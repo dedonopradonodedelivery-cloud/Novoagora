@@ -69,9 +69,9 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
 
             {/* Texto Explicativo Lógico */}
             <div className="bg-gray-50 dark:bg-gray-700/30 rounded-2xl p-4 w-full mb-6">
-                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 text-[15px] font-medium leading-relaxed text-center">
                     {isCashback 
-                        ? "Será creditado automaticamente no seu Localizei Pay." 
+                        ? "Seu prêmio foi creditado automaticamente no seu Cashback Local."
                         : "Resgate nos estabelecimentos parceiros."
                     }
                 </p>

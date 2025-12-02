@@ -17,6 +17,7 @@ import { FreguesiaConnectPublic } from './components/FreguesiaConnectPublic';
 import { FreguesiaConnectDashboard } from './components/FreguesiaConnectDashboard';
 import { FreguesiaConnectRestricted } from './components/FreguesiaConnectRestricted';
 import { RewardDetailsView } from './components/RewardDetailsView';
+import { PrizeHistoryView } from './components/PrizeHistoryView';
 import { AuthModal } from './components/AuthModal';
 import { QuickRegister } from './components/QuickRegister';
 import { MenuView } from './components/MenuView';
@@ -190,7 +191,7 @@ const App: React.FC = () => {
     { id: 'sub-ad-2', title: 'Seu almoço executivo aqui', image: 'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=800&auto=format=fit-crop', merchantName: 'Sabor & Cia' },
   ];
 
-  const hideHeader = ['category_detail', 'food_category', 'subcategory_store_list', 'store_detail', 'store_category', 'cashback', 'cashback_landing', 'profile', 'store_area', 'service_subcategories', 'service_specialties', 'service_success', 'editorial_list', 'freguesia_connect_public', 'freguesia_connect_dashboard', 'freguesia_connect_restricted', 'reward_details'].includes(activeTab);
+  const hideHeader = ['category_detail', 'food_category', 'subcategory_store_list', 'store_detail', 'store_category', 'cashback', 'cashback_landing', 'profile', 'store_area', 'service_subcategories', 'service_specialties', 'service_success', 'editorial_list', 'freguesia_connect_public', 'freguesia_connect_dashboard', 'freguesia_connect_restricted', 'reward_details', 'prize_history'].includes(activeTab);
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
@@ -366,6 +367,14 @@ const App: React.FC = () => {
                     onBack={() => setActiveTab('home')} // Go back to home after seeing reward
                     onHome={() => setActiveTab('home')}
                 />
+            )}
+            
+            {activeTab === 'prize_history' && user && (
+              <PrizeHistoryView
+                userId={user.uid}
+                onBack={() => setActiveTab('home')}
+                onGoToSpinWheel={() => setActiveTab('home')}
+              />
             )}
           </main>
           

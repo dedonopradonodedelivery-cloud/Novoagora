@@ -59,7 +59,8 @@ const SpinWheelModal: React.FC<{
   userId: string | null;
   onWin: (reward: any) => void;
   onRequireLogin: () => void;
-}> = ({ isOpen, onClose, userId, onWin, onRequireLogin }) => {
+  onViewHistory: () => void;
+}> = ({ isOpen, onClose, userId, onWin, onRequireLogin, onViewHistory }) => {
   if (!isOpen) return null;
 
   return (
@@ -86,6 +87,7 @@ const SpinWheelModal: React.FC<{
               userId={userId}
               onWin={onWin}
               onRequireLogin={onRequireLogin}
+              onViewHistory={onViewHistory}
             />
         </div>
       </div>
@@ -347,6 +349,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
         userId={user?.uid || null}
         onWin={handleSpinWin}
         onRequireLogin={onRequireLogin}
+        onViewHistory={() => onNavigate('prize_history')}
       />
     </div>
   );
