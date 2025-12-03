@@ -20,7 +20,6 @@ import { MasterSponsorBanner } from './MasterSponsorBanner';
 interface ServicesViewProps {
   onSelectMacro: (id: string, name: string) => void;
   onOpenTerms: () => void;
-  onNavigate: (view: string) => void;
 }
 
 const MACRO_SERVICES = [
@@ -75,14 +74,14 @@ const MACRO_SERVICES = [
   },
 ];
 
-export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpenTerms, onNavigate }) => {
+export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpenTerms }) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in fade-in duration-500 pb-32">
       
       <div className="px-5 pt-6 flex flex-col gap-6">
         
         {/* Patrocinador Master */}
-        <MasterSponsorBanner onClick={() => onNavigate('patrocinador_master')} />
+        <MasterSponsorBanner />
 
         {/* Hero Banner Estilo Card Premium */}
         <div className="relative w-full rounded-[20px] bg-gradient-to-r from-[#FF6501] to-[#FF7A00] p-7 shadow-lg shadow-orange-500/20 overflow-hidden group cursor-default transition-all duration-300 hover:shadow-orange-500/25">

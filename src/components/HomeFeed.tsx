@@ -625,7 +625,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
 
             {/* Patrocinador Master */}
             <div className="px-5 w-full">
-              <MasterSponsorBanner onClick={() => onNavigate('patrocinador_master')} />
+              <MasterSponsorBanner />
             </div>
 
             {/* Lista principal */}

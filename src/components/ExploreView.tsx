@@ -5,10 +5,11 @@ import {
   MapPin,
   Star,
   Percent,
+  Sparkles,
   Compass,
   Filter,
+  Crown,
 } from 'lucide-react';
-import { MasterSponsorBanner } from './MasterSponsorBanner';
 
 interface ExploreViewProps {
   onSelectCategory: (category: Category) => void;
@@ -274,8 +275,34 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </button>
         </div>
 
-        {/* Patrocinador Master */}
-        <MasterSponsorBanner onClick={() => onNavigate('patrocinador_master')} />
+        {/* Card Patrocinador Master com cores da logo e botão clicável */}
+        <section className="rounded-2xl p-4 flex flex-col gap-3 shadow-sm border bg-[#f4f6fb] border-[#1f2740]/15">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1">
+              <p className="text-[10px] font-semibold tracking-[0.18em] uppercase flex items-center gap-1 text-[#1f2740]">
+                <Crown className="w-3.5 h-3.5 text-yellow-400 fill-yellow-300" />
+                <span>Patrocinador Master</span>
+              </p>
+              <h2 className="text-sm font-bold text-[#1f2740] mt-1">
+                Grupo Esquematiza
+              </h2>
+            </div>
+            <a
+              href="https://www.instagram.com/grupoesquematiza/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-gradient-to-r from-[#ff6501] to-[#ff7a00] text-white text-xs font-semibold shadow-md active:scale-95 transition-transform"
+            >
+              Seguir
+            </a>
+          </div>
+
+          <div className="mt-1">
+            <p className="text-[11px] text-[#1f2740]">
+              Transformando desafios em soluções seguras para a Freguesia.
+            </p>
+          </div>
+        </section>
 
         {/* Seções de recomendação */}
         {hasAnyStore ? (
