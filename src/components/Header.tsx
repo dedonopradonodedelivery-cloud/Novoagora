@@ -48,8 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }, []);
 
-  // Placeholder fixo
-  const placeholderText = "Busque por lojas e produtos";
+  // Placeholder fixo atualizado
+  const placeholderText = "Busque por lojas, serviços ou produtos";
 
   return (
     <header className="contents">
@@ -58,8 +58,12 @@ export const Header: React.FC<HeaderProps> = ({
         1. TOP SECTION (Scrolls away) 
         Contains Logo, Location, User Profile.
         Background matches the sticky part to look like one block.
+        Padding top adjusted for safe-area (iPhone Notch).
       */}
-      <div className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] pt-5 px-4 pb-2 relative z-40">
+      <div 
+        className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] px-4 pb-2 relative z-40"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}
+      >
         <div className="flex justify-between items-start">
           
           {/* Logo Localizei Freguesia + Localização (Esquerda) */}

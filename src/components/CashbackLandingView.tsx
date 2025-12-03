@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Wallet, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Sparkles, ArrowRight } from 'lucide-react';
+import { CashbackIcon } from './CashbackIcon';
 
 interface CashbackLandingViewProps {
   onBack: () => void;
@@ -111,11 +112,17 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
         </div>
 
         {/* Card Ilustrativo de Saldo */}
-        <div className="w-full max-w-xs bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl shadow-orange-900/20 border border-white/50 dark:border-gray-700 mb-10 transform hover:scale-105 transition-transform duration-500 relative z-20">
-            <div className="flex justify-between items-start mb-4">
+        <div className="w-full max-w-xs bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl shadow-orange-900/20 border border-white/50 dark:border-gray-700 mb-10 transform hover:scale-105 transition-transform duration-500 relative z-20 overflow-hidden">
+            
+            {/* New Cashback Icon Positioned Decoratively */}
+            <div className="absolute -right-4 -top-4 opacity-10 pointer-events-none">
+                <CashbackIcon className="w-32 h-32" />
+            </div>
+
+            <div className="flex justify-between items-start mb-4 relative z-10">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-[#FF6501]">
-                        <Wallet className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-[#FF6501] overflow-hidden">
+                        <CashbackIcon className="w-12 h-12" />
                     </div>
                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400">Meu Saldo</span>
                 </div>
@@ -123,15 +130,15 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
                     + R$ 2,50 hoje
                 </span>
             </div>
-            <div className="text-center py-2">
+            <div className="text-center py-2 relative z-10">
                 <span className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                     R$ {fakeBalance.toFixed(2).replace('.', ',')}
                 </span>
             </div>
-            <div className="mt-4 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div className="mt-4 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden relative z-10">
                 <div className="h-full bg-gradient-to-r from-orange-400 to-[#FF6501] w-[70%] rounded-full animate-pulse"></div>
             </div>
-            <p className="text-center text-[10px] text-gray-400 mt-2">
+            <p className="text-center text-[10px] text-gray-400 mt-2 relative z-10">
                 Cashback acumulado em compras locais (exemplo)
             </p>
         </div>

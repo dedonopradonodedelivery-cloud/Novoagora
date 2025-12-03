@@ -1,4 +1,5 @@
 
+// ... keep imports ...
 import React, { useState, useEffect, useRef } from 'react';
 import { CATEGORIES } from '../constants';
 import { AdType, Category, Store } from '../types';
@@ -161,6 +162,15 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [selectedQuoteNiche, setSelectedQuoteNiche] = useState('');
 
+  // State to trigger spin animation on mount
+  const [hasSpun, setHasSpun] = useState(false);
+
+  useEffect(() => {
+    // Trigger the spin animation once when the component mounts
+    const timer = setTimeout(() => setHasSpun(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
 
@@ -192,10 +202,10 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   }, [activeSearchTerm]);
 
   const MINI_BANNERS = [
-    { id: 'cashback', title: "Cashback Local", subtitle: "Dinheiro de volta.", icon: <Coins className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-[#FF6501] to-[#FF9E0B]", action: () => onNavigate(user ? 'cashback' : 'cashback_landing') },
-    { id: 'services', title: "Peça um Orçamento", subtitle: "Receba até 5 orçamentos.", icon: <Wrench className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-blue-600 to-cyan-500", action: () => onNavigate('services') },
-    { id: 'connect', title: "Freguesia Connect", subtitle: "Networking empresarial.", icon: <Users className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-indigo-600 to-purple-600", action: () => onNavigate(!user ? 'freguesia_connect_public' : userRole === 'lojista' ? 'freguesia_connect_dashboard' : 'freguesia_connect_restricted') },
-    { id: 'achadinhos', title: "Achados de Hoje", subtitle: "Ofertas especiais.", icon: <Sparkles className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-pink-500 to-rose-500", action: () => onNavigate('marketplace') }
+    { id: 'cashback', title: "Cashback Local", subtitle: "Dinheiro de volta.", icon: <Coins className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-[#FF6501] to-[#FF9E0B]", action: () => onNavigate('cashback_info'), cta: "Ver Agora" },
+    { id: 'services', title: "Peça um Orçamento", subtitle: "Receba até 5 orçamentos.", icon: <Wrench className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-blue-600 to-cyan-500", action: () => onNavigate('services'), cta: "Orçamento" },
+    { id: 'connect', title: "Freguesia Connect", subtitle: "Networking empresarial.", icon: <Users className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-indigo-600 to-purple-600", action: () => onNavigate(!user ? 'freguesia_connect_public' : userRole === 'lojista' ? 'freguesia_connect_dashboard' : 'freguesia_connect_restricted'), cta: "Faça Parte" },
+    { id: 'achadinhos', title: "Achados de Hoje", subtitle: "Ofertas especiais.", icon: <Sparkles className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-pink-500 to-rose-500", action: () => onNavigate('marketplace'), cta: "Ver Ofertas" }
   ];
 
   const handleCategoryScroll = () => {
@@ -226,14 +236,14 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   };
   
   return (
-    <div className="flex flex-col gap-5 pt-4 pb-16 animate-in fade-in duration-500 bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col gap-4 mt-[12px] pb-24 bg-gray-50 dark:bg-gray-900 w-full max-w-md mx-auto !pt-0 animate-in fade-in duration-500">
       <style>{`
-        @keyframes wheel-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        @keyframes wheel-spin-once {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(1800deg); }
         }
-        .spin-wheel {
-          animation: wheel-spin 3s ease-in-out 1s 1;
+        .spin-wheel-animate {
+          animation: wheel-spin-once 5s ease-out forwards;
         }
       `}</style>
       
@@ -271,22 +281,21 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
              )}
         </div>
       ) : (
-        <div className="flex flex-col gap-5 mt-1">
+        <div className="flex flex-col gap-6 w-full">
             
             {/* --- Faixa Roleta Localizei (Layout Organizado) --- */}
-            <div className="px-5">
+            <div className="px-5 w-full">
               <div
                 onClick={handleSpinWheelClick}
-                className="w-full rounded-2xl bg-gradient-to-r from-orange-100 via-amber-50 to-rose-100 dark:from-gray-800 dark:to-gray-700 border border-orange-200/60 dark:border-gray-600 shadow-md shadow-orange-100/50 flex items-center px-4 py-3 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all duration-300"
+                className="w-full rounded-2xl bg-gradient-to-r from-orange-100 via-amber-50 to-rose-100 dark:from-gray-800 dark:to-gray-700 border border-orange-200/60 dark:border-gray-600 shadow-md shadow-orange-100/50 flex items-center px-2 py-3 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all duration-300"
               >
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-transparent rounded-full blur-xl -mr-6 -mt-6 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-1/3 w-16 h-16 bg-yellow-400/20 rounded-full blur-lg pointer-events-none"></div>
-                <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-red-400/40 rounded-full animate-ping pointer-events-none"></div>
-
+                
                 {/* Left: Icon */}
-                <div className="relative z-10 flex-shrink-0 mr-4">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/50 relative transform group-hover:rotate-12 transition-transform duration-700 ease-out spin-wheel">
+                <div className="relative z-10 flex-shrink-0 mr-2">
+                  <div className={`w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/50 relative ${hasSpun ? 'spin-wheel-animate' : ''}`}>
                     <svg viewBox="0 0 32 32" className="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="16" cy="16" r="15" fill="white" stroke="#FFE0B2" strokeWidth="1" />
                         <path d="M16 16 L16 1 A15 15 0 0 1 26.6 5.4 Z" fill="#FF5252" /> 
@@ -305,20 +314,20 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 </div>
                 
                 {/* Center: Text (Aligned Left) */}
-                <div className="relative z-10 flex-1 flex flex-col justify-center min-w-0 mr-2">
-                    <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-0.5 truncate">
+                <div className="relative z-10 flex-1 flex flex-col justify-center min-w-0 mr-1">
+                    <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-0.5 whitespace-nowrap">
                       Roleta Localizei
                     </span>
-                    <span className="text-[12px] font-semibold text-gray-900 dark:text-white leading-tight truncate">
-                      Gira agora e ganhe prêmios todos os dias
+                    <span className="text-[11px] xs:text-[12px] sm:text-[13px] font-bold text-gray-900 dark:text-white leading-none whitespace-nowrap overflow-visible">
+                      Ganhe prêmios todos os dias
                     </span>
                 </div>
 
-                {/* Right: CTA */}
-                <div className="relative z-10 flex-shrink-0 ml-auto">
-                    <div className="flex items-center justify-center bg-white/60 dark:bg-gray-800/60 p-2 rounded-full backdrop-blur-sm border border-white/40 shadow-sm group-hover:scale-110 transition-transform">
-                      <ChevronRight className="w-5 h-5 text-orange-600 dark:text-orange-400 stroke-[3]" />
-                    </div>
+                {/* Right: CTA Button */}
+                <div className="relative z-10 flex-shrink-0 ml-1">
+                    <button className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-md shadow-orange-500/20 active:scale-95 transition-transform uppercase tracking-wide whitespace-nowrap">
+                        Gire Agora
+                    </button>
                 </div>
               </div>
             </div>
@@ -347,7 +356,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             {/* Carrossel de Banners Estilo Méliuz */}
             <div className="w-full relative group">
                  <div className="px-5 mb-3 flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">O que você vai encontrar aqui</h3>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">O que você vai encontrar na Localizei</h3>
                  </div>
                  
                  {/* Botão de Navegação Flutuante */}
@@ -396,7 +405,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                                 {/* 3. CTA (Right) */}
                                 <div className="z-10 flex-shrink-0 ml-2">
                                     <button className={`bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white font-bold rounded-full w-fit transition-colors flex items-center gap-1 ${btnPaddingClass}`}>
-                                        VER AGORA <ArrowRight className="w-2.5 h-2.5" />
+                                        {banner.cta} <ArrowRight className="w-2.5 h-2.5" />
                                     </button>
                                 </div>
 
@@ -410,8 +419,32 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Lojas com Cashback */}
-            <div className="pl-5 space-y-2.5">
+            {/* Achadinhos (MOVED UP) */}
+            <div className="pl-5 space-y-2.5 w-full">
+                 <div className="flex items-center justify-between pr-5">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">Achadinhos da Freguesia</h3>
+                    <button 
+                        onClick={() => onNavigate('marketplace')}
+                        className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
+                    >
+                        Ver mais
+                    </button>
+                 </div>
+                 <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
+                    {EDITORIAL_THEMES.map((theme) => (
+                       <div key={theme.id} className="min-w-[108px] w-[108px] h-[192px] rounded-none overflow-hidden relative cursor-pointer group active:scale-[0.98] transition-transform shadow-md" onClick={() => onSelectCollection(theme)}>
+                          <img src={theme.image} alt={theme.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
+                             <h4 className="font-bold text-white text-base font-display leading-tight">{theme.title}</h4>
+                             <p className="text-xs text-gray-200 font-medium line-clamp-2 mt-1">{theme.subtitle}</p>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
+            </div>
+
+            {/* Lojas com Cashback (MOVED DOWN) */}
+            <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Lojas com Cashback</h3>
                     <button 
@@ -456,32 +489,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Achadinhos */}
-            <div className="pl-5 space-y-2.5">
-                 <div className="flex items-center justify-between pr-5">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">Achadinhos da Freguesia</h3>
-                    <button 
-                        onClick={() => onNavigate('marketplace')}
-                        className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                    >
-                        Ver mais
-                    </button>
-                 </div>
-                 <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
-                    {EDITORIAL_THEMES.map((theme) => (
-                       <div key={theme.id} className="min-w-[108px] w-[108px] h-[192px] rounded-none overflow-hidden relative cursor-pointer group active:scale-[0.98] transition-transform shadow-md" onClick={() => onSelectCollection(theme)}>
-                          <img src={theme.image} alt={theme.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
-                             <h4 className="font-bold text-white text-base font-display leading-tight">{theme.title}</h4>
-                             <p className="text-xs text-gray-200 font-medium line-clamp-2 mt-1">{theme.subtitle}</p>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
-            </div>
-
-            {/* Recomendados para você (Nova Seção) */}
-            <div className="pl-5 space-y-2.5">
+            {/* Recomendados para você */}
+            <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Recomendados para você</h3>
                     <button 
@@ -526,7 +535,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             </div>
 
             {/* Top buscados */}
-            <div className="pl-5 space-y-2.5">
+            <div className="pl-5 space-y-2.5 w-full">
                <div className="flex items-center justify-between pr-5">
                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">As lojas mais buscadas</h3>
                    <button 
@@ -549,7 +558,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             </div>
 
             {/* Eventos da Freguesia */}
-            <div className="pl-5 space-y-2.5 mt-2">
+            <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Eventos da Freguesia</h3>
                     <button
@@ -579,7 +588,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             </div>
 
             {/* Serviços 24h (Nova Seção) */}
-            <div className="pl-5 space-y-2.5 mt-2">
+            <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h3>
                     <button
@@ -615,12 +624,12 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             </div>
 
             {/* Patrocinador Master */}
-            <div className="px-5 mt-2">
+            <div className="px-5 w-full">
               <MasterSponsorBanner />
             </div>
 
             {/* Lista principal */}
-            <div className="px-5 pb-4 min-h-[300px]">
+            <div className="px-5 pb-4 min-h-[300px] w-full">
                 <LojasEServicosList 
                     onStoreClick={onStoreClick} 
                     onViewAll={() => onNavigate('explore')}

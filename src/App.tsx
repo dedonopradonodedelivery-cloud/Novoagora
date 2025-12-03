@@ -26,11 +26,13 @@ import { SpecialtiesView } from './components/SpecialtiesView';
 import { StoreAreaView } from './components/StoreAreaView';
 import { QuoteRequestModal } from './components/QuoteRequestModal';
 import { ServiceSuccessView } from './components/ServiceSuccessView';
+import { ServiceTermsView } from './components/ServiceTermsView';
 import { EditorialListView, EditorialCollection } from './components/EditorialListView';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Category, Store, AdType } from './types';
+import { CashbackInfoView } from './components/CashbackInfoView';
 
 // =============================
 // MOCK DE LOJAS PARA AMBIENTE SEM SUPABASE
@@ -62,7 +64,7 @@ const MOCK_STORES: Store[] = [
     reviewsCount: 87,
     distance: 'Freguesia • RJ',
     cashback: 3,
-    adType: AdType.SPONSORED,
+    adType: AdType.PREMIUM,
     subcategory: 'Padaria',
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
@@ -156,7 +158,7 @@ const App: React.FC = () => {
 
   // SPLASH
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -212,28 +214,35 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-primary-500 to-orange-700 flex flex-col items-center justify-center text-white z-50">
-        <div className="relative flex flex-col items-center justify-center mb-8">
-          <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-4 animate-pop-in opacity-0">
-            <MapPin className="w-8 h-8 text-primary-600 fill-primary-600" />
+        
+        {/* Central Logo Block */}
+        <div className="relative flex flex-col items-center justify-center">
+          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-4 animate-pop-in opacity-0">
+            <MapPin className="w-10 h-10 text-primary-600 fill-primary-600" />
           </div>
-          <div className="text-4xl font-bold font-display animate-slide-up opacity-0 [animation-delay:500ms]">
+          <div className="text-5xl font-bold font-display animate-slide-up opacity-0 [animation-delay:500ms]">
             Localizei
           </div>
-          <div className="text-xs font-light uppercase mt-2 animate-tracking-expand opacity-0 [animation-delay:1000ms]">
+          <div className="text-sm font-light uppercase mt-2 tracking-[0.2em] animate-tracking-expand opacity-0 [animation-delay:1000ms]">
             Freguesia
           </div>
         </div>
-        <div className="absolute bottom-12 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
-          <p className="text-[9px] opacity-70 uppercase tracking-wider mb-1">
-            Patrocinador Master
-          </p>
-          <div className="bg-white/10 backdrop-blur-sm px-5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 shadow-lg">
-            <Crown className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300 drop-shadow-md" />
-            <p className="font-bold text-base tracking-wide text-white drop-shadow-sm">
-              Grupo Esquematiza
+
+        {/* Sponsor Block - Repositioned Below Logo with Float Animation */}
+        <div className="mt-16 animate-fade-in opacity-0 [animation-delay:1500ms]">
+          <div className="text-center animate-sponsor-float">
+            <p className="text-[10px] opacity-80 uppercase tracking-widest mb-2 font-medium">
+              Patrocinador Master
             </p>
+            <div className="bg-white/15 backdrop-blur-md px-6 py-2 rounded-full border border-white/20 flex items-center gap-2.5 shadow-xl">
+              <Crown className="w-4 h-4 text-yellow-300 fill-yellow-300 drop-shadow-md" />
+              <p className="font-bold text-lg tracking-wide text-white drop-shadow-sm">
+                Grupo Esquematiza
+              </p>
+            </div>
           </div>
         </div>
+
       </div>
     );
   }
@@ -267,11 +276,13 @@ const App: React.FC = () => {
     'store_category',
     'cashback',
     'cashback_landing',
+    'cashback_info',
     'profile',
     'store_area',
     'service_subcategories',
     'service_specialties',
     'service_success',
+    'service_terms', 
     'editorial_list',
     'freguesia_connect_public',
     'freguesia_connect_dashboard',
@@ -333,7 +344,16 @@ const App: React.FC = () => {
             )}
 
             {activeTab === 'services' && (
-              <ServicesView onSelectMacro={handleSelectServiceMacro} />
+              <ServicesView 
+                onSelectMacro={handleSelectServiceMacro} 
+                onOpenTerms={() => setActiveTab('service_terms')}
+              />
+            )}
+
+            {activeTab === 'service_terms' && (
+              <ServiceTermsView 
+                onBack={() => setActiveTab('services')} 
+              />
             )}
 
             {activeTab === 'service_subcategories' && selectedServiceMacro && (
@@ -423,6 +443,17 @@ const App: React.FC = () => {
               <CashbackLandingView
                 onBack={() => setActiveTab('home')}
                 onLogin={() => setIsAuthOpen(true)}
+              />
+            )}
+
+            {/* Nova rota para Cashback Info */}
+            {activeTab === 'cashback_info' && (
+              <CashbackInfoView
+                user={user}
+                userRole={userRole}
+                onBack={() => setActiveTab('home')}
+                onLogin={() => setIsAuthOpen(true)}
+                onNavigate={setActiveTab}
               />
             )}
 
