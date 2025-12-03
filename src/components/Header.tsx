@@ -17,6 +17,7 @@ interface HeaderProps {
   searchTerm?: string;
   onSearchChange?: (term: string) => void;
   onNavigate?: (view: string) => void;
+  activeTab?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -26,50 +27,50 @@ export const Header: React.FC<HeaderProps> = ({
   user, 
   searchTerm = '', 
   onSearchChange,
-  onNavigate
+  onNavigate,
+  activeTab
 }) => {
   const [locationText, setLocationText] = useState<string>('Localização não ativa');
-  const [hasLocation, setHasLocation] = useState(false);
 
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Em um app real, usaríamos as coordenadas para obter o endereço (Reverse Geocoding).
-          // Para este contexto da Freguesia, simulamos que estamos na região correta ao ter permissão.
-          setHasLocation(true);
           setLocationText('Freguesia, RJ');
         },
         (error) => {
           console.log('Geolocalização não permitida ou erro:', error);
-          setHasLocation(false);
-          setLocationText('Localização não autorizada');
+          setLocationText('Freguesia, RJ'); // Default fallback
         }
       );
     } else {
-      setLocationText('GPS indisponível');
+      setLocationText('Freguesia, RJ');
     }
   }, []);
 
+  // Placeholder fixo
+  const placeholderText = "Busque por lojas e produtos";
+
   return (
-    <header className="relative z-40 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Background Container com Gradiente e Bordas Curvas */}
-      <div className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] rounded-b-[32px] pt-6 pb-6 px-5 shadow-lg relative z-10">
-        
-        {/* PARTE SUPERIOR: Logo, Título e Ações */}
-        <div className="flex justify-between items-start mb-6">
+    <header className="contents">
+      
+      {/* 
+        1. TOP SECTION (Scrolls away) 
+        Contains Logo, Location, User Profile.
+        Background matches the sticky part to look like one block.
+      */}
+      <div className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] pt-5 px-4 pb-2 relative z-40">
+        <div className="flex justify-between items-start">
           
           {/* Logo Localizei Freguesia + Localização (Esquerda) */}
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10 shadow-sm flex-shrink-0">
+             <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10 shadow-sm flex-shrink-0">
                 <MapPin className="w-5 h-5 text-white fill-white/20" />
              </div>
              <div className="flex flex-col justify-center">
-                {/* Título em linha única */}
-                <h1 className="text-white font-bold text-lg font-display leading-tight tracking-tight">
+                <h1 className="text-white font-bold text-base font-display leading-tight tracking-tight">
                   Localizei Freguesia
                 </h1>
-                {/* Localização dinâmica */}
                 <span className="text-white/80 text-xs font-medium tracking-wide flex items-center gap-1">
                   {locationText}
                 </span>
@@ -77,48 +78,54 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Ícones de Ação (Direita) */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             
-            {/* Botão Tema (Dia/Noite) */}
+            {/* Botão Tema */}
             <button 
               onClick={toggleTheme}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2.5 rounded-xl transition-all active:scale-95 border border-white/10 shadow-sm"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm"
               aria-label="Alternar Tema"
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
-            {/* REMOVIDO: Botão Cashback */}
-
             {/* Botão Perfil */}
             <button 
               onClick={onAuthClick}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-0.5 rounded-xl transition-all active:scale-95 border border-white/10 shadow-sm overflow-hidden w-[42px] h-[42px] flex items-center justify-center"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-0.5 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm overflow-hidden w-9 h-9 flex items-center justify-center"
               aria-label="Perfil"
             >
               {user?.photoURL ? (
-                <img src={user.photoURL} alt="Perfil" className="w-full h-full object-cover rounded-[10px]" />
+                <img src={user.photoURL} alt="Perfil" className="w-full h-full object-cover rounded-[6px]" />
               ) : (
                 <UserIcon className="w-5 h-5" />
               )}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* PARTE INFERIOR: Busca Integrada */}
-        <div className="relative group">
-           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-             <Search className="h-5 w-5 text-[#FF6501] group-focus-within:scale-110 transition-transform duration-300" />
-           </div>
+      {/* 
+        2. STICKY SEARCH BAR (Sticks to top)
+        Contains the search input.
+        Inherits the rounded bottom and shadow.
+        -mt-px ensures no gap between the gradients.
+      */}
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] px-4 pb-6 pt-2 rounded-b-[28px] shadow-lg -mt-px">
+        <div className="relative w-full">
            <input
              type="text"
              value={searchTerm}
              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-             placeholder="Buscar lojas, descontos e serviços..."
-             className="block w-full pl-11 pr-4 py-3.5 border-none rounded-2xl bg-white text-gray-800 placeholder-gray-400 shadow-lg shadow-orange-900/10 focus:outline-none focus:ring-4 focus:ring-white/30 transition-all text-sm font-medium"
+             placeholder={placeholderText}
+             className="block w-full h-12 pl-5 pr-12 rounded-full bg-white text-[#333333] placeholder-[#8A8A8A] shadow-[0_2px_6px_rgba(0,0,0,0.08)] border-none focus:outline-none text-[15px] font-normal transition-all"
            />
+           <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+             <Search className="h-5 w-5 text-[#666666]" />
+           </div>
         </div>
       </div>
+
     </header>
   );
 };

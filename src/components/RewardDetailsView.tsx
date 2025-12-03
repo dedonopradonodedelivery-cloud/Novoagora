@@ -33,7 +33,7 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300 flex flex-col items-center relative overflow-hidden">
       
       {/* Background Decor */}
-      <div className="absolute top-0 w-full h-[40vh] bg-gradient-to-b from-orange-500 to-orange-600 rounded-b-[40px] z-0"></div>
+      <div className="absolute top-0 w-full h-[40vh] bg-gradient-to-b from-orange-500 to-orange-600 rounded-b-[34px] z-0"></div>
 
       {/* Header */}
       <div className="w-full relative z-10 px-5 pt-6 pb-2 flex items-center justify-between">
@@ -47,29 +47,29 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
         <div className="w-10"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-sm px-6 mt-8 flex flex-col items-center flex-1 pb-10">
+      <div className="relative z-10 w-full max-w-sm px-5 mt-6 flex flex-col items-center flex-1 pb-10">
         
         {/* Card Principal */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 w-full shadow-2xl shadow-orange-900/20 flex flex-col items-center text-center relative overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full shadow-2xl shadow-orange-900/20 flex flex-col items-center text-center relative overflow-hidden border border-gray-100 dark:border-gray-700">
             {/* Confetti Visuals (Static) */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500"></div>
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500"></div>
 
-            <div className="w-24 h-24 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-6 ring-8 ring-orange-50 dark:ring-orange-900/10">
+            <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-5 ring-8 ring-orange-50 dark:ring-orange-900/10">
                 {isCashback ? (
-                    <Wallet className="w-12 h-12 text-orange-600 dark:text-orange-400" />
+                    <Wallet className="w-10 h-10 text-orange-600 dark:text-orange-400" />
                 ) : (
-                    <Ticket className="w-12 h-12 text-orange-600 dark:text-orange-400" />
+                    <Ticket className="w-10 h-10 text-orange-600 dark:text-orange-400" />
                 )}
             </div>
 
             {/* Título Grande */}
-            <h2 className="text-3xl font-extrabold text-[#FF6501] mb-4 font-display leading-tight">
+            <h2 className="text-2xl font-extrabold text-[#FF6501] mb-4 font-display leading-tight">
                 {rewardName}
             </h2>
 
             {/* Texto Explicativo Lógico */}
-            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-2xl p-4 w-full mb-6">
-                <p className="text-gray-600 dark:text-gray-300 text-[15px] font-medium leading-relaxed text-center">
+            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-3 w-full mb-5">
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium leading-relaxed text-center">
                     {isCashback 
                         ? "Seu prêmio foi creditado automaticamente no seu Cashback Local."
                         : "Resgate nos estabelecimentos parceiros."
@@ -81,7 +81,7 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
             {!isCashback && (
                 <div className="w-full mb-4">
                     <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-600 p-3 shadow-sm">
-                        <code className="text-lg font-mono font-bold text-gray-800 dark:text-gray-200 tracking-wider">
+                        <code className="text-base font-mono font-bold text-gray-800 dark:text-gray-200 tracking-wider">
                             {reward.code}
                         </code>
                         <button 
@@ -106,7 +106,7 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
         <div className="w-full mt-auto pt-8">
             <button 
                 onClick={onHome}
-                className="w-full bg-gradient-to-r from-[#FF6501] to-[#FF7A00] hover:shadow-orange-500/40 text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-[#FF6501] to-[#FF7A00] hover:shadow-orange-500/40 text-white font-bold py-3.5 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
                 <Home className="w-5 h-5" />
                 Voltar ao Início

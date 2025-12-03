@@ -17,6 +17,7 @@ import {
   Store
 } from 'lucide-react';
 import { auth } from '../lib/firebase';
+import { MasterSponsorBanner } from './MasterSponsorBanner';
 
 interface MenuViewProps {
   user: any;
@@ -70,6 +71,9 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, onAuthClick, onNavigat
 
       <div className="p-5 space-y-6">
         
+        {/* Patrocinador Master */}
+        <MasterSponsorBanner />
+
         {/* User Profile Card */}
         <div 
           onClick={onAuthClick}

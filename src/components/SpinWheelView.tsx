@@ -202,9 +202,9 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
   const renderSpinButton = () => {
     if (spinStatus === 'cooldown') {
       return (
-        <div className="w-full text-center bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
-          <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Você já girou hoje. Volte amanhã!</p>
-          <p className="text-lg font-bold text-primary-500 mt-1">
+        <div className="w-full text-center bg-gray-100 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Você já girou hoje. Volte amanhã!</p>
+          <p className="text-base font-bold text-primary-500 mt-1">
             Próximo giro em: {timeUntilNextSpin}
           </p>
         </div>
@@ -220,7 +220,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
     else if (spinStatus === 'error') text = 'Erro de Conexão';
 
     return (
-      <button onClick={handleSpin} disabled={disabled} className="w-full h-16 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold text-lg rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+      <button onClick={handleSpin} disabled={disabled} className="w-full h-14 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold text-base rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
         {text}
       </button>
     );
@@ -242,27 +242,27 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
   };
 
   return (
-    <div className="bg-[#F7F7F7] dark:bg-gray-900 rounded-t-3xl shadow-2xl p-6 pt-5 w-full max-w-md mx-auto relative overflow-hidden font-sans">
-      <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
+    <div className="bg-[#F7F7F7] dark:bg-gray-900 rounded-t-3xl shadow-2xl p-5 pt-4 w-full max-w-md mx-auto relative overflow-hidden font-sans">
+      <div className="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-3"></div>
       
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <button onClick={() => setIsMuted(!isMuted)} className="p-2 text-gray-400 hover:text-gray-600">
-          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
         <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white font-display">Roleta da Freguesia</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Gire uma vez por dia e ganhe prêmios!</p>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white font-display">Roleta da Freguesia</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Gire uma vez por dia e ganhe prêmios!</p>
         </div>
         <button onClick={onViewHistory} className="p-2 text-gray-400 hover:text-gray-600">
-            <History size={20} />
+            <History size={18} />
         </button>
       </div>
       
-      <div className="relative w-full max-w-[320px] mx-auto aspect-square flex items-center justify-center mb-6">
+      <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center mb-5">
         <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20" style={{ filter: 'drop-shadow(0 4px 5px rgba(0,0,0,0.25))' }}>
-          <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-[#D32F2F]"></div>
+          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#D32F2F]"></div>
         </div>
-        <div className="absolute w-16 h-16 bg-white dark:bg-gray-800 rounded-full border-4 border-[#D32F2F] shadow-inner z-10"></div>
+        <div className="absolute w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-[#D32F2F] shadow-inner z-10"></div>
         
         <div 
           className="relative w-full h-full rounded-full transition-transform ease-[cubic-bezier(0.25,1,0.5,1)] border-8 border-white dark:border-gray-800 shadow-xl"
@@ -273,7 +273,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
               <g key={i}>
                 <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
                 <path id={`textPath-${i}`} d={`M100,100 L${100 + 95 * Math.cos((i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2) * Math.PI / 180)},${100 + 95 * Math.sin((i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2) * Math.PI / 180)}`} fill="none" />
-                <text dy="-4" className="font-display" style={{ fontSize: '11px', fill: prize.textColor, fontWeight: 600, textAnchor: 'end' }}>
+                <text dy="-4" className="font-display" style={{ fontSize: '10px', fill: prize.textColor, fontWeight: 600, textAnchor: 'end' }}>
                   <textPath href={`#textPath-${i}`} startOffset="95%">{prize.prize_label}</textPath>
                 </text>
               </g>
@@ -287,15 +287,15 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
       {spinResult && (
         <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-30 flex items-center justify-center rounded-3xl animate-in fade-in duration-300">
            <div className="text-center p-4 flex flex-col items-center">
-               <div className="inline-block p-4 bg-white dark:bg-gray-700 rounded-full shadow-lg mb-4 animate-jelly">
-                    {spinResult.prize_type === 'nao_foi_dessa_vez' && <ThumbsDown size={40} className="text-gray-500" />}
-                    {spinResult.prize_type === 'gire_de_novo' && <RefreshCw size={40} className="text-blue-500"/>}
-                    {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={40} className="text-orange-500" />}
+               <div className="inline-block p-3 bg-white dark:bg-gray-700 rounded-full shadow-lg mb-3 animate-jelly">
+                    {spinResult.prize_type === 'nao_foi_dessa_vez' && <ThumbsDown size={32} className="text-gray-500" />}
+                    {spinResult.prize_type === 'gire_de_novo' && <RefreshCw size={32} className="text-blue-500"/>}
+                    {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={32} className="text-orange-500" />}
                </div>
-               <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+               <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                    {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Que pena!' : (spinResult.prize_type === 'gire_de_novo' ? 'Mais uma chance!' : 'Você ganhou!')}
                </h3>
-               <p className="text-lg font-semibold text-orange-600 dark:text-orange-400 mt-1">{spinResult.prize_label}</p>
+               <p className="text-base font-semibold text-orange-600 dark:text-orange-400 mt-1">{spinResult.prize_label}</p>
            </div>
         </div>
       )}

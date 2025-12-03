@@ -1,79 +1,221 @@
+
 import React from 'react';
-import { Wrench, TriangleAlert, Hammer, CarFront, Smartphone, Dog, Sparkles, Briefcase, MoreHorizontal } from 'lucide-react';
+import { 
+  Wrench, 
+  TriangleAlert, 
+  Hammer, 
+  CarFront, 
+  Smartphone, 
+  Dog, 
+  Sparkles, 
+  Briefcase, 
+  Search,
+  MessageSquare,
+  CheckCircle2,
+  ArrowRight,
+  MoveRight
+} from 'lucide-react';
+import { MasterSponsorBanner } from './MasterSponsorBanner';
 
 interface ServicesViewProps {
   onSelectMacro: (id: string, name: string) => void;
+  onOpenTerms: () => void;
 }
 
-export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro }) => {
-  
-  const macros = [
-    { id: 'emergency', name: 'Emergência', icon: TriangleAlert, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
-    { id: 'home', name: 'Casa & Reparos', icon: Hammer, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-    { id: 'auto', name: 'Auto & Moto', icon: CarFront, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { id: 'tech', name: 'Tecnologia', icon: Smartphone, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
-    { id: 'pet', name: 'Pet Serviços', icon: Dog, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-    { id: 'clean', name: 'Limpeza', icon: Sparkles, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
-    { id: 'pro', name: 'Profissionais', icon: Briefcase, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-    { id: 'other', name: 'Outros', icon: MoreHorizontal, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800' },
-  ];
+const MACRO_SERVICES = [
+  { 
+    id: 'emergency', 
+    name: 'Emergência', 
+    description: 'Chaveiro, desentupidora e elétrica 24h', 
+    icon: TriangleAlert,
+    color: 'text-red-600',
+  },
+  { 
+    id: 'home', 
+    name: 'Casa & Reparos', 
+    description: 'Pequenas obras, pintura e manutenção', 
+    icon: Hammer,
+    color: 'text-orange-600',
+  },
+  { 
+    id: 'auto', 
+    name: 'Auto & Veículos', 
+    description: 'Mecânica, estética e socorro veicular', 
+    icon: CarFront,
+    color: 'text-blue-600',
+  },
+  { 
+    id: 'tech', 
+    name: 'Tecnologia', 
+    description: 'Celulares, computadores e redes', 
+    icon: Smartphone,
+    color: 'text-purple-600',
+  },
+  { 
+    id: 'pet', 
+    name: 'Pets', 
+    description: 'Banho, tosa, veterinário e hotel', 
+    icon: Dog,
+    color: 'text-amber-600',
+  },
+  { 
+    id: 'clean', 
+    name: 'Limpeza', 
+    description: 'Diaristas, pós-obra e estofados', 
+    icon: Sparkles,
+    color: 'text-cyan-600',
+  },
+  { 
+    id: 'pro', 
+    name: 'Consultoria', 
+    description: 'Advogados, contadores e mais', 
+    icon: Briefcase,
+    color: 'text-indigo-600',
+  },
+];
 
+export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpenTerms }) => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in fade-in duration-500 pb-32">
       
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-900 px-5 pt-8 pb-6 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-10">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-display leading-tight">
-          Serviços
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Peça orçamentos rapidamente
-        </p>
-      </div>
-
-      {/* Content */}
-      <div className="p-5">
+      <div className="px-5 pt-6 flex flex-col gap-6">
         
-        {/* Banner */}
-        <div className="w-full h-[140px] rounded-[20px] bg-gradient-to-r from-[#FF6501] to-[#FF7A00] p-6 flex flex-col justify-center relative overflow-hidden shadow-lg shadow-orange-500/20 mb-8">
-            <div className="flex items-start gap-4 relative z-10">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                    <Wrench className="w-8 h-8 text-white" />
-                </div>
-                <div className="flex-1">
-                    <h2 className="text-xl font-bold text-white leading-tight mb-2">
-                        Precisa de um serviço?
-                    </h2>
-                    <p className="text-sm text-white/90 font-medium leading-relaxed">
-                        Peça um orçamento e fale com profissionais da Freguesia.
-                    </p>
-                </div>
+        {/* Patrocinador Master */}
+        <MasterSponsorBanner />
+
+        {/* Hero Banner Estilo Card Premium */}
+        <div className="relative w-full rounded-[20px] bg-gradient-to-r from-[#FF6501] to-[#FF7A00] p-7 shadow-lg shadow-orange-500/20 overflow-hidden group cursor-default transition-all duration-300 hover:shadow-orange-500/25">
+          {/* Elementos Decorativos */}
+          <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-[-20px] left-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-inner shrink-0">
+              <Wrench className="w-7 h-7 text-white drop-shadow-sm" />
             </div>
             
-            {/* Decorative circles */}
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-            <div className="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-lg"></div>
+            <div className="flex-1 flex flex-col justify-center pt-1">
+              <h2 className="text-xl font-semibold text-white leading-tight mb-1">
+                Precisando de um serviço?
+              </h2>
+              <p className="text-[13px] text-white/90 font-medium leading-relaxed max-w-[260px]">
+                Receba até 5 orçamentos grátis pelo seu WhatsApp agora mesmo de profissionais da Freguesia.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Macro Categories Grid */}
+        {/* Seção Grid de Categorias */}
         <div>
-            <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-lg ml-1">O que você precisa?</h3>
-            <div className="grid grid-cols-2 gap-4">
-                {macros.map((item) => (
-                    <button 
-                        key={item.id}
-                        onClick={() => onSelectMacro(item.id, item.name)}
-                        className="bg-white dark:bg-gray-800 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-4 hover:shadow-md transition-all active:scale-[0.98] min-h-[160px]"
-                    >
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
-                            <item.icon className="w-8 h-8" />
-                        </div>
-                        <span className="font-bold text-gray-800 dark:text-white text-sm text-center leading-tight">
-                            {item.name}
-                        </span>
-                    </button>
-                ))}
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">
+              O que você precisa?
+            </h3>
+            <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-300 bg-[#F8F8F8] dark:bg-gray-800 px-[10px] py-1.5 rounded-[12px]">
+              {MACRO_SERVICES.length} categorias
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {MACRO_SERVICES.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectMacro(item.id, item.name)}
+                  className="bg-white dark:bg-gray-800 rounded-[20px] px-5 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700/50 flex flex-col items-start gap-4 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] hover:border-orange-100 dark:hover:border-gray-600 transition-all duration-300 active:scale-[0.96] group text-left h-full relative overflow-hidden"
+                >
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 border border-gray-100 dark:border-gray-700 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <Icon className={`w-6 h-6 ${item.color}`} strokeWidth={2} />
+                  </div>
+                  
+                  <div className="flex-1 w-full space-y-1.5">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight group-hover:text-[#FF6501] transition-colors">
+                      {item.name}
+                    </h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug line-clamp-2 font-medium">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div className="w-full pt-4 mt-auto border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] font-bold text-[#FF6501] uppercase tracking-wide">
+                      Ver opções
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-orange-50 dark:bg-gray-700 flex items-center justify-center group-hover:bg-[#FF6501] transition-colors">
+                        <MoveRight className="w-3.5 h-3.5 text-[#FF6501] group-hover:text-white transition-colors" />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Seção Como Funciona */}
+        <div className="bg-[#F8F8F8] dark:bg-gray-800/50 rounded-[20px] p-8 border border-gray-100 dark:border-gray-700/50">
+          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-8 text-center">
+            Como funciona?
+          </h3>
+          
+          <div className="relative flex flex-col gap-8">
+            {/* Linha Vertical Conectora */}
+            <div className="absolute left-[22px] top-4 bottom-4 w-[2px] bg-gray-300/25 dark:bg-gray-600/25 rounded-full"></div>
+
+            {/* Passo 1 */}
+            <div className="relative flex items-center gap-5 z-10 group">
+              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#FF6501] shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Search className="w-5 h-5" strokeWidth={2.5} />
+              </div>
+              <div>
+                <strong className="text-sm font-bold text-gray-900 dark:text-white block mb-1">
+                  Escolha a categoria
+                </strong>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
+                  Selecione o tipo de serviço que você precisa resolver.
+                </p>
+              </div>
             </div>
+
+            {/* Passo 2 */}
+            <div className="relative flex items-center gap-5 z-10 group">
+              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#FF6501] shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <MessageSquare className="w-5 h-5" strokeWidth={2.5} />
+              </div>
+              <div>
+                <strong className="text-sm font-bold text-gray-900 dark:text-white block mb-1">
+                  Descreva o pedido
+                </strong>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
+                  Conte o que precisa e adicione fotos se quiser.
+                </p>
+              </div>
+            </div>
+
+            {/* Passo 3 */}
+            <div className="relative flex items-center gap-5 z-10 group">
+              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-green-500 shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />
+              </div>
+              <div>
+                <strong className="text-sm font-bold text-gray-900 dark:text-white block mb-1">
+                  Receba orçamentos
+                </strong>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
+                  Profissionais da Freguesia entrarão em contato.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+             <button 
+                onClick={onOpenTerms}
+                className="flex items-center gap-2 text-xs font-bold text-[#FF6501] hover:text-[#e65a00] transition-colors px-4 py-2 rounded-full hover:bg-orange-50 dark:hover:bg-orange-900/10 active:scale-95"
+             >
+                Ler termos de uso <ArrowRight className="w-3.5 h-3.5" />
+             </button>
+          </div>
         </div>
 
       </div>

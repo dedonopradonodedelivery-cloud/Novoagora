@@ -5,6 +5,7 @@ import { Store, AdType } from '../types';
 
 interface LojasEServicosListProps {
   onStoreClick?: (store: Store) => void;
+  onViewAll?: () => void;
 }
 
 // --- 1. GERAÇÃO DE DADOS FAKE LOCAIS (64 ITENS) ---
@@ -68,7 +69,7 @@ const RAW_STORES = generateFakeStores();
 const ALL_SORTED_STORES = sortStores([...RAW_STORES]);
 const ITEMS_PER_PAGE = 12;
 
-export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreClick }) => {
+export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreClick, onViewAll }) => {
   // --- ESTADOS ---
   const [visibleStores, setVisibleStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(false);
@@ -136,12 +137,21 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
       
       {/* HEADER DA SEÇÃO */}
       <div className="flex justify-between items-end mb-3 px-1">
-        <h3 className="text-[18px] font-semibold text-gray-800 dark:text-white leading-none">
+        <h3 className="text-base font-semibold text-gray-800 dark:text-white leading-none">
           Lojas & Serviços
         </h3>
-        <span className="text-[10px] text-gray-400 font-medium">
-          {visibleStores.length} de {ALL_SORTED_STORES.length}
-        </span>
+        {onViewAll ? (
+            <button 
+                onClick={onViewAll}
+                className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
+            >
+                Ver mais
+            </button>
+        ) : (
+            <span className="text-[10px] text-gray-400 font-medium">
+              {visibleStores.length} de {ALL_SORTED_STORES.length}
+            </span>
+        )}
       </div>
 
       {/* LISTA VERTICAL DE CARDS COMPACTOS */}
@@ -155,10 +165,10 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                     key={store.id}
                     ref={isLastElement ? lastStoreElementRef : null}
                     onClick={() => onStoreClick && onStoreClick(store)}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 flex gap-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors h-[88px]"
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-1.5 flex gap-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors h-[80px]"
                 >
                     {/* Imagem Esquerda (Horizontal Layout) */}
-                    <div className="w-[88px] h-[72px] flex-shrink-0 relative rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                    <div className="w-[80px] h-[64px] flex-shrink-0 relative rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
                         <img 
                             src={store.image} 
                             alt={store.name} 
@@ -168,7 +178,7 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                         
                         {/* STICKER CASHBACK (Regra 2: Canto inferior esquerdo, Verde, Bold) */}
                         {store.cashback && (
-                           <div className="absolute bottom-1 left-1 bg-[#2ECC71] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shadow-sm z-10 leading-none">
+                           <div className="absolute bottom-1 left-1 bg-[#2ECC71] text-white text-[8px] font-extrabold px-1 py-0.5 rounded shadow-sm z-10 leading-none">
                              {store.cashback}% VOLTA
                            </div>
                         )}
@@ -179,26 +189,26 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                         <div className="flex justify-between items-start gap-2">
                              {/* Nome + Verificação */}
                              <div className="flex items-center gap-1.5 min-w-0">
-                               <h4 className="font-bold text-gray-800 dark:text-white text-[13px] leading-tight truncate">
+                               <h4 className="font-bold text-gray-800 dark:text-white text-xs leading-tight truncate">
                                   {store.name}
                                </h4>
                                {store.verified && (
-                                 <BadgeCheck className="w-3.5 h-3.5 text-blue-500 fill-white flex-shrink-0" />
+                                 <BadgeCheck className="w-3 h-3 text-blue-500 fill-white flex-shrink-0" />
                                )}
                              </div>
                              
                              {/* Sticker PATROCINADO (Substitui PRO) */}
                              {isSponsored && (
-                                 <span className="flex-shrink-0 text-[9px] font-bold bg-[#FF6501] text-white px-1.5 py-0.5 rounded shadow-sm leading-none">
+                                 <span className="flex-shrink-0 text-[8px] font-bold bg-[#FF6501] text-white px-1 py-0.5 rounded shadow-sm leading-none">
                                      PATROCINADO
                                  </span>
                              )}
                         </div>
 
                         {/* Linha Secundária de Metadados */}
-                        <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-1.5">
+                        <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-gray-400 mt-1.5">
                              <div className="flex items-center gap-0.5 text-orange-500 font-bold">
-                                <Star className="w-3 h-3 fill-current" />
+                                <Star className="w-2.5 h-2.5 fill-current" />
                                 <span>{store.rating}</span>
                              </div>
                              <span className="w-0.5 h-0.5 bg-gray-300 rounded-full"></span>
