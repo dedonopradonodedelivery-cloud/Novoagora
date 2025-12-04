@@ -11,6 +11,7 @@ import {
   LogOut, 
   Store, 
   Users,
+  Briefcase
 } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { MasterSponsorBanner } from './MasterSponsorBanner';
@@ -101,7 +102,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         </div>
 
         {/* 3) Merchant Area (Conditional) */}
-        {user && isMerchant && (
+        {user && isMerchant ? (
             <button 
                 onClick={() => onNavigate('store_area')}
                 className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-4 rounded-2xl shadow-md shadow-indigo-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
@@ -116,6 +117,22 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
                     </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
+            </button>
+        ) : user && (
+            <button 
+                onClick={() => onNavigate('business_registration')}
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-2xl shadow-md shadow-orange-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
+            >
+                <div className="flex items-center gap-4">
+                    <div className="p-2 rounded-xl bg-white/20 text-white">
+                        <Briefcase className="w-6 h-6" />
+                    </div>
+                    <div className="text-left">
+                        <h3 className="font-bold text-white text-sm">Cadastrar meu negócio</h3>
+                        <p className="text-xs text-orange-100">Sou lojista na Freguesia</p>
+                    </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-orange-200 group-hover:text-white transition-colors" />
             </button>
         )}
 

@@ -33,6 +33,13 @@ import { CashbackInfoView } from './components/CashbackInfoView';
 import { EditProfileView } from './components/EditProfileView';
 import { ServiceTermsView } from './components/ServiceTermsView';
 import { PatrocinadorMasterScreen } from './components/PatrocinadorMasterScreen';
+import { BusinessRegistrationFlow } from './components/BusinessRegistrationFlow';
+import { StoreCashbackModule } from './components/StoreCashbackModule';
+import { StoreAdsModule } from './components/StoreAdsModule';
+import { StoreConnectModule } from './components/StoreConnectModule';
+import { StoreProfileEdit } from './components/StoreProfileEdit';
+import { StoreFinanceModule } from './components/StoreFinanceModule';
+import { StoreSupportModule } from './components/StoreSupportModule';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -162,7 +169,7 @@ const App: React.FC = () => {
 
   // SPLASH
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -218,7 +225,7 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-primary-500 to-orange-700 flex flex-col items-center justify-center text-white z-50">
-        <div className="relative flex flex-col items-center justify-center mb-8">
+        <div className="relative flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-4 animate-pop-in opacity-0">
             <MapPin className="w-8 h-8 text-primary-600 fill-primary-600" />
           </div>
@@ -229,7 +236,7 @@ const App: React.FC = () => {
             Freguesia
           </div>
         </div>
-        <div className="absolute bottom-12 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
+        <div className="mt-16 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
           <p className="text-[9px] opacity-70 uppercase tracking-wider mb-1">
             Patrocinador Master
           </p>
@@ -276,6 +283,12 @@ const App: React.FC = () => {
     'cashback_info',
     'profile',
     'store_area',
+    'store_cashback_module',
+    'store_ads_module',
+    'store_connect',
+    'store_profile',
+    'store_finance',
+    'store_support',
     'service_subcategories',
     'service_specialties',
     'service_success',
@@ -292,7 +305,8 @@ const App: React.FC = () => {
     'favorites',
     'become_sponsor',
     'edit_profile',
-    'patrocinador_master'
+    'patrocinador_master',
+    'business_registration'
   ].includes(activeTab);
 
   return (
@@ -471,7 +485,41 @@ const App: React.FC = () => {
             )}
 
             {activeTab === 'store_area' && (
-              <StoreAreaView onBack={() => setActiveTab('profile')} />
+              <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
+            )}
+
+            {activeTab === 'business_registration' && (
+              <BusinessRegistrationFlow 
+                onBack={() => setActiveTab('profile')} 
+                onComplete={() => {
+                    setUserRole('lojista'); // Simulate logic
+                    setActiveTab('store_area');
+                }}
+              />
+            )}
+
+            {activeTab === 'store_cashback_module' && (
+                <StoreCashbackModule onBack={() => setActiveTab('store_area')} />
+            )}
+
+            {activeTab === 'store_ads_module' && (
+                <StoreAdsModule onBack={() => setActiveTab('store_area')} />
+            )}
+
+            {activeTab === 'store_connect' && (
+                <StoreConnectModule onBack={() => setActiveTab('store_area')} />
+            )}
+
+            {activeTab === 'store_profile' && (
+                <StoreProfileEdit onBack={() => setActiveTab('store_area')} />
+            )}
+
+            {activeTab === 'store_finance' && (
+                <StoreFinanceModule onBack={() => setActiveTab('store_area')} />
+            )}
+
+            {activeTab === 'store_support' && (
+                <StoreSupportModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'freguesia_connect_public' && (

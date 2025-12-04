@@ -1,116 +1,305 @@
 
-import React from 'react';
-import { ChevronLeft, Store, Phone, MapPin, Clock, Edit, FileText, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  ChevronLeft, 
+  BadgeCheck, 
+  DollarSign, 
+  ShoppingBag, 
+  Users, 
+  Repeat, 
+  TrendingUp, 
+  Wallet, 
+  Megaphone, 
+  Zap, 
+  ChevronRight,
+  Settings,
+  HelpCircle,
+  CreditCard,
+  LayoutDashboard
+} from 'lucide-react';
 
 interface StoreAreaViewProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack }) => {
-  // Mock data for the logged-in shopkeeper
-  const myStore = {
-    name: "Minha Loja Exemplo",
-    logo: "https://picsum.photos/200/200?random=50",
-    category: "Alimentação",
-    phone: "(21) 99999-8888",
-    address: "Rua Tirol, 123 - Freguesia",
-    description: "O melhor atendimento e produtos da região. Venha conferir nossas ofertas!",
-    hours: "Seg à Sex: 09h às 19h"
-  };
+// Mock Data
+const STORE_DATA = {
+  name: "Hamburgueria Brasa",
+  isVerified: true,
+  logo: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=200&auto=format&fit=crop",
+  kpis: {
+    sales: 12450.00,
+    orders: 142,
+    newCustomers: 28,
+    recurringCustomers: 114,
+    cashbackGiven: 622.50,
+    adBalance: 45.00
+  },
+  connectStatus: 'inactive' // 'active' | 'inactive'
+};
+
+const KPICard: React.FC<{ 
+  icon: React.ElementType; 
+  label: string; 
+  value: string; 
+  color: string 
+}> = ({ icon: Icon, label, value, color }) => (
+  <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between h-24">
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${color} bg-opacity-10 dark:bg-opacity-20`}>
+      <Icon className={`w-4 h-4 ${color.replace('bg-', 'text-')}`} />
+    </div>
+    <div>
+      <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide truncate">{label}</p>
+      <p className="text-lg font-bold text-gray-900 dark:text-white leading-tight">{value}</p>
+    </div>
+  </div>
+);
+
+const MenuLink: React.FC<{ 
+  icon: React.ElementType; 
+  label: string; 
+  onClick?: () => void;
+}> = ({ icon: Icon, label, onClick }) => (
+  <button 
+    onClick={onClick}
+    className="w-full bg-white dark:bg-gray-800 p-4 border-b last:border-b-0 border-gray-100 dark:border-gray-700 flex items-center justify-between group active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors"
+  >
+    <div className="flex items-center gap-3">
+      <div className="text-gray-400 group-hover:text-[#FF6501] transition-colors">
+        <Icon className="w-5 h-5" />
+      </div>
+      <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{label}</span>
+    </div>
+    <ChevronRight className="w-4 h-4 text-gray-300" />
+  </button>
+);
+
+export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate }) => {
+  const [isStoreOnline, setIsStoreOnline] = useState(true);
+  const [isCashbackEnabled, setIsCashbackEnabled] = useState(true);
+
+  const formatCurrency = (val: number) => 
+    val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in slide-in-from-right duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 font-sans animate-in slide-in-from-right duration-300">
       
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-900 px-5 pt-8 pb-6 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-10 flex items-center gap-4">
-        <button 
-          onClick={onBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-white" />
-        </button>
-        <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display leading-tight">
-            Área do Lojista
-            </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Gerencie seu negócio</p>
+      {/* --- HEADER --- */}
+      <div className="bg-white dark:bg-gray-900 px-5 pt-12 pb-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-20 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <button 
+            onClick={onBack}
+            className="w-10 h-10 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-500 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800 p-1 rounded-full">
+            <button 
+                onClick={() => setIsStoreOnline(false)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${!isStoreOnline ? 'bg-red-500 text-white shadow-sm' : 'text-gray-500'}`}
+            >
+                Offline
+            </button>
+            <button 
+                onClick={() => setIsStoreOnline(true)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${isStoreOnline ? 'bg-green-500 text-white shadow-sm' : 'text-gray-500'}`}
+            >
+                Online
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700 overflow-hidden border border-gray-100 dark:border-gray-600">
+                <img src={STORE_DATA.logo} alt="Logo" className="w-full h-full object-cover" />
+            </div>
+            <div>
+                <div className="flex items-center gap-1">
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display leading-none">
+                        {STORE_DATA.name}
+                    </h1>
+                    {STORE_DATA.isVerified && <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-50 dark:fill-blue-900" />}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full ${isStoreOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                    {isStoreOnline ? 'Loja aberta para pedidos' : 'Loja fechada temporariamente'}
+                </p>
+            </div>
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="p-5 space-y-6">
         
-        {/* Store Profile Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-            <div className="flex flex-col items-center text-center mb-6">
-                <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden border-4 border-white dark:border-gray-600 shadow-md mb-4">
-                    <img src={myStore.logo} alt="Logo" className="w-full h-full object-cover" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{myStore.name}</h2>
-                <span className="px-3 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-full mt-2">
-                    {myStore.category}
-                </span>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase">Telefone</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200">{myStore.phone}</p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase">Endereço</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200">{myStore.address}</p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3">
-                    <Store className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase">Descrição</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200">{myStore.description}</p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase">Funcionamento</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200">{myStore.hours}</p>
-                    </div>
-                </div>
+        {/* --- KPIs SECTION --- */}
+        <div>
+            <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 px-1">Visão Geral (Este Mês)</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <KPICard 
+                    icon={DollarSign} 
+                    label="Vendas Localizei" 
+                    value={formatCurrency(STORE_DATA.kpis.sales)} 
+                    color="bg-green-500"
+                />
+                <KPICard 
+                    icon={ShoppingBag} 
+                    label="Pedidos" 
+                    value={STORE_DATA.kpis.orders.toString()} 
+                    color="bg-blue-500"
+                />
+                <KPICard 
+                    icon={Users} 
+                    label="Novos Clientes" 
+                    value={`+${STORE_DATA.kpis.newCustomers}`} 
+                    color="bg-purple-500"
+                />
+                <KPICard 
+                    icon={Repeat} 
+                    label="Recorrentes" 
+                    value={STORE_DATA.kpis.recurringCustomers.toString()} 
+                    color="bg-orange-500"
+                />
+                <KPICard 
+                    icon={TrendingUp} 
+                    label="Cashback Gerado" 
+                    value={formatCurrency(STORE_DATA.kpis.cashbackGiven)} 
+                    color="bg-yellow-500"
+                />
+                <KPICard 
+                    icon={Wallet} 
+                    label="Saldo Anúncios" 
+                    value={formatCurrency(STORE_DATA.kpis.adBalance)} 
+                    color="bg-gray-500"
+                />
             </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 gap-4">
-            <button className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
-                <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-                        <Edit className="w-6 h-6" />
+        {/* --- BLOCK: CASHBACK --- */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-bl-full -mr-4 -mt-4"></div>
+            
+            <div className="flex justify-between items-start mb-4 relative z-10">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-600 dark:text-yellow-400">
+                        <TrendingUp className="w-5 h-5" />
                     </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-gray-800 dark:text-white">Editar meus dados</h3>
-                        <p className="text-xs text-gray-500">Atualizar informações da loja</p>
-                    </div>
+                    <h3 className="font-bold text-gray-900 dark:text-white">Cashback da Loja</h3>
                 </div>
-            </button>
+                
+                {/* Toggle Switch */}
+                <button 
+                    onClick={() => setIsCashbackEnabled(!isCashbackEnabled)}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${isCashbackEnabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                >
+                    <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${isCashbackEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                </button>
+            </div>
 
-            <button className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
-                <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
-                        <FileText className="w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-gray-800 dark:text-white">Meus orçamentos</h3>
-                        <p className="text-xs text-gray-500">Ver pedidos recebidos</p>
-                    </div>
+            <div className="flex gap-4 mb-4">
+                <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Taxa atual</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-xl">5%</p>
                 </div>
-                <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    2 novos
+                <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Retorno</p>
+                    <p className="font-bold text-green-600 text-xl">R$ 4,5k</p>
                 </div>
+            </div>
+
+            <button 
+                onClick={() => onNavigate && onNavigate('store_cashback_module')}
+                className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                Ver painel completo de fidelidade
             </button>
+        </div>
+
+        {/* --- BLOCK: ADS & HIGHLIGHTS --- */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+                    <Megaphone className="w-5 h-5" />
+                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white">Anúncios e Destaques</h3>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 mb-4 flex items-center justify-between">
+                <div>
+                    <p className="text-xs font-bold text-gray-800 dark:text-white">Campanha "Fim de Semana"</p>
+                    <p className="text-[10px] text-green-600 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Ativa agora
+                    </p>
+                </div>
+                <div className="text-right">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Cliques</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">84</p>
+                </div>
+            </div>
+
+            <button 
+                onClick={() => onNavigate && onNavigate('store_ads_module')}
+                className="w-full bg-[#FF6501] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all"
+            >
+                Gerenciar campanhas
+            </button>
+        </div>
+
+        {/* --- BLOCK: FREGUESIA CONNECT --- */}
+        <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-5 shadow-lg text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            
+            <div className="flex justify-between items-start mb-2 relative z-10">
+                <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    <h3 className="font-bold">Freguesia Connect</h3>
+                </div>
+                {STORE_DATA.connectStatus === 'active' ? (
+                    <span className="text-[10px] font-bold bg-green-500 text-white px-2 py-0.5 rounded-full">Membro</span>
+                ) : (
+                    <span className="text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full">Não Membro</span>
+                )}
+            </div>
+
+            <p className="text-sm text-indigo-100 mb-4 leading-relaxed relative z-10">
+                Participe da maior rede de networking empresarial do bairro. Eventos, parcerias e descontos B2B.
+            </p>
+
+            <button 
+                onClick={() => onNavigate && onNavigate('store_connect')}
+                className="w-full bg-white text-indigo-600 py-3 rounded-xl text-sm font-bold shadow-sm active:scale-[0.98] transition-all relative z-10"
+            >
+                {STORE_DATA.connectStatus === 'active' ? 'Acessar Comunidade' : 'Quero participar'}
+            </button>
+        </div>
+
+        {/* --- NAVIGATION LIST --- */}
+        <div>
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3 ml-2">
+                Navegação Rápida
+            </h3>
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
+                <MenuLink 
+                    icon={LayoutDashboard} 
+                    label="Home do Painel" 
+                    onClick={() => onNavigate && onNavigate('store_area')}
+                />
+                <MenuLink 
+                    icon={Settings} 
+                    label="Minha Loja (Perfil Público)" 
+                    onClick={() => onNavigate && onNavigate('store_profile')}
+                />
+                <MenuLink 
+                    icon={CreditCard} 
+                    label="Minha conta / Financeiro" 
+                    onClick={() => onNavigate && onNavigate('store_finance')}
+                />
+                <MenuLink 
+                    icon={HelpCircle} 
+                    label="Suporte ao Lojista" 
+                    onClick={() => onNavigate && onNavigate('store_support')}
+                />
+            </div>
         </div>
 
       </div>
