@@ -101,13 +101,6 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
                 Entrar ou criar conta
                 <ChevronRight className="w-5 h-5 opacity-80" />
             </button>
-
-            <button 
-                onClick={() => onNavigate('business_registration')}
-                className="w-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-                Sou lojista – cadastrar meu negócio
-            </button>
           </div>
 
         </div>

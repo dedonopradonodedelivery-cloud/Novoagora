@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, CheckCircle, XCircle, Clock, DollarSign, User, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabase';
 import { CashbackTransaction } from '../types';
 
 interface MerchantCashbackRequestsProps {
@@ -9,15 +9,8 @@ interface MerchantCashbackRequestsProps {
   onBack: () => void;
 }
 
-// Extensão da tipagem para incluir dados do profile (join)
 interface ExtendedCashbackTransaction extends CashbackTransaction {
-  profiles?: {
-    nome: string;
-  };
-  // Assegurando que os campos _cents existam na tipagem vinda do banco
-  total_amount_cents: number;
-  cashback_used_cents: number;
-  amount_to_pay_now_cents: number;
+  customer_name?: string; // For mock or if we join tables
 }
 
 export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> = ({ merchantId, onBack }) => {
@@ -30,20 +23,20 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
   useEffect(() => {
     fetchPendingRequests();
 
-    // Listener para MUDANÇAS em tempo real (Novas solicitações ou atualizações de status)
+    if (!supabase) return;
+
+    // Listener para MUDANÇAS em tempo real
     const channel = supabase
       .channel('merchant_transactions_channel')
       .on(
         'postgres_changes',
         {
-          event: '*', // Escuta INSERT (novo pedido) e UPDATE (caso mude status em outro device)
+          event: '*', 
           schema: 'public',
           table: 'cashback_transactions',
           filter: `merchant_id=eq.${merchantId}`,
         },
-        (payload) => {
-          // Quando houver qualquer mudança relevante para este lojista,
-          // recarregamos a lista para garantir dados consistentes (incluindo joins com profiles)
+        () => {
           fetchPendingRequests();
         }
       )
@@ -55,16 +48,31 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
   }, [merchantId]);
 
   const fetchPendingRequests = async () => {
+    if (!supabase) {
+        // Mock data if no supabase
+        setRequests([
+            {
+                id: 'mock-1',
+                merchant_id: merchantId,
+                store_id: 'store-1',
+                customer_id: 'cust-1',
+                customer_name: 'Maria Silva',
+                total_amount_cents: 15000,
+                cashback_used_cents: 500,
+                cashback_to_earn_cents: 725,
+                amount_to_pay_now_cents: 14500,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            }
+        ]);
+        setLoading(false);
+        return;
+    }
+
     try {
-      // Busca transações pendentes e faz o join com profiles para pegar o nome do cliente
       const { data, error } = await supabase
         .from('cashback_transactions')
-        .select(`
-          *,
-          profiles:customer_id (
-            nome
-          )
-        `)
+        .select('*') // In real app, join with profiles to get name
         .eq('merchant_id', merchantId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
@@ -84,30 +92,21 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
     setProcessingId(tx.id || '');
 
     try {
-      // 1. Chamar RPC para debitar o saldo do cliente (se houver uso de cashback)
-      if (tx.cashback_used_cents > 0) {
-        const { data: rpcData, error: rpcError } = await supabase.rpc('cashback_debit', {
-          p_user_id: tx.customer_id,
-          p_amount_cents: tx.cashback_used_cents,
-          p_description: `Uso de cashback na loja ${tx.store_id}`, // Idealmente usar nome da loja
-          p_related_transaction_id: tx.id
-        });
+      if (supabase) {
+          const { error: updateError } = await supabase
+            .from('cashback_transactions')
+            .update({ 
+                status: 'approved',
+                approved_at: new Date().toISOString()
+            })
+            .eq('id', tx.id);
 
-        if (rpcError) throw new Error(`Erro no débito: ${rpcError.message}`);
+          if (updateError) throw updateError;
+      } else {
+          // Simulation
+          await new Promise(r => setTimeout(r, 1000));
       }
 
-      // 2. Atualizar status da transação para approved
-      const { error: updateError } = await supabase
-        .from('cashback_transactions')
-        .update({ 
-            status: 'approved',
-            approved_at: new Date().toISOString()
-        })
-        .eq('id', tx.id);
-
-      if (updateError) throw updateError;
-
-      // 3. Atualizar UI (remover da lista local imediatamente para feedback rápido)
       setRequests((prev) => prev.filter((r) => r.id !== tx.id));
       setSelectedRequest(null); 
 
@@ -123,16 +122,19 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
     setProcessingId(tx.id || '');
 
     try {
-      // Apenas atualiza o status, sem mexer no saldo
-      const { error } = await supabase
-        .from('cashback_transactions')
-        .update({ 
-            status: 'rejected',
-            // rejected_at não existe no esquema padrão, mas se existisse seria aqui.
-        })
-        .eq('id', tx.id);
+      if (supabase) {
+          const { error } = await supabase
+            .from('cashback_transactions')
+            .update({ 
+                status: 'rejected',
+            })
+            .eq('id', tx.id);
 
-      if (error) throw error;
+          if (error) throw error;
+      } else {
+          // Simulation
+          await new Promise(r => setTimeout(r, 1000));
+      }
 
       setRequests((prev) => prev.filter((r) => r.id !== tx.id));
       setSelectedRequest(null);
@@ -200,7 +202,7 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
                             <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
                                 <User className="w-3.5 h-3.5 text-gray-500" />
                                 <span className="text-xs font-bold text-gray-700 dark:text-gray-300 max-w-[100px] truncate">
-                                    {req.profiles?.nome || 'Cliente Localizei'}
+                                    {req.customer_name || 'Cliente'}
                                 </span>
                             </div>
                         </div>
@@ -247,7 +249,7 @@ export const MerchantCashbackRequests: React.FC<MerchantCashbackRequestsProps> =
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 mb-8 space-y-4">
                     <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-3">
                         <span className="text-gray-500 text-sm">Cliente</span>
-                        <span className="font-bold text-gray-900 dark:text-white">{selectedRequest.profiles?.nome || 'Cliente'}</span>
+                        <span className="font-bold text-gray-900 dark:text-white">{selectedRequest.customer_name || 'Cliente'}</span>
                     </div>
                     
                     <div className="flex justify-between items-center">

@@ -110,10 +110,11 @@ export interface CashbackTransaction {
   merchant_id: string;
   store_id: string;
   customer_id: string;
-  total_amount: number;
-  cashback_used: number;
-  cashback_to_earn: number; // Calculated based on store %
-  amount_to_pay_now: number;
+  total_amount_cents: number;
+  cashback_used_cents: number;
+  cashback_to_earn_cents: number; 
+  amount_to_pay_now_cents: number;
   status: 'pending' | 'approved' | 'rejected';
   created_at?: string;
+  approved_at?: string;
 }

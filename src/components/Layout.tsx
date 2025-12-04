@@ -1,17 +1,19 @@
-import React from "react";
-import { BottomNav } from "./BottomNav";
+
+import React, { ReactNode } from 'react';
+import { BottomNav } from './BottomNav';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  setActiveTab: (tab: string) => void;
+  userRole?: 'cliente' | 'lojista' | null;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, userRole }) => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <div className="flex-1 overflow-y-auto pb-24">{children}</div>
-      <BottomNav active={activeTab} onChange={onTabChange} />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-28 font-sans w-full max-w-md border-x border-gray-100 dark:border-gray-800 shadow-2xl transition-colors duration-300 relative">
+        {children}
+        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} userRole={userRole} />
     </div>
   );
 };

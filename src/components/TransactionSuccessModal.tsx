@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, TrendingUp, Home as HomeIcon } from "lucide-react";
+import { CheckCircle2, Home } from "lucide-react";
 
 interface TransactionSuccessModalProps {
   isOpen: boolean;
@@ -17,50 +17,39 @@ export const TransactionSuccessModal: React.FC<TransactionSuccessModalProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
-      <div className="bg-white dark:bg-gray-800 w-full max-w-sm rounded-[32px] p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
-        {/* Icon */}
-        <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-200 dark:shadow-none">
-          <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+      <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
+        <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-10 h-10 text-emerald-600" />
         </div>
-
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-xl font-bold text-slate-900 mb-1">
           Pagamento confirmado!
         </h2>
-
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+        <p className="text-sm text-slate-500 mb-6">
           Sua transação foi processada com sucesso.
         </p>
-
-        {/* Details Card */}
-        <div className="w-full bg-gray-50 dark:bg-gray-700/30 rounded-2xl p-5 mb-8 border border-gray-100 dark:border-gray-700">
-          <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200 dark:border-gray-600 border-dashed">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Valor pago
-            </span>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
+        <div className="bg-slate-50 rounded-2xl p-4 mb-6 space-y-2 text-left text-sm">
+          <div className="flex justify-between">
+            <span className="text-slate-500">Valor pago</span>
+            <span className="font-semibold text-slate-900">
               R$ {amountPaid.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </span>
           </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
-              <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                Cashback gerado
-              </span>
-            </div>
-            <span className="text-lg font-bold text-green-600 dark:text-green-400">
+          <div className="flex justify-between">
+            <span className="text-emerald-600 font-medium">
+              Cashback gerado
+            </span>
+            <span className="font-semibold text-emerald-600">
               + R$ {cashbackEarned.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>
-
         <button
+          type="button"
           onClick={onClose}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-3 rounded-2xl shadow-md active:scale-[0.98] transition"
         >
-          <HomeIcon className="w-5 h-5" />
+          <Home className="w-5 h-5" />
           Voltar para o início
         </button>
       </div>

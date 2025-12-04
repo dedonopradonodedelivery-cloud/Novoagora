@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ChevronLeft, QrCode, Camera, AlertCircle } from 'lucide-react';
 
@@ -83,7 +84,7 @@ export const CashbackScanScreen: React.FC<CashbackScanScreenProps> = ({ onBack, 
           className="absolute bottom-10 bg-white text-black font-bold py-3 px-6 rounded-full shadow-xl flex items-center gap-2 active:scale-95 transition-transform z-30"
         >
           <Camera className="w-5 h-5" />
-          Simular Leitura (Dev)
+          Simular Leitura (Toque Aqui)
         </button>
       </div>
 
