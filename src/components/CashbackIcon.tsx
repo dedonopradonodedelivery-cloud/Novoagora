@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface CashbackIconProps {
@@ -15,12 +16,12 @@ export const CashbackIcon: React.FC<CashbackIconProps> = ({ className = "w-24 h-
       >
         <defs>
           <linearGradient id="coinGrad" x1="20" y1="0" x2="180" y2="200" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FF7A00" />
-            <stop offset="100%" stopColor="#E65100" />
+            <stop offset="0%" stopColor="#2D6DF6" />
+            <stop offset="100%" stopColor="#1B54D9" />
           </linearGradient>
           <linearGradient id="coinGradLight" x1="20" y1="0" x2="180" y2="200" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FF9E40" />
-            <stop offset="100%" stopColor="#FF6B00" />
+            <stop offset="0%" stopColor="#5E92FF" />
+            <stop offset="100%" stopColor="#2D6DF6" />
           </linearGradient>
           <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />

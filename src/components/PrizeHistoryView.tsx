@@ -163,7 +163,7 @@ export const PrizeHistoryView: React.FC<PrizeHistoryViewProps> = ({ userId, onBa
             </div>
             <h2 className="text-lg font-bold text-gray-800 dark:text-white">Nenhum giro encontrado</h2>
             <p className="text-gray-500 dark:text-gray-400 mt-2 mb-8 text-sm">Você ainda não girou a Roleta da Freguesia.</p>
-            <button onClick={onGoToSpinWheel} className="w-full max-w-xs bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+            <button onClick={onGoToSpinWheel} className="w-full max-w-xs bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
               Girar pela primeira vez
               <ArrowRight className="w-5 h-5" />
             </button>

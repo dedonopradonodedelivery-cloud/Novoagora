@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, ShoppingBag, Eye, EyeOff, LogOut, User as UserIcon } from 'lucide-react';
 import { auth, googleProvider } from '../lib/firebase';
@@ -158,7 +159,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, user }) =
         <div className="p-8 flex flex-col items-center flex-1 overflow-y-auto no-scrollbar">
           
           {/* Header Icon */}
-          <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-orange-200 dark:shadow-none flex-shrink-0">
+          <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200 dark:shadow-none flex-shrink-0">
             <ShoppingBag className="w-8 h-8 text-white" />
           </div>
 
@@ -284,7 +285,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, user }) =
             <button 
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-none transform active:scale-[0.98] transition-all mt-6 text-base flex items-center justify-center"
+              className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 dark:shadow-none transform active:scale-[0.98] transition-all mt-6 text-base flex items-center justify-center"
             >
               {isLoading ? 'Processando...' : (mode === 'register' ? 'Criar conta' : 'Entrar')}
             </button>

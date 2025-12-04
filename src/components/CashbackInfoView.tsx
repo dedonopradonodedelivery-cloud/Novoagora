@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { ChevronLeft, Store, Sparkles, ArrowRight, Lock, Clock } from 'lucide-react';
@@ -53,7 +54,7 @@ const CountdownDisplay = () => {
 
   return (
     <div className="w-full max-w-sm mx-auto mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center justify-center gap-2 mb-4 text-[#FF6501] dark:text-orange-400">
+      <div className="flex items-center justify-center gap-2 mb-4 text-[#1E5BFF] dark:text-blue-400">
         <Clock className="w-4 h-4" />
         <span className="text-xs font-bold uppercase tracking-widest">Lançamento Oficial em</span>
       </div>
@@ -96,14 +97,14 @@ export const CashbackInfoView: React.FC<CashbackInfoViewProps> = ({
           
           <button 
             onClick={onLogin}
-            className="w-full bg-[#FF6501] hover:bg-[#e65a00] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
           >
             Criar minha conta
             <ArrowRight className="w-5 h-5 stroke-[3]" />
           </button>
           
           <p className="mt-4 text-xs text-gray-400">
-            Já tem conta? <button onClick={onLogin} className="text-[#FF6501] font-bold hover:underline">Entrar</button>
+            Já tem conta? <button onClick={onLogin} className="text-[#1E5BFF] font-bold hover:underline">Entrar</button>
           </p>
         </div>
       );

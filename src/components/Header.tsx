@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
         Padding top adjusted for safe-area (iPhone Notch).
       */}
       <div 
-        className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] px-4 pb-2 relative z-40"
+        className="bg-gradient-to-r from-[#2D6DF6] to-[#1B54D9] px-4 pb-2 relative z-40"
         style={{ paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}
       >
         <div className="flex justify-between items-start">
@@ -115,7 +115,7 @@ export const Header: React.FC<HeaderProps> = ({
         Inherits the rounded bottom and shadow.
         -mt-px ensures no gap between the gradients.
       */}
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] px-4 pb-6 pt-2 rounded-b-[28px] shadow-lg -mt-px">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-[#2D6DF6] to-[#1B54D9] px-4 pb-6 pt-2 rounded-b-[28px] shadow-lg -mt-px">
         <div className="relative w-full">
            <input
              type="text"

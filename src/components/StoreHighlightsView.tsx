@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ShoppingCart, X } from 'lucide-react';
 import { Store } from '../types';
@@ -261,7 +262,7 @@ const ProductCard: React.FC<{ product: (typeof storeHighlightsMock.products)[0] 
           className="absolute bottom-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-transform duration-200 border border-gray-100"
           aria-label="Adicionar ao carrinho"
         >
-          <ShoppingCart className="w-4 h-4 text-[#FF7A00]" />
+          <ShoppingCart className="w-4 h-4 text-[#1E5BFF]" />
         </button>
       </div>
       <div className="p-3 flex-1 flex flex-col">

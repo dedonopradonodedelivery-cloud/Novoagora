@@ -70,7 +70,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
             </button>
             <h1 className="font-bold text-lg text-gray-900 dark:text-white">Editar Perfil</h1>
         </div>
-        <button className="text-[#FF6501] font-bold text-sm">Salvar</button>
+        <button className="text-[#1E5BFF] font-bold text-sm">Salvar</button>
       </div>
 
       {/* Tabs */}
@@ -127,7 +127,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#FF6501]/50 text-sm font-medium dark:text-white"
+                            className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 text-sm font-medium dark:text-white"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -150,7 +150,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                                 name="subcategory"
                                 value={formData.subcategory}
                                 onChange={handleInputChange}
-                                className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#FF6501]/50 text-sm font-medium dark:text-white"
+                                className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 text-sm font-medium dark:text-white"
                             />
                         </div>
                     </div>
@@ -161,7 +161,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                             value={formData.description}
                             onChange={handleInputChange}
                             rows={3}
-                            className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#FF6501]/50 text-sm font-medium dark:text-white resize-none"
+                            className="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 text-sm font-medium dark:text-white resize-none"
                         />
                     </div>
                 </div>
@@ -169,7 +169,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                 {/* Contact Info */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
                     <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-[#FF6501]" /> Localização e Contato
+                        <MapPin className="w-4 h-4 text-[#1E5BFF]" /> Localização e Contato
                     </h3>
                     <div>
                         <label className="text-xs font-bold text-gray-500 uppercase">Endereço Completo</label>
@@ -178,7 +178,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                                 name="address"
                                 value={formData.address}
                                 onChange={handleInputChange}
-                                className="w-full mt-1 p-3 pl-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#FF6501]/50 text-sm font-medium dark:text-white"
+                                className="w-full mt-1 p-3 pl-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 text-sm font-medium dark:text-white"
                             />
                             <MapPin className="absolute left-3 top-1/2 translate-y-[-30%] w-4 h-4 text-gray-400" />
                         </div>
@@ -190,7 +190,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                className="w-full mt-1 p-3 pl-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#FF6501]/50 text-sm font-medium dark:text-white"
+                                className="w-full mt-1 p-3 pl-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 text-sm font-medium dark:text-white"
                             />
                             <Phone className="absolute left-3 top-1/2 translate-y-[-30%] w-4 h-4 text-gray-400" />
                         </div>
@@ -224,7 +224,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
             <div className="space-y-4 animate-in fade-in duration-300">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
                     <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
-                        <Clock className="w-4 h-4 text-[#FF6501]" /> Horário de Funcionamento
+                        <Clock className="w-4 h-4 text-[#1E5BFF]" /> Horário de Funcionamento
                     </h3>
                     <div className="space-y-4">
                         {hours.map((schedule, idx) => (
@@ -290,8 +290,8 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                         <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{review.text}</p>
                         
                         {review.reply ? (
-                            <div className="bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border-l-4 border-[#FF6501]">
-                                <p className="text-xs font-bold text-[#FF6501] mb-1">Sua resposta:</p>
+                            <div className="bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border-l-4 border-[#1E5BFF]">
+                                <p className="text-xs font-bold text-[#1E5BFF] mb-1">Sua resposta:</p>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">{review.reply}</p>
                             </div>
                         ) : (
@@ -299,9 +299,9 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
                                 <textarea 
                                     placeholder="Escreva uma resposta pública..."
                                     rows={2}
-                                    className="w-full p-3 pr-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-sm border border-gray-200 dark:border-gray-600 outline-none focus:border-[#FF6501] dark:text-white"
+                                    className="w-full p-3 pr-10 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-sm border border-gray-200 dark:border-gray-600 outline-none focus:border-[#1E5BFF] dark:text-white"
                                 />
-                                <button className="absolute right-2 bottom-2 p-1.5 bg-[#FF6501] rounded-lg text-white hover:bg-[#e65a00]">
+                                <button className="absolute right-2 bottom-2 p-1.5 bg-[#1E5BFF] rounded-lg text-white hover:bg-[#1749CC]">
                                     <MessageSquare className="w-4 h-4" />
                                 </button>
                             </div>
@@ -315,7 +315,7 @@ export const StoreProfileEdit: React.FC<StoreProfileEditProps> = ({ onBack }) =>
 
       {/* Floating Save Button (Visible only on Scroll or Fixed at bottom) */}
       <div className="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-20">
-        <button className="w-full bg-[#FF6501] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+        <button className="w-full bg-[#1E5BFF] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
             <Save className="w-5 h-5" />
             Salvar Alterações
         </button>

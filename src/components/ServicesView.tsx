@@ -9,10 +9,10 @@ import {
   Dog, 
   Sparkles, 
   Briefcase, 
-  Search,
-  MessageSquare,
-  CheckCircle2,
-  ArrowRight,
+  Search, 
+  MessageSquare, 
+  CheckCircle2, 
+  ArrowRight, 
   MoveRight
 } from 'lucide-react';
 import { MasterSponsorBanner } from './MasterSponsorBanner';
@@ -36,14 +36,14 @@ const MACRO_SERVICES = [
     name: 'Casa & Reparos', 
     description: 'Pequenas obras, pintura e manutenção', 
     icon: Hammer,
-    color: 'text-orange-600',
+    color: 'text-[#1E5BFF]',
   },
   { 
     id: 'auto', 
     name: 'Auto & Veículos', 
     description: 'Mecânica, estética e socorro veicular', 
     icon: CarFront,
-    color: 'text-blue-600',
+    color: 'text-[#1E5BFF]',
   },
   { 
     id: 'tech', 
@@ -57,7 +57,7 @@ const MACRO_SERVICES = [
     name: 'Pets', 
     description: 'Banho, tosa, veterinário e hotel', 
     icon: Dog,
-    color: 'text-amber-600',
+    color: 'text-[#1E5BFF]',
   },
   { 
     id: 'clean', 
@@ -85,7 +85,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
         <MasterSponsorBanner onClick={() => onNavigate('patrocinador_master')} />
 
         {/* Hero Banner Estilo Card Premium */}
-        <div className="relative w-full rounded-[20px] bg-gradient-to-r from-[#FF6501] to-[#FF7A00] p-7 shadow-lg shadow-orange-500/20 overflow-hidden group cursor-default transition-all duration-300 hover:shadow-orange-500/25">
+        <div className="relative w-full rounded-[20px] bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] p-7 shadow-lg shadow-blue-500/20 overflow-hidden group cursor-default transition-all duration-300 hover:shadow-blue-500/25">
           {/* Elementos Decorativos */}
           <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute bottom-[-20px] left-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -124,14 +124,14 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
                 <button
                   key={item.id}
                   onClick={() => onSelectMacro(item.id, item.name)}
-                  className="bg-white dark:bg-gray-800 rounded-[20px] px-5 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700/50 flex flex-col items-start gap-4 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] hover:border-orange-100 dark:hover:border-gray-600 transition-all duration-300 active:scale-[0.96] group text-left h-full relative overflow-hidden"
+                  className="bg-white dark:bg-gray-800 rounded-[20px] px-5 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700/50 flex flex-col items-start gap-4 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] hover:border-blue-100 dark:hover:border-gray-600 transition-all duration-300 active:scale-[0.96] group text-left h-full relative overflow-hidden"
                 >
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 border border-gray-100 dark:border-gray-700 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                     <Icon className={`w-6 h-6 ${item.color}`} strokeWidth={2} />
                   </div>
                   
                   <div className="flex-1 w-full space-y-1.5">
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight group-hover:text-[#FF6501] transition-colors">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight group-hover:text-[#1E5BFF] transition-colors">
                       {item.name}
                     </h4>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug line-clamp-2 font-medium">
@@ -140,11 +140,11 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
                   </div>
 
                   <div className="w-full pt-4 mt-auto border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] font-bold text-[#FF6501] uppercase tracking-wide">
+                    <span className="text-[10px] font-bold text-[#1E5BFF] uppercase tracking-wide">
                       Ver opções
                     </span>
-                    <div className="w-6 h-6 rounded-full bg-orange-50 dark:bg-gray-700 flex items-center justify-center group-hover:bg-[#FF6501] transition-colors">
-                        <MoveRight className="w-3.5 h-3.5 text-[#FF6501] group-hover:text-white transition-colors" />
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-gray-700 flex items-center justify-center group-hover:bg-[#1E5BFF] transition-colors">
+                        <MoveRight className="w-3.5 h-3.5 text-[#1E5BFF] group-hover:text-white transition-colors" />
                     </div>
                   </div>
                 </button>
@@ -165,7 +165,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
 
             {/* Passo 1 */}
             <div className="relative flex items-center gap-5 z-10 group">
-              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#FF6501] shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#1E5BFF] shrink-0 group-hover:scale-110 transition-transform duration-300">
                 <Search className="w-5 h-5" strokeWidth={2.5} />
               </div>
               <div>
@@ -180,7 +180,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
 
             {/* Passo 2 */}
             <div className="relative flex items-center gap-5 z-10 group">
-              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#FF6501] shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-[#F8F8F8] dark:border-gray-900 flex items-center justify-center shadow-sm text-[#1E5BFF] shrink-0 group-hover:scale-110 transition-transform duration-300">
                 <MessageSquare className="w-5 h-5" strokeWidth={2.5} />
               </div>
               <div>
@@ -212,7 +212,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-center">
              <button 
                 onClick={onOpenTerms}
-                className="flex items-center gap-2 text-xs font-bold text-[#FF6501] hover:text-[#e65a00] transition-colors px-4 py-2 rounded-full hover:bg-orange-50 dark:hover:bg-orange-900/10 active:scale-95"
+                className="flex items-center gap-2 text-xs font-bold text-[#1E5BFF] hover:text-[#1749CC] transition-colors px-4 py-2 rounded-full hover:bg-[#EAF0FF] dark:hover:bg-blue-900/10 active:scale-95"
              >
                 Ler termos de uso <ArrowRight className="w-3.5 h-3.5" />
              </button>

@@ -15,8 +15,8 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
   const [name, setName] = useState(user.displayName || '');
   const [phone, setPhone] = useState('');
   
-  // Custom Orange color matching the brand
-  const BRAND_ORANGE = '#FF6501';
+  // Custom Blue color matching the brand
+  const BRAND_BLUE = '#2D6DF6';
 
   // Apply phone mask (XX) XXXXX-XXXX
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +72,7 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
       <div className="w-full max-w-sm flex items-center justify-center gap-2 mb-10 opacity-50">
         <div className="w-2 h-2 rounded-full bg-gray-300"></div>
         <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-        <div className="w-8 h-2 rounded-full" style={{ backgroundColor: BRAND_ORANGE }}></div>
+        <div className="w-8 h-2 rounded-full" style={{ backgroundColor: BRAND_BLUE }}></div>
       </div>
 
       <div className="w-full max-w-sm">
@@ -87,11 +87,11 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
         {/* Avatar Preview */}
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-gray-100 p-1 shadow-lg shadow-orange-100 border-2 border-white">
+            <div className="w-28 h-28 rounded-full bg-gray-100 p-1 shadow-lg shadow-blue-100 border-2 border-white">
               {user.photoURL ? (
                 <img src={user.photoURL} alt="Profile" className="w-full h-full rounded-full object-cover" />
               ) : (
-                <div className="w-full h-full rounded-full bg-orange-50 flex items-center justify-center text-orange-400">
+                <div className="w-full h-full rounded-full bg-blue-50 flex items-center justify-center text-blue-400">
                   <UserIcon className="w-12 h-12" />
                 </div>
               )}
@@ -111,13 +111,13 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
               Nome Completo
             </label>
             <div className="relative flex items-center">
-              <UserIcon className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#FF6501] transition-colors" />
+              <UserIcon className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#2D6DF6] transition-colors" />
               <input 
                 type="text" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex: João da Silva"
-                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#FF6501] focus:ring-4 focus:ring-orange-500/10 outline-none transition-all placeholder-gray-300 font-medium"
+                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#2D6DF6] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder-gray-300 font-medium"
                 required
               />
             </div>
@@ -129,14 +129,14 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
               WhatsApp / Celular
             </label>
             <div className="relative flex items-center">
-              <Smartphone className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#FF6501] transition-colors" />
+              <Smartphone className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#2D6DF6] transition-colors" />
               <input 
                 type="tel" 
                 value={phone}
                 onChange={handlePhoneChange}
                 placeholder="(21) 99999-9999"
                 maxLength={15}
-                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#FF6501] focus:ring-4 focus:ring-orange-500/10 outline-none transition-all placeholder-gray-300 font-medium"
+                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#2D6DF6] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder-gray-300 font-medium"
                 required
               />
             </div>
@@ -152,8 +152,8 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
           <button 
             type="submit"
             disabled={isSaving}
-            style={{ backgroundColor: BRAND_ORANGE }}
-            className="w-full text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/20 hover:shadow-orange-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
+            style={{ backgroundColor: BRAND_BLUE }}
+            className="w-full text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isSaving ? (
               <span className="animate-pulse">Salvando...</span>

@@ -21,8 +21,10 @@ import {
   ThumbsUp,
   Calendar,
   MapPin,
-  Clock,
-  Phone
+  Filter,
+  Percent,
+  Star,
+  BadgeCheck
 } from 'lucide-react';
 import { QuoteRequestModal } from './QuoteRequestModal';
 import { EditorialCollection } from './EditorialListView';
@@ -30,7 +32,7 @@ import { supabase } from '../lib/supabase';
 import { LojasEServicosList } from './LojasEServicosList';
 import { User } from 'firebase/auth';
 import { SpinWheelView } from './SpinWheelView';
-import { MasterSponsorBanner } from './MasterSponsorBanner';
+// Removed MasterSponsorBanner import to use inline standardized version
 
 interface HomeFeedProps {
   onNavigate: (view: string) => void;
@@ -53,10 +55,12 @@ const TOP_SEARCHED = [
 ];
 
 const EDITORIAL_THEMES: EditorialCollection[] = [
-  { id: 'coffee', title: 'Melhores cafés', subtitle: 'Para começar o dia bem', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=600&auto=format&fit=crop', keywords: ['café', 'padaria', 'confeitaria', 'bistrô'] },
-  { id: 'barber', title: 'Corte de confiança', subtitle: 'Barbearias bem avaliadas', image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=600&auto=format&fit=crop', keywords: ['barbearia', 'cabeleireiro', 'salão', 'cortes'] },
-  { id: 'sweets', title: 'Docerias Amadas', subtitle: 'Adoce seu dia na Freguesia', image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600&auto=format&fit=crop', keywords: ['doce', 'bolo', 'torta', 'sorvete', 'açaí'] },
-  { id: 'top-rated', title: 'Os Top Avaliados', subtitle: 'Favoritos do bairro', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format&fit=crop', keywords: [] },
+  { id: 'coffee', title: 'Melhores Cafés', subtitle: '', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=600&auto=format&fit=crop', keywords: ['café', 'padaria', 'confeitaria', 'bistrô'] },
+  { id: 'barber', title: 'Corte de Confiança', subtitle: '', image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=600&auto=format&fit=crop', keywords: ['barbearia', 'cabeleireiro', 'salão', 'cortes'] },
+  { id: 'sweets', title: 'Docerias Amadas', subtitle: '', image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600&auto=format&fit=crop', keywords: ['doce', 'bolo', 'torta', 'sorvete', 'açaí'] },
+  { id: 'top-rated', title: 'Os Top Avaliados', subtitle: '', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format&fit=crop', keywords: [] },
+  { id: 'party', title: 'Festas', subtitle: '', image: 'https://images.unsplash.com/photo-1530103862676-de3c9a59af38?q=80&w=600&auto=format&fit=crop', keywords: ['festa', 'decoração', 'buffet'] },
+  { id: 'fashion', title: 'Moda', subtitle: '', image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=600&auto=format&fit=crop', keywords: ['roupa', 'moda', 'boutique'] },
 ];
 
 const CASHBACK_HIGHLIGHTS = [
@@ -73,21 +77,6 @@ const RECOMMENDED_FOR_YOU = [
   { id: 'rec3', name: 'Drogasmil', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=400&auto=format=fit=crop' },
   { id: 'rec4', name: 'China In Box', category: 'Culinária Chinesa', image: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?q=80&w=400&auto=format=fit=crop' },
   { id: 'rec5', name: 'Vila da Mata', category: 'Floricultura', image: 'https://images.unsplash.com/photo-1490750967868-58cb75069ed6?q=80&w=400&auto=format=fit=crop' },
-];
-
-const LOCAL_EVENTS = [
-  { id: 'ev1', title: 'Feira da Freguesia', date: 'Dom, 10h', location: 'Praça Edwaldo Hanemann', image: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=400&auto=format=fit=crop' },
-  { id: 'ev2', title: 'Música na Praça', date: 'Sex, 19h', location: 'Praça Professora Camisão', image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=400&auto=format=fit=crop' },
-  { id: 'ev3', title: 'Adoção de Pets', date: 'Sáb, 09h', location: 'Bosque da Freguesia', image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=400&auto=format=fit=crop' },
-  { id: 'ev4', title: 'Encontro de Carros Antigos', date: '25 Nov', location: 'Estacionamento Rios D\'Or', image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=400&auto=format=fit=crop' },
-];
-
-const SERVICES_24H = [
-  { id: 'srv1', name: 'Chaveiro Expresso', category: 'Chaveiro', image: 'https://images.unsplash.com/photo-1585664811087-47f65be1bac6?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv2', name: 'Farmácia Pacheco', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv3', name: 'Vet 24h', category: 'Veterinário', image: 'https://images.unsplash.com/photo-1606425271394-c3ca9aa1fc06?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv4', name: 'Reboque Rápido', category: 'Auto Socorro', image: 'https://images.unsplash.com/photo-1562920616-0b63f03b22b7?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv5', name: 'Desentupidora', category: 'Emergência', image: 'https://images.unsplash.com/photo-1584622050111-993a426fbf0a?q=80&w=400&auto=format=fit=crop' },
 ];
 
 // Modal da Roleta (bottom sheet)
@@ -162,8 +151,14 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [selectedQuoteNiche, setSelectedQuoteNiche] = useState('');
 
+  // List Filter State
+  const [listFilter, setListFilter] = useState<'all' | 'cashback' | 'top_rated' | 'open_now'>('all');
+
   // State to trigger spin animation on mount
   const [hasSpun, setHasSpun] = useState(false);
+
+  // Filter Verified Stores
+  const verifiedStores = stores.filter(s => s.verified);
 
   useEffect(() => {
     // Trigger the spin animation once when the component mounts
@@ -202,7 +197,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   }, [activeSearchTerm]);
 
   const MINI_BANNERS = [
-    { id: 'cashback', title: "Cashback Local", subtitle: "Dinheiro de volta.", icon: <Coins className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-[#FF6501] to-[#FF9E0B]", action: () => onNavigate('cashback_info'), cta: "Ver Agora" },
+    { id: 'cashback', title: "Cashback Local", subtitle: "Dinheiro de volta.", icon: <Coins className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-[#1E5BFF] to-[#1B54D9]", action: () => onNavigate('cashback_info'), cta: "Ver Agora" },
     { id: 'services', title: "Peça um Orçamento", subtitle: "Receba até 5 orçamentos.", icon: <Wrench className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-blue-600 to-cyan-500", action: () => onNavigate('services'), cta: "Orçamento" },
     { id: 'connect', title: "Freguesia Connect", subtitle: "Networking empresarial.", icon: <Users className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-indigo-600 to-purple-600", action: () => onNavigate(!user ? 'freguesia_connect_public' : userRole === 'lojista' ? 'freguesia_connect_dashboard' : 'freguesia_connect_restricted'), cta: "Faça Parte" },
     { id: 'achadinhos', title: "Achados de Hoje", subtitle: "Ofertas especiais.", icon: <Sparkles className="w-8 h-8 text-white" />, bgClass: "bg-gradient-to-r from-pink-500 to-rose-500", action: () => onNavigate('marketplace'), cta: "Ver Ofertas" }
@@ -287,11 +282,11 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             <div className="px-5 w-full">
               <div
                 onClick={handleSpinWheelClick}
-                className="w-full rounded-2xl bg-gradient-to-r from-orange-100 via-amber-50 to-rose-100 dark:from-gray-800 dark:to-gray-700 border border-orange-200/60 dark:border-gray-600 shadow-md shadow-orange-100/50 flex items-center px-2 py-3 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all duration-300"
+                className="w-full rounded-2xl bg-gradient-to-r from-blue-100 via-indigo-50 to-purple-100 dark:from-gray-800 dark:to-gray-700 border border-blue-200/60 dark:border-gray-600 shadow-md shadow-blue-100/50 flex items-center px-2 py-3 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all duration-300"
               >
                 {/* Background Decor */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-transparent rounded-full blur-xl -mr-6 -mt-6 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-1/3 w-16 h-16 bg-yellow-400/20 rounded-full blur-lg pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-xl -mr-6 -mt-6 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-1/3 w-16 h-16 bg-indigo-400/20 rounded-full blur-lg pointer-events-none"></div>
                 
                 {/* Left: Icon */}
                 <div className="relative z-10 flex-shrink-0 mr-2">
@@ -315,7 +310,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 
                 {/* Center: Text (Aligned Left) */}
                 <div className="relative z-10 flex-1 flex flex-col justify-center min-w-0 mr-1">
-                    <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-0.5 whitespace-nowrap">
+                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5 whitespace-nowrap">
                       Roleta Localizei
                     </span>
                     <span className="text-[11px] xs:text-[12px] sm:text-[13px] font-bold text-gray-900 dark:text-white leading-none whitespace-nowrap overflow-visible">
@@ -325,7 +320,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
 
                 {/* Right: CTA Button */}
                 <div className="relative z-10 flex-shrink-0 ml-1">
-                    <button className="bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-md shadow-orange-500/20 active:scale-95 transition-transform uppercase tracking-wide whitespace-nowrap">
+                    <button className="bg-gradient-to-r from-[#1E5BFF] to-[#1B54D9] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-md shadow-blue-500/20 active:scale-95 transition-transform uppercase tracking-wide whitespace-nowrap">
                         Gire Agora
                     </button>
                 </div>
@@ -338,7 +333,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                   <div className="grid grid-rows-2 grid-flow-col gap-x-5 gap-y-4 w-max">
                       {CATEGORIES.map((cat) => (
                         <div key={cat.id} onClick={() => onSelectCategory(cat)} className="flex flex-col items-center gap-1.5 cursor-pointer group active:scale-95 transition-transform w-[68px]">
-                            <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center group-hover:shadow-md transition-all">
+                            <div className="w-14 h-14 bg-[#EEF4FF] dark:bg-gray-800 rounded-2xl shadow-sm border border-[#EEF4FF] dark:border-gray-700 flex items-center justify-center group-hover:shadow-md group-active:bg-[#DCE8FF] group-hover:bg-[#DCE8FF] transition-all">
                                 {React.isValidElement(cat.icon) ? React.cloneElement(cat.icon as React.ReactElement<any>, { className: "w-6 h-6 text-primary-500" }) : cat.icon}
                             </div>
                             <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400 text-center leading-tight w-full">{cat.name}</span>
@@ -419,7 +414,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Achadinhos (MOVED UP) */}
+            {/* Achadinhos (MOVED UP) - Updated Layout per Request */}
             <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Achadinhos da Freguesia</h3>
@@ -432,11 +427,10 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
                  <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
                     {EDITORIAL_THEMES.map((theme) => (
-                       <div key={theme.id} className="min-w-[108px] w-[108px] h-[192px] rounded-none overflow-hidden relative cursor-pointer group active:scale-[0.98] transition-transform shadow-md" onClick={() => onSelectCollection(theme)}>
+                       <div key={theme.id} className="min-w-[108px] w-[108px] h-[192px] rounded-2xl overflow-hidden relative cursor-pointer group active:scale-[0.98] transition-transform shadow-md" onClick={() => onSelectCollection(theme)}>
                           <img src={theme.image} alt={theme.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-center items-center p-3 text-center">
                              <h4 className="font-bold text-white text-base font-display leading-tight">{theme.title}</h4>
-                             <p className="text-xs text-gray-200 font-medium line-clamp-2 mt-1">{theme.subtitle}</p>
                           </div>
                        </div>
                     ))}
@@ -488,6 +482,39 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                     ))}
                  </div>
             </div>
+
+            {/* Lojas Verificadas (New Section) */}
+            {verifiedStores.length > 0 && (
+                <div className="pl-5 space-y-2.5 w-full">
+                    <div className="flex items-center justify-between pr-5">
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Lojas Verificadas</h3>
+                        <button
+                            onClick={() => onNavigate('verified_stores')}
+                            className="text-sm font-medium text-[#1E5BFF] hover:text-[#1749CC] transition-colors"
+                        >
+                            Ver todas
+                        </button>
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
+                        {verifiedStores.slice(0, 10).map((store) => (
+                        <div key={store.id} onClick={() => onStoreClick && onStoreClick(store)} className="min-w-[140px] w-[140px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
+                            <div className="h-24 w-full relative bg-gray-200 dark:bg-gray-700">
+                                <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-sm">
+                                    <BadgeCheck className="w-3.5 h-3.5 text-[#1E5BFF] fill-white dark:fill-gray-800" />
+                                </div>
+                            </div>
+                            <div className="p-2.5 flex flex-col flex-1 justify-between">
+                                <div>
+                                    <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{store.name}</h4>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{store.category}</p>
+                                </div>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Recomendados para você */}
             <div className="pl-5 space-y-2.5 w-full">
@@ -557,75 +584,81 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                </div>
             </div>
 
-            {/* Eventos da Freguesia */}
-            <div className="pl-5 space-y-2.5 w-full">
-                 <div className="flex items-center justify-between pr-5">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">Eventos da Freguesia</h3>
-                    <button
-                        onClick={() => onNavigate('freguesia_connect_public')}
-                        className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                    >
-                        Ver agenda
-                    </button>
-                 </div>
-                 <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
-                    {LOCAL_EVENTS.map((event) => (
-                       <div key={event.id} className="min-w-[160px] w-[160px] h-[200px] rounded-2xl overflow-hidden relative cursor-pointer group active:scale-[0.98] transition-transform shadow-md">
-                          <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-3">
-                             <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-1 rounded-lg shadow-sm">
-                                <span className="text-[10px] font-bold text-gray-900 uppercase">{event.date}</span>
-                             </div>
-                             <h4 className="font-bold text-white text-sm leading-tight mb-0.5">{event.title}</h4>
-                             <div className="flex items-center gap-1 text-gray-300">
-                                <MapPin className="w-3 h-3" />
-                                <p className="text-[10px] font-medium line-clamp-1">{event.location}</p>
-                             </div>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
-            </div>
-
-            {/* Serviços 24h (Nova Seção) */}
-            <div className="pl-5 space-y-2.5 w-full">
-                 <div className="flex items-center justify-between pr-5">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h3>
-                    <button
-                        onClick={() => onNavigate('services')}
-                        className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                    >
-                        Ver todos
-                    </button>
-                 </div>
-                 <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
-                    {SERVICES_24H.map((service) => (
-                       <div key={service.id} className="min-w-[130px] w-[130px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                          <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
-                              <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                              <div className="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
-                                <Clock className="w-3 h-3" />
-                                24h
-                              </div>
-                          </div>
-                          <div className="p-2.5 flex flex-col flex-1 justify-between">
-                             <div>
-                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
-                             </div>
-                             <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-green-500" />
-                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
-                             </div>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
-            </div>
-
-            {/* Patrocinador Master */}
+            {/* Patrocinador Master - Dark Blue Style */}
             <div className="px-5 w-full">
-              <MasterSponsorBanner onClick={() => onNavigate('patrocinador_master')} />
+              <div 
+                onClick={() => onNavigate('patrocinador_master')}
+                className="w-full bg-[#1F2A44] rounded-2xl p-4 shadow-sm border border-transparent relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all"
+              >
+                <div className="flex items-center gap-4 relative z-10">
+                   {/* Icon - White container for contrast */}
+                   <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
+                      <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1E5BFF]" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" fill="currentColor"/>
+                        <path d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z" fill="white"/>
+                      </svg>
+                   </div>
+
+                   {/* Text - 100% White */}
+                   <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">Patrocinador Master</p>
+                      <h3 className="text-white font-bold text-lg leading-tight truncate">Grupo Esquematiza</h3>
+                      <p className="text-white text-xs mt-0.5 font-medium truncate">Transformando desafios em soluções seguras!</p>
+                   </div>
+
+                   {/* Arrow - White */}
+                   <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
+                </div>
+              </div>
+            </div>
+
+            {/* Filtros da Lista Home */}
+            <div className="px-5 w-full -mb-2 mt-1">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <button
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
+                        listFilter === 'all'
+                            ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+                        }`}
+                        onClick={() => setListFilter('all')}
+                    >
+                        <Filter className="w-3 h-3" />
+                        Todos
+                    </button>
+                    <button
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
+                        listFilter === 'cashback'
+                            ? 'bg-green-500 text-white border-green-500'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+                        }`}
+                        onClick={() => setListFilter('cashback')}
+                    >
+                        <Percent className="w-3 h-3" />
+                        Cashback
+                    </button>
+                    <button
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
+                        listFilter === 'top_rated'
+                            ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+                        }`}
+                        onClick={() => setListFilter('top_rated')}
+                    >
+                        <Star className="w-3 h-3" />
+                        Melhor avaliadas
+                    </button>
+                    <button
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
+                        listFilter === 'open_now'
+                            ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+                        }`}
+                        onClick={() => setListFilter('open_now')}
+                    >
+                        ⏱ Aberto agora
+                    </button>
+                </div>
             </div>
 
             {/* Lista principal */}
@@ -633,6 +666,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 <LojasEServicosList 
                     onStoreClick={onStoreClick} 
                     onViewAll={() => onNavigate('explore')}
+                    activeFilter={listFilter}
                 />
             </div>
         </div>

@@ -103,14 +103,14 @@ export const StoreSupportModule: React.FC<StoreSupportModuleProps> = ({ onBack }
                     <LifeBuoy className="w-5 h-5 text-gray-400" />
                     <h3 className="font-bold text-gray-900 dark:text-white">Meus Chamados</h3>
                 </div>
-                <button className="flex items-center gap-1 text-[#FF6501] text-xs font-bold bg-orange-50 dark:bg-orange-900/10 px-3 py-1.5 rounded-full">
+                <button className="flex items-center gap-1 text-[#1E5BFF] text-xs font-bold bg-[#EAF0FF] dark:bg-blue-900/10 px-3 py-1.5 rounded-full">
                     <Plus className="w-3 h-3" /> Novo
                 </button>
             </div>
 
             <div className="space-y-3">
                 {TICKETS.map((ticket, index) => (
-                    <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between group cursor-pointer hover:border-[#FF6501]/30 transition-colors">
+                    <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between group cursor-pointer hover:border-[#1E5BFF]/30 transition-colors">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-400">
                                 <MessageSquare className="w-5 h-5" />

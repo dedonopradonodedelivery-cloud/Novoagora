@@ -67,7 +67,7 @@ export const CashbackView: React.FC<CashbackViewProps> = ({ onBack }) => {
                 
                 {/* Passo 1 */}
                 <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
                     <div className="flex flex-col">
                         <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Compre nas lojas parceiras da Freguesia.</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">Escolha uma loja que participa do Cashback Localizei.</p>
@@ -76,7 +76,7 @@ export const CashbackView: React.FC<CashbackViewProps> = ({ onBack }) => {
 
                 {/* Passo 2 */}
                 <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
                     <div className="flex flex-col">
                         <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Avise que você participa do cashback Localizei.</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">No momento do pagamento, informe ao vendedor que quer pontuar no aplicativo.</p>
@@ -85,7 +85,7 @@ export const CashbackView: React.FC<CashbackViewProps> = ({ onBack }) => {
 
                 {/* Passo 3 */}
                 <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
                     <div className="flex flex-col">
                         <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Escaneie o QR Code do lojista com o seu celular.</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">Abra o app Localizei, leia o QR Code da loja e informe o valor da sua compra.</p>
@@ -94,7 +94,7 @@ export const CashbackView: React.FC<CashbackViewProps> = ({ onBack }) => {
 
                 {/* Passo 4 */}
                 <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
                     <div className="flex flex-col">
                         <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Receba na hora 5% de cashback.</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">Uma parte do valor da sua compra volta imediatamente para a sua carteira digital.</p>
@@ -103,7 +103,7 @@ export const CashbackView: React.FC<CashbackViewProps> = ({ onBack }) => {
 
                 {/* Passo 5 */}
                 <div className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">5</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">5</div>
                     <div className="flex flex-col">
                         <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Use seu saldo nas próximas compras.</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5">Com dinheiro na carteira, você pode usar o cashback como desconto em novas compras nas lojas participantes.</p>

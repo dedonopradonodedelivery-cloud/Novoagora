@@ -202,7 +202,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({ user, onBack }
             <button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 hover:brightness-110 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 hover:brightness-110 disabled:opacity-70 disabled:cursor-not-allowed"
             >
                 {isLoading ? (
                     <>

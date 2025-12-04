@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CheckCircle2, Home, FileText, Clock, Users, MessageSquare, ChevronRight } from 'lucide-react';
 
@@ -80,7 +81,7 @@ export const ServiceSuccessView: React.FC<ServiceSuccessViewProps> = ({ onViewRe
       <div className="w-full max-w-sm space-y-4">
         <button 
           onClick={onViewRequests}
-          className="w-full bg-[#FF6501] hover:bg-[#FF7A00] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+          className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
         >
           Ver meus pedidos
           <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

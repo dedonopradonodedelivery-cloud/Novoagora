@@ -64,6 +64,7 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
+    verified: true, // Marked as verified
   },
   {
     id: '2',
@@ -80,6 +81,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
+    verified: true, // Marked as verified
   },
   {
     id: '3',
@@ -96,6 +98,7 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Araguaia, 300 - Freguesia',
     phone: '(21) 97777-3333',
     hours: 'Seg a Sáb • 6h às 22h',
+    verified: false,
   },
   {
     id: '4',
@@ -112,6 +115,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
+    verified: true, // Marked as verified
   },
 ];
 
@@ -224,10 +228,10 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-primary-500 to-orange-700 flex flex-col items-center justify-center text-white z-50">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#2D6DF6] to-[#1B54D9] flex flex-col items-center justify-center text-white z-50">
         <div className="relative flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-4 animate-pop-in opacity-0">
-            <MapPin className="w-8 h-8 text-primary-600 fill-primary-600" />
+            <MapPin className="w-8 h-8 text-[#2D6DF6] fill-[#2D6DF6]" />
           </div>
           <div className="text-4xl font-bold font-display animate-slide-up opacity-0 [animation-delay:500ms]">
             Localizei
@@ -276,6 +280,7 @@ const App: React.FC = () => {
     'category_detail',
     'food_category',
     'subcategory_store_list',
+    'verified_stores', // Hide main header for verified stores list
     'store_detail',
     'store_category',
     'cashback',
@@ -347,6 +352,7 @@ const App: React.FC = () => {
                 onSelectCategory={handleSelectCategory}
                 onNavigate={setActiveTab}
                 onStoreClick={handleSelectStore}
+                onViewAllVerified={() => setActiveTab('verified_stores')}
                 stores={stores}
                 searchTerm={globalSearch}
               />
@@ -358,6 +364,16 @@ const App: React.FC = () => {
                 stores={stores}
                 onBack={() => setActiveTab('home')}
                 onStoreClick={handleSelectStore}
+              />
+            )}
+
+            {activeTab === 'verified_stores' && (
+              <SubcategoryStoreList
+                subcategoryName="Lojas Verificadas"
+                onBack={() => setActiveTab('explore')}
+                onStoreClick={handleSelectStore}
+                stores={stores.filter(s => s.verified)}
+                sponsoredBanners={[]} // No banners for this view
               />
             )}
 

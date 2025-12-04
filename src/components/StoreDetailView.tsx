@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   ChevronLeft,
@@ -106,7 +107,7 @@ const InfoCard: React.FC<{
   value: string;
 }> = ({ icon: Icon, title, value }) => (
   <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl flex items-center gap-4 shadow-lg shadow-black/5 border border-gray-100 dark:border-gray-700/50">
-    <div className="w-12 h-12 bg-orange-50 dark:bg-[#FF6501]/10 rounded-xl flex items-center justify-center text-[#FF6501] flex-shrink-0">
+    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-[#1E5BFF] flex-shrink-0">
       <Icon className="w-6 h-6" />
     </div>
     <div>
@@ -248,7 +249,7 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                 <Heart
                   className={`w-5 h-5 text-gray-800 transition-all ${
                     isFavorite
-                      ? 'fill-red-500 text-red-500'
+                      ? 'fill-[#1E5BFF] text-[#1E5BFF]'
                       : 'fill-transparent'
                   }`}
                 />
@@ -292,7 +293,7 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                     {business.rating !== undefined && (
                       <>
                         <span className="text-gray-300">•</span>
-                        <Star className="w-4 h-4 text-[#FF6501] fill-current" />
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
                         <span>
                           {business.rating} ({business.ratingCount ?? 0})
                         </span>
@@ -388,14 +389,14 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <button className="w-full bg-white dark:bg-gray-800 text-[#FF6501] font-bold py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <button className="w-full bg-white dark:bg-gray-800 text-[#1E5BFF] font-bold py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
                         Como Chegar
                       </button>
                     </div>
                   )}
 
                   <div className="pt-4">
-                    <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#FF6501] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-transform text-base">
+                    <button className="w-full bg-gradient-to-r from-[#1E5BFF] to-[#3A73FF] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 active:scale-95 transition-transform text-base">
                       Informar erro neste local
                     </button>
                   </div>
@@ -436,7 +437,7 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
                         placeholder="Escreva sua avaliação aqui..."
-                        className="w-full h-28 p-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 focus:border-[#FF6501] rounded-xl focus:ring-2 focus:ring-orange-500/10 outline-none transition-all dark:text-white text-sm shadow-sm resize-none"
+                        className="w-full h-28 p-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 focus:border-[#1E5BFF] rounded-xl focus:ring-2 focus:ring-blue-500/10 outline-none transition-all dark:text-white text-sm shadow-sm resize-none"
                       />
                       <div className="flex justify-between items-center">
                         {reviewSuccess ? (
@@ -450,7 +451,7 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                         <button
                           onClick={handleSubmitReview}
                           disabled={!reviewText.trim() || isSubmittingReview}
-                          className="bg-[#FF6501] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed hover:bg-[#e65a00]"
+                          className="bg-[#1E5BFF] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed hover:bg-[#164ACC]"
                         >
                           {isSubmittingReview ? 'Enviando...' : 'Enviar avaliação'}
                         </button>

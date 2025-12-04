@@ -1,24 +1,24 @@
 
-import React from 'react';
-import { ChevronLeft, Copy, CheckCircle, Ticket, Sparkles, Home, Wallet } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronLeft, Copy, CheckCircle, Ticket, Wallet } from 'lucide-react';
 
 interface RewardDetailsViewProps {
   reward: {
     label: string;
     code: string;
     value: string;
+    description?: string;
   } | null;
   onBack: () => void;
   onHome: () => void;
 }
 
 export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, onBack, onHome }) => {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
 
   if (!reward) return null;
 
   const rewardName = reward.label;
-  // Verifica se é cashback (case-insensitive)
   const isCashback = rewardName.toLowerCase().includes('cashback');
 
   const handleCopy = () => {
@@ -33,7 +33,7 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300 flex flex-col items-center relative overflow-hidden">
       
       {/* Background Decor */}
-      <div className="absolute top-0 w-full h-[40vh] bg-gradient-to-b from-orange-500 to-orange-600 rounded-b-[34px] z-0"></div>
+      <div className="absolute top-0 w-full h-[40vh] bg-gradient-to-b from-[#1E5BFF] to-[#1749CC] rounded-b-[34px] z-0"></div>
 
       {/* Header */}
       <div className="w-full relative z-10 px-5 pt-6 pb-2 flex items-center justify-between">
@@ -50,68 +50,59 @@ export const RewardDetailsView: React.FC<RewardDetailsViewProps> = ({ reward, on
       <div className="relative z-10 w-full max-w-sm px-5 mt-6 flex flex-col items-center flex-1 pb-10">
         
         {/* Card Principal */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full shadow-2xl shadow-orange-900/20 flex flex-col items-center text-center relative overflow-hidden border border-gray-100 dark:border-gray-700">
-            {/* Confetti Visuals (Static) */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500"></div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full shadow-2xl shadow-blue-900/20 flex flex-col items-center text-center relative overflow-hidden border border-gray-100 dark:border-gray-700">
+            {/* Visuals */}
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#1E5BFF] via-[#4D7CFF] to-[#1E5BFF]"></div>
 
-            <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-5 ring-8 ring-orange-50 dark:ring-orange-900/10">
+            <div className="w-20 h-20 bg-[#EAF0FF] dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-5 ring-8 ring-[#EAF0FF] dark:ring-blue-900/10">
                 {isCashback ? (
-                    <Wallet className="w-10 h-10 text-orange-600 dark:text-orange-400" />
+                    <Wallet className="w-10 h-10 text-[#1E5BFF] dark:text-blue-400" />
                 ) : (
-                    <Ticket className="w-10 h-10 text-orange-600 dark:text-orange-400" />
+                    <Ticket className="w-10 h-10 text-[#1E5BFF] dark:text-blue-400" />
                 )}
             </div>
 
             {/* Título Grande */}
-            <h2 className="text-2xl font-extrabold text-[#FF6501] mb-4 font-display leading-tight">
+            <h2 className="text-2xl font-extrabold text-[#1E5BFF] mb-4 font-display leading-tight">
                 {rewardName}
             </h2>
 
             {/* Texto Explicativo Lógico */}
-            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-3 w-full mb-5">
-                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium leading-relaxed text-center">
-                    {isCashback 
-                        ? "Seu prêmio foi creditado automaticamente no seu Cashback Local."
-                        : "Resgate nos estabelecimentos parceiros."
-                    }
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl w-full mb-6 text-sm text-gray-600 dark:text-gray-300">
+                <p className="leading-relaxed">
+                    {reward.description || "Parabéns! Utilize o código abaixo para resgatar seu prêmio na loja ou ele será creditado automaticamente."}
                 </p>
             </div>
 
-            {/* Código (Apenas se não for cashback) */}
-            {!isCashback && (
-                <div className="w-full mb-4">
-                    <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-600 p-3 shadow-sm">
-                        <code className="text-base font-mono font-bold text-gray-800 dark:text-gray-200 tracking-wider">
-                            {reward.code}
-                        </code>
-                        <button 
-                            onClick={handleCopy}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                            title="Copiar código"
-                        >
-                            {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-400" />}
-                        </button>
+            {/* Código de Resgate */}
+            <div className="w-full mb-6">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Código do Cupom</p>
+                <button 
+                    onClick={handleCopy}
+                    className="w-full bg-[#EAF0FF] dark:bg-gray-900 border-2 border-dashed border-[#1E5BFF]/30 rounded-xl p-4 flex items-center justify-between group active:scale-[0.98] transition-all"
+                >
+                    <span className="font-mono text-xl font-bold text-gray-800 dark:text-white tracking-wider">
+                        {reward.code}
+                    </span>
+                    <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#1E5BFF]">
+                        {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-2">Toque no ícone para copiar</p>
-                </div>
-            )}
-
-            <div className="flex items-center gap-2 text-xs text-gray-500 bg-orange-50 dark:bg-orange-900/20 px-3 py-1.5 rounded-full mt-2">
-                <Sparkles className="w-3 h-3 text-orange-500" />
-                <span>Válido por 24 horas</span>
+                </button>
+                {copied && <p className="text-xs text-green-500 font-bold mt-2 animate-pulse">Copiado para a área de transferência!</p>}
             </div>
+
+            <p className="text-xs text-gray-400">
+                Válido por 7 dias. Apresente este código no caixa.
+            </p>
         </div>
 
-        {/* Botão Voltar ao Início */}
-        <div className="w-full mt-auto pt-8">
-            <button 
-                onClick={onHome}
-                className="w-full bg-gradient-to-r from-[#FF6501] to-[#FF7A00] hover:shadow-orange-500/40 text-white font-bold py-3.5 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-            >
-                <Home className="w-5 h-5" />
-                Voltar ao Início
-            </button>
-        </div>
+        {/* Botão Home */}
+        <button 
+            onClick={onHome}
+            className="mt-8 text-white/80 font-bold text-sm hover:text-white transition-colors"
+        >
+            Voltar para o início
+        </button>
 
       </div>
     </div>

@@ -130,7 +130,7 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 my-1">
-                    <span className="flex items-center gap-1 text-yellow-500 font-bold">
+                    <span className="flex items-center gap-1 text-[#1E5BFF] font-bold">
                         <Star className="w-3.5 h-3.5 fill-current" /> 
                         {store.rating}
                     </span>

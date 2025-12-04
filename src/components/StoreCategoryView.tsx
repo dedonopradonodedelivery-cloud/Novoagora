@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronLeft, ShoppingCart, Plus, Coins } from 'lucide-react';
 
@@ -31,12 +32,12 @@ const ProductCard: React.FC<{ product: typeof mockProducts[0] }> = ({ product })
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                  {hasDiscount && (
-                    <div className="absolute top-2 left-2 bg-[#FF6500] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
+                    <div className="absolute top-2 left-2 bg-[#1E5BFF] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
                         {discountPercent}% OFF
                     </div>
                 )}
                 <button className="absolute bottom-2 right-2 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-transform duration-200">
-                    <ShoppingCart className="w-4 h-4 text-[#FF7A00]" />
+                    <ShoppingCart className="w-4 h-4 text-[#1E5BFF]" />
                 </button>
             </div>
             <div className="flex-1 flex flex-col">

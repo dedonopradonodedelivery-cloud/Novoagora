@@ -109,7 +109,7 @@ export const AboutView: React.FC<SimplePageProps> = ({ onBack }) => {
       
       <div className="p-6">
         <div className="flex flex-col items-center mb-8">
-            <div className="w-20 h-20 bg-primary-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-orange-200 dark:shadow-none">
+            <div className="w-20 h-20 bg-primary-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-200 dark:shadow-none">
                 <MapPin className="w-10 h-10 text-white fill-white" />
             </div>
             <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white">Localizei Freguesia</h2>
@@ -126,8 +126,8 @@ export const AboutView: React.FC<SimplePageProps> = ({ onBack }) => {
                 <p>Ser a principal referência de busca, serviços e vantagens para quem vive e trabalha na Freguesia.</p>
             </div>
             
-            <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-xl border border-orange-100 dark:border-orange-800/30">
-                <p className="text-xs text-orange-800 dark:text-orange-200 font-medium text-center">
+            <div className="bg-[#EAF0FF] dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-800/30">
+                <p className="text-xs text-blue-800 dark:text-blue-200 font-medium text-center">
                     Feito com carinho por moradores,<br/> para moradores. ❤️
                 </p>
             </div>
@@ -171,7 +171,7 @@ export const SponsorInfoView: React.FC<SimplePageProps> = ({ onBack }) => {
       </div>
       
       <div className="p-6 flex flex-col items-center text-center">
-        <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30">
+        <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-[#1E5BFF] rounded-full flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
             <Crown className="w-12 h-12 text-white" />
         </div>
         

@@ -13,7 +13,7 @@ export const ServiceTermsView: React.FC<ServiceTermsViewProps> = ({ onBack }) =>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300 relative">
       
       {/* Giant Hero Banner */}
-      <div className="relative w-full h-[320px] bg-gradient-to-br from-[#FF6501] to-[#FF8A3D]">
+      <div className="relative w-full h-[320px] bg-gradient-to-br from-[#1E5BFF] to-[#4D7CFF]">
         {/* Background Decor */}
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 2px, transparent 2.5px)', backgroundSize: '24px 24px' }}></div>
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -24,7 +24,7 @@ export const ServiceTermsView: React.FC<ServiceTermsViewProps> = ({ onBack }) =>
             onClick={onBack}
             className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 text-white" />
           </button>
         </div>
 
@@ -37,7 +37,7 @@ export const ServiceTermsView: React.FC<ServiceTermsViewProps> = ({ onBack }) =>
           <h1 className="text-3xl font-extrabold text-white mb-3 font-display drop-shadow-sm leading-tight">
             Termos de Uso da Solicitação de Orçamentos
           </h1>
-          <p className="text-orange-50 text-sm leading-relaxed max-w-sm font-medium">
+          <p className="text-blue-50 text-sm leading-relaxed max-w-sm font-medium">
             Entenda como funciona a intermediação entre você e os profissionais da Freguesia.
           </p>
         </div>
@@ -112,7 +112,7 @@ export const ServiceTermsView: React.FC<ServiceTermsViewProps> = ({ onBack }) =>
         <div className="mt-12 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-center">
             <button 
                 onClick={onBack}
-                className="text-[#FF6501] font-bold text-sm hover:text-[#e65a00] transition-colors flex items-center gap-2 px-6 py-3 rounded-full bg-orange-50 dark:bg-orange-900/10"
+                className="text-[#1E5BFF] font-bold text-sm hover:text-[#1749CC] transition-colors flex items-center gap-2 px-6 py-3 rounded-full bg-[#EAF0FF] dark:bg-blue-900/10"
             >
                 <ChevronLeft className="w-4 h-4" />
                 Voltar para Serviços

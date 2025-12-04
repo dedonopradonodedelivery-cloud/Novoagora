@@ -4,18 +4,18 @@ import {
   ChevronLeft, 
   Megaphone, 
   Plus, 
-  BarChart3, 
   Calendar, 
   MousePointer, 
   Eye, 
   ShoppingBag, 
   PauseCircle, 
   PlayCircle, 
-  Image as ImageIcon,
   CheckCircle2,
   TrendingUp,
   Target,
-  Layout
+  Rocket,
+  Wallet,
+  QrCode
 } from 'lucide-react';
 
 interface StoreAdsModuleProps {
@@ -29,7 +29,6 @@ interface Campaign {
   id: string;
   name: string;
   type: AdType;
-  position: string;
   status: 'active' | 'paused' | 'ended';
   startDate: string;
   endDate: string;
@@ -50,7 +49,6 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     id: '1',
     name: 'Promoção Fim de Semana',
     type: 'premium',
-    position: 'Home (Topo)',
     status: 'active',
     startDate: '10/11/2023',
     endDate: '17/11/2023',
@@ -62,27 +60,17 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     id: '2',
     name: 'Oferta de Almoço',
     type: 'local',
-    position: 'Categoria Alimentação',
     status: 'paused',
     startDate: '01/11/2023',
     endDate: '30/11/2023',
     budget: 57.00,
     metrics: { impressions: 5600, clicks: 120, ctr: 2.1, orders: 8, cpa: 7.12 },
     history: [10, 15, 12, 18, 20, 15, 30]
-  },
-  {
-    id: '3',
-    name: 'Dia dos Pais',
-    type: 'premium',
-    position: 'Busca',
-    status: 'ended',
-    startDate: '01/08/2023',
-    endDate: '15/08/2023',
-    budget: 120.00,
-    metrics: { impressions: 25000, clicks: 900, ctr: 3.6, orders: 95, cpa: 1.26 },
-    history: [0,0,0,0,0,0,0]
   }
 ];
+
+// Mock Store Balance
+const STORE_BALANCE = 45.00; 
 
 export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
   const [view, setView] = useState<ViewState>('list');
@@ -91,14 +79,21 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
   // Creation Form State
   const [createStep, setCreateStep] = useState(1);
   const [newCampaignType, setNewCampaignType] = useState<AdType>('local');
-  const [duration, setDuration] = useState(7);
-  const [position, setPosition] = useState('Categoria');
+  
+  // New Fields
+  const [campaignName, setCampaignName] = useState('');
+  const [campaignDesc, setCampaignDesc] = useState('');
+  const [duration, setDuration] = useState(7); // Slider value 7-180
 
   const getPricePerDay = (type: AdType) => type === 'local' ? 1.90 : 3.90;
   const totalCost = getPricePerDay(newCampaignType) * duration;
+  const hasSufficientBalance = STORE_BALANCE >= totalCost;
 
   const handleCreateClick = () => {
     setCreateStep(1);
+    setCampaignName('');
+    setCampaignDesc('');
+    setDuration(7);
     setView('create');
   };
 
@@ -125,23 +120,33 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
   // --- VIEWS ---
 
   const ListView = () => (
-    <div className="p-5 pb-20">
-      <div className="bg-purple-600 rounded-3xl p-6 text-white mb-6 shadow-lg shadow-purple-900/20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-        <h2 className="text-2xl font-bold mb-2 relative z-10">Alcance mais clientes</h2>
-        <p className="text-purple-100 text-sm mb-6 max-w-[240px] relative z-10">
-          Crie anúncios destacados e apareça no topo das buscas da Freguesia.
-        </p>
-        <button 
-          onClick={handleCreateClick}
-          className="w-full bg-white text-purple-700 font-bold py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform relative z-10"
-        >
-          <Plus className="w-5 h-5" />
-          Criar nova campanha
-        </button>
+    <div className="p-5 pb-32">
+      <div className="bg-gradient-to-br from-purple-700 to-indigo-800 rounded-3xl p-6 text-white mb-8 shadow-xl shadow-purple-900/20 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+        <div className="relative z-10">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-4 border border-white/20">
+                <Rocket className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+            </div>
+            <h2 className="text-xl font-bold mb-2 font-display">Apareça para quem quer comprar</h2>
+            <p className="text-indigo-100 text-sm mb-6 leading-relaxed">
+              Lojas que anunciam recebem até <strong>3x mais visitas</strong>. Seus anúncios aparecem no topo das listas, na busca e em áreas de destaque do app.
+            </p>
+            <button 
+              onClick={handleCreateClick}
+              className="w-full bg-white text-purple-700 font-bold py-3.5 rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+            >
+              <Megaphone className="w-4 h-4" />
+              Criar campanha a partir de R$ 1,90/dia
+            </button>
+        </div>
       </div>
 
-      <h3 className="font-bold text-gray-900 dark:text-white mb-4 px-1">Minhas Campanhas</h3>
+      <div className="flex items-center justify-between mb-4 px-1">
+        <h3 className="font-bold text-gray-900 dark:text-white">Minhas Campanhas</h3>
+        <span className="text-xs text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md">
+            Saldo: R$ {STORE_BALANCE.toFixed(2).replace('.', ',')}
+        </span>
+      </div>
       
       <div className="space-y-4">
         {MOCK_CAMPAIGNS.map((campaign) => (
@@ -152,7 +157,9 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white text-sm">{campaign.name}</h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{campaign.position}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {campaign.type === 'premium' ? 'Alcance Máximo' : 'Visibilidade Local'}
+                </p>
               </div>
               {renderStatusBadge(campaign.status)}
             </div>
@@ -187,18 +194,19 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
   );
 
   const CreateView = () => (
-    <div className="p-5 pb-24">
+    <div className="p-5 pb-40">
       {/* Progress Steps */}
-      <div className="flex justify-between mb-8 px-2">
+      <div className="flex justify-between mb-8 px-4 relative">
+        <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 -z-10 mx-8"></div>
         {[1, 2, 3].map(step => (
-          <div key={step} className="flex flex-col items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-              createStep >= step ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+          <div key={step} className="flex flex-col items-center gap-2 bg-gray-50 dark:bg-gray-900 px-2">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors shadow-sm ${
+              createStep >= step ? 'bg-purple-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-400 border border-gray-200 dark:border-gray-700'
             }`}>
               {step}
             </div>
-            <span className="text-[10px] font-medium text-gray-500">
-              {step === 1 ? 'Plano' : step === 2 ? 'Config' : 'Revisão'}
+            <span className={`text-[10px] font-bold ${createStep >= step ? 'text-purple-600' : 'text-gray-400'}`}>
+              {step === 1 ? 'Plano' : step === 2 ? 'Configurar' : 'Pagamento'}
             </span>
           </div>
         ))}
@@ -206,49 +214,58 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
 
       {createStep === 1 && (
         <div className="space-y-4 animate-in slide-in-from-right duration-300">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Escolha o tipo de destaque</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Escolha seu plano</h3>
           
           <button 
             onClick={() => setNewCampaignType('local')}
-            className={`w-full p-5 rounded-2xl border-2 text-left transition-all ${
+            className={`w-full p-5 rounded-3xl border-2 text-left transition-all ${
               newCampaignType === 'local' 
-                ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' 
+                ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20 ring-2 ring-purple-600/20 ring-offset-2 dark:ring-offset-gray-900' 
                 : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
             }`}
           >
             <div className="flex justify-between items-start mb-2">
               <span className="font-bold text-gray-900 dark:text-white text-lg">ADS Local</span>
-              <span className="text-purple-600 font-bold bg-white dark:bg-gray-900 px-2 py-1 rounded-md text-xs border border-purple-200 dark:border-purple-800">
+              <span className="text-purple-700 dark:text-purple-300 font-bold bg-purple-100 dark:bg-purple-900/40 px-3 py-1 rounded-lg text-xs">
                 R$ 1,90/dia
               </span>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              Ideal para manter sua marca visível. Exibição na listagem da categoria e em buscas relacionadas.
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
+              Perfeito para visibilidade constante. Sua loja aparece com destaque na lista da categoria e buscas locais.
             </p>
+            <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-green-500" /> Topo da Categoria</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-green-500" /> Borda colorida no card</li>
+            </ul>
           </button>
 
           <button 
             onClick={() => setNewCampaignType('premium')}
-            className={`w-full p-5 rounded-2xl border-2 text-left transition-all relative overflow-hidden ${
+            className={`w-full p-5 rounded-3xl border-2 text-left transition-all relative overflow-hidden ${
               newCampaignType === 'premium' 
-                ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' 
+                ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20 ring-2 ring-purple-600/20 ring-offset-2 dark:ring-offset-gray-900' 
                 : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
             }`}
           >
             {newCampaignType === 'premium' && (
-              <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">
-                RECOMENDADO
+              <div className="absolute top-0 right-0 bg-gradient-to-bl from-purple-600 to-indigo-600 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl shadow-sm uppercase tracking-wide">
+                Mais Popular
               </div>
             )}
             <div className="flex justify-between items-start mb-2">
               <span className="font-bold text-gray-900 dark:text-white text-lg">ADS Premium</span>
-              <span className="text-purple-600 font-bold bg-white dark:bg-gray-900 px-2 py-1 rounded-md text-xs border border-purple-200 dark:border-purple-800">
+              <span className="text-purple-700 dark:text-purple-300 font-bold bg-purple-100 dark:bg-purple-900/40 px-3 py-1 rounded-lg text-xs">
                 R$ 3,90/dia
               </span>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              Máxima visibilidade. Destaque no topo da Home, banner rotativo e prioridade máxima nas buscas.
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
+              Máxima exposição. Sua marca no banner rotativo da Home e prioridade absoluta nas buscas.
             </p>
+            <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-green-500" /> Banner na Home</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-green-500" /> 1º lugar na busca</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-green-500" /> Badge "Patrocinado"</li>
+            </ul>
           </button>
         </div>
       )}
@@ -256,102 +273,147 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
       {createStep === 2 && (
         <div className="space-y-6 animate-in slide-in-from-right duration-300">
           <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Onde exibir?</label>
-            <div className="grid grid-cols-2 gap-3">
-              {['Home (Destaque)', 'Categoria', 'Busca', 'Notificações'].map(pos => (
-                <button 
-                  key={pos}
-                  onClick={() => setPosition(pos)}
-                  className={`py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
-                    position === pos 
-                      ? 'bg-purple-600 text-white border-purple-600' 
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {pos}
-                </button>
-              ))}
-            </div>
+            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Nome da Campanha</label>
+            <input 
+                type="text"
+                placeholder="Ex: Promoção de Verão"
+                value={campaignName}
+                onChange={(e) => setCampaignName(e.target.value)}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Duração</label>
-            <div className="flex gap-3">
-              {[7, 15, 30].map(days => (
-                <button 
-                  key={days}
-                  onClick={() => setDuration(days)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all ${
-                    duration === days 
-                      ? 'bg-purple-600 text-white border-purple-600' 
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {days} dias
-                </button>
-              ))}
-            </div>
+            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Descrição Curta</label>
+            <input 
+                type="text"
+                placeholder="Ex: Descontos de até 20% em toda a loja"
+                value={campaignDesc}
+                onChange={(e) => setCampaignDesc(e.target.value)}
+                maxLength={50}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all"
+            />
+            <p className="text-[10px] text-gray-400 text-right mt-1">{campaignDesc.length}/50</p>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Criativo (Imagem)</label>
-            <div className="w-full h-40 bg-gray-100 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <ImageIcon className="w-8 h-8 text-gray-400 mb-2" />
-              <p className="text-xs text-gray-500 font-medium">Toque para enviar imagem</p>
-              <p className="text-[10px] text-gray-400 mt-1">Recomendado: 800x400px</p>
+            <div className="flex justify-between items-end mb-4">
+                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase ml-1">Duração</label>
+                <span className="text-xl font-black text-purple-600">{duration} dias</span>
             </div>
+            
+            <div className="relative h-4 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 touch-none">
+                <div 
+                    className="absolute top-0 left-0 h-full bg-purple-600 rounded-full"
+                    style={{ width: `${((duration - 7) / (180 - 7)) * 100}%` }}
+                ></div>
+                <input 
+                    type="range"
+                    min="7"
+                    max="180"
+                    step="1"
+                    value={duration}
+                    onChange={(e) => setDuration(parseInt(e.target.value))}
+                    className="absolute top-[-8px] left-0 w-full h-8 opacity-0 cursor-pointer"
+                />
+                <div 
+                    className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-4 border-purple-600 rounded-full shadow-md pointer-events-none transition-all"
+                    style={{ left: `calc(${((duration - 7) / (180 - 7)) * 100}% - 12px)` }}
+                ></div>
+            </div>
+            
+            <div className="flex justify-between text-[10px] text-gray-400 font-bold px-1">
+                <span>7 dias</span>
+                <span>180 dias</span>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-2xl flex justify-between items-center border border-purple-100 dark:border-purple-800/50">
+             <span className="text-sm font-bold text-gray-600 dark:text-purple-200">Investimento Total</span>
+             <span className="text-2xl font-black text-purple-700 dark:text-purple-300">R$ {totalCost.toFixed(2).replace('.', ',')}</span>
           </div>
         </div>
       )}
 
       {createStep === 3 && (
         <div className="space-y-6 animate-in slide-in-from-right duration-300">
-          <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 text-center">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Quase lá!</h3>
-            <p className="text-sm text-gray-500 mb-6">Revise sua campanha antes de ativar.</p>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-400" /> Resumo do Pedido
+            </h3>
             
-            <div className="bg-white dark:bg-gray-900 rounded-xl p-4 text-left space-y-3 shadow-sm">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Tipo</span>
-                <span className="font-bold text-gray-900 dark:text-white">{newCampaignType === 'local' ? 'ADS Local' : 'Premium'}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Duração</span>
-                <span className="font-bold text-gray-900 dark:text-white">{duration} dias</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Posição</span>
-                <span className="font-bold text-gray-900 dark:text-white">{position}</span>
-              </div>
-              <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
-              <div className="flex justify-between text-base">
-                <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                <span className="font-bold text-purple-600">R$ {totalCost.toFixed(2).replace('.', ',')}</span>
-              </div>
+            <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Campanha</span>
+                    <span className="font-bold text-gray-900 dark:text-white text-right">{campaignName}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Plano</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{newCampaignType === 'local' ? 'ADS Local' : 'Premium'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Duração</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{duration} dias</span>
+                </div>
+                <div className="border-t border-gray-100 dark:border-gray-700 my-2"></div>
+                <div className="flex justify-between text-base">
+                    <span className="font-bold text-gray-900 dark:text-white">Valor Final</span>
+                    <span className="font-black text-purple-600 text-lg">R$ {totalCost.toFixed(2).replace('.', ',')}</span>
+                </div>
+            </div>
+
+            {/* Payment Method Logic */}
+            <div className={`p-4 rounded-xl border ${hasSufficientBalance ? 'bg-green-50 border-green-200 dark:bg-green-900/10 dark:border-green-800' : 'bg-orange-50 border-orange-200 dark:bg-orange-900/10 dark:border-orange-800'}`}>
+                {hasSufficientBalance ? (
+                    <>
+                        <div className="flex items-center gap-2 mb-2 text-green-700 dark:text-green-400 font-bold text-sm">
+                            <Wallet className="w-4 h-4" /> Pagamento com Saldo
+                        </div>
+                        <p className="text-xs text-green-600 dark:text-green-500 leading-tight">
+                            O valor será descontado do seu saldo de loja (Disponível: R$ {STORE_BALANCE.toFixed(2).replace('.', ',')}).
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <div className="flex items-center gap-2 mb-2 text-orange-700 dark:text-orange-400 font-bold text-sm">
+                            <QrCode className="w-4 h-4" /> Pagamento via Pix
+                        </div>
+                        <p className="text-xs text-orange-600 dark:text-orange-500 leading-tight mb-3">
+                            Saldo insuficiente. Gere um código Pix para ativar sua campanha instantaneamente.
+                        </p>
+                        <button className="w-full bg-white dark:bg-gray-800 text-orange-600 font-bold text-xs py-2 rounded-lg border border-orange-200 dark:border-orange-800 shadow-sm">
+                            Gerar Código Pix
+                        </button>
+                    </>
+                )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Wizard Footer Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-20 flex gap-3 max-w-md mx-auto">
+      {/* Fixed Footer */}
+      <div className="fixed bottom-0 left-0 right-0 p-5 pt-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-30 flex gap-3 max-w-md mx-auto shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         {createStep > 1 && (
           <button 
             onClick={() => setCreateStep(prev => prev - 1)}
-            className="flex-1 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold"
+            className="w-1/3 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             Voltar
           </button>
         )}
         <button 
           onClick={() => {
+            if (createStep === 2 && !campaignName) {
+                alert("Por favor, dê um nome para sua campanha.");
+                return;
+            }
             if (createStep < 3) setCreateStep(prev => prev + 1);
-            else setView('list');
+            else setView('list'); // Finish
           }}
-          className="flex-[2] bg-purple-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-500/20 active:scale-[0.98] transition-all"
+          className={`flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg shadow-purple-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${createStep === 1 ? 'w-full' : ''}`}
         >
-          {createStep === 3 ? 'Confirmar e Ativar' : 'Próximo'}
+          {createStep === 3 ? (hasSufficientBalance ? 'Confirmar e Ativar' : 'Confirmar Pix') : 'Próximo'}
+          {createStep < 3 && <ChevronLeft className="w-4 h-4 rotate-180" />}
         </button>
       </div>
     </div>
@@ -363,7 +425,7 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
     const maxVal = Math.max(...history);
 
     return (
-      <div className="p-5 pb-24 animate-in slide-in-from-right duration-300">
+      <div className="p-5 pb-32 animate-in slide-in-from-right duration-300">
         
         {/* Summary Card */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
@@ -446,14 +508,32 @@ export const StoreAdsModule: React.FC<StoreAdsModuleProps> = ({ onBack }) => {
             ))}
           </div>
         </div>
-
-        {/* Action Button */}
-        <button className="w-full py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-white font-bold rounded-2xl shadow-sm">
-          Editar Criativo
-        </button>
       </div>
     );
   };
+
+  function FileText(props: any) {
+      return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" x2="8" y1="13" y2="13" />
+            <line x1="16" x2="8" y1="17" y2="17" />
+            <line x1="10" x2="8" y1="9" y2="9" />
+        </svg>
+      );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300">

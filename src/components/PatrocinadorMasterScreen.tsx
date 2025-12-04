@@ -9,13 +9,10 @@ import {
   Phone, 
   MapPin, 
   Globe, 
-  Crown, 
   Building2, 
   Truck, 
   Monitor, 
   Heart, 
-  GraduationCap, 
-  Briefcase,
   Quote,
   Calendar
 } from 'lucide-react';
@@ -84,13 +81,16 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
       {/* Hero Section */}
       <div className="bg-slate-900 text-white pt-8 pb-10 px-6 rounded-b-[40px] shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-orange-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
         
         <div className="relative z-10 flex flex-col items-center text-center">
           <div className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 flex items-center justify-center mb-6 shadow-2xl">
-             <Crown className="w-12 h-12 text-yellow-400 fill-yellow-400" />
+             <svg viewBox="0 0 24 24" className="w-12 h-12 text-yellow-400" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" fill="currentColor"/>
+               <path d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z" fill="white"/>
+             </svg>
           </div>
-          <h2 className="text-orange-400 font-bold tracking-widest text-xs uppercase mb-2">Grupo Esquematiza</h2>
+          <h2 className="text-blue-400 font-bold tracking-widest text-xs uppercase mb-2">Grupo Esquematiza</h2>
           <h1 className="text-3xl font-bold font-display leading-tight mb-4">
             Segurança e Serviços com Excelência
           </h1>
@@ -123,8 +123,8 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
           <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-4 pl-1">Nossas Empresas</h3>
           <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 no-scrollbar">
             {companies.map((company, idx) => (
-              <div key={idx} className="min-w-[200px] bg-slate-800 text-white p-4 rounded-2xl shadow-md border-l-4 border-orange-500 flex flex-col justify-center">
-                <span className="text-xs text-orange-400 font-bold uppercase mb-1">Unidade</span>
+              <div key={idx} className="min-w-[200px] bg-slate-800 text-white p-4 rounded-2xl shadow-md border-l-4 border-blue-500 flex flex-col justify-center">
+                <span className="text-xs text-blue-400 font-bold uppercase mb-1">Unidade</span>
                 <p className="font-bold text-sm leading-tight">{company}</p>
               </div>
             ))}
@@ -167,7 +167,7 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
           <div className="space-y-3">
             {differentials.map((item, idx) => (
               <div key={idx} className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
-                <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-xl text-orange-600 dark:text-orange-400 mt-0.5">
+                <div className="bg-[#EAF0FF] dark:bg-blue-900/20 p-2 rounded-xl text-[#1E5BFF] dark:text-blue-400 mt-0.5">
                   <item.icon className="w-5 h-5" />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
                 <Quote className="w-8 h-8 text-slate-700 absolute top-4 right-4" />
                 <p className="text-sm font-medium text-gray-300 italic mb-4 leading-relaxed">"{t.text}"</p>
                 <div>
-                  <p className="font-bold text-orange-400 text-sm">{t.name}</p>
+                  <p className="font-bold text-blue-400 text-sm">{t.name}</p>
                   <p className="text-xs text-gray-500">{t.role}</p>
                 </div>
               </div>

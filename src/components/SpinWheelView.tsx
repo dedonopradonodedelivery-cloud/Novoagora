@@ -24,14 +24,14 @@ interface Prize {
 }
 
 const PRIZES: Prize[] = [
-  { prize_key: 'reais_5', prize_label: 'R$5 de Volta', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FFFFFF', textColor: '#E65100', description: 'Creditado na sua carteira Cashback Local.' },
-  { prize_key: 'cashback_5', prize_label: '5% Cashback', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
-  { prize_key: 'lose', prize_label: 'Não foi dessa vez', prize_type: 'nao_foi_dessa_vez', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#E65100', description: 'Mais sorte amanhã!' },
-  { prize_key: 'cashback_10', prize_label: '10% Cashback', prize_type: 'cashback', prize_value: 10, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
-  { prize_key: 'spin_again', prize_label: 'Gire de Novo', prize_type: 'gire_de_novo', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#E65100', description: 'Boa sorte na próxima tentativa!' },
-  { prize_key: 'reais_10', prize_label: 'Cupom R$10', prize_type: 'cupom', prize_value: 10, status: 'pendente', color: '#FF6501', textColor: '#FFFFFF', description: 'Use em qualquer loja parceira.' },
-  { prize_key: 'gift_local', prize_label: 'Brinde Local', prize_type: 'cupom', status: 'pendente', color: '#FFFFFF', textColor: '#E65100', description: 'Apresente o código para retirar.' },
-  { prize_key: 'cashback_15', prize_label: '15% Cashback', prize_type: 'cashback', prize_value: 15, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
+  { prize_key: 'reais_5', prize_label: 'R$5 de Volta', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FFFFFF', textColor: '#1749CC', description: 'Creditado na sua carteira Cashback Local.' },
+  { prize_key: 'cashback_5', prize_label: '5% Cashback', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
+  { prize_key: 'lose', prize_label: 'Não foi dessa vez', prize_type: 'nao_foi_dessa_vez', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#1749CC', description: 'Mais sorte amanhã!' },
+  { prize_key: 'cashback_10', prize_label: '10% Cashback', prize_type: 'cashback', prize_value: 10, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
+  { prize_key: 'spin_again', prize_label: 'Gire de Novo', prize_type: 'gire_de_novo', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#1749CC', description: 'Boa sorte na próxima tentativa!' },
+  { prize_key: 'reais_10', prize_label: 'Cupom R$10', prize_type: 'cupom', prize_value: 10, status: 'pendente', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Use em qualquer loja parceira.' },
+  { prize_key: 'gift_local', prize_label: 'Brinde Local', prize_type: 'cupom', status: 'pendente', color: '#FFFFFF', textColor: '#1749CC', description: 'Apresente o código para retirar.' },
+  { prize_key: 'cashback_15', prize_label: '15% Cashback', prize_type: 'cashback', prize_value: 15, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
 ];
 
 const SEGMENT_COUNT = PRIZES.length;
@@ -220,7 +220,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
     else if (spinStatus === 'error') text = 'Erro de Conexão';
 
     return (
-      <button onClick={handleSpin} disabled={disabled} className="w-full h-14 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold text-base rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+      <button onClick={handleSpin} disabled={disabled} className="w-full h-14 bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white font-bold text-base rounded-2xl shadow-lg shadow-blue-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
         {text}
       </button>
     );
@@ -260,9 +260,9 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
       
       <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center mb-5">
         <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20" style={{ filter: 'drop-shadow(0 4px 5px rgba(0,0,0,0.25))' }}>
-          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#D32F2F]"></div>
+          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#1E5BFF]"></div>
         </div>
-        <div className="absolute w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-[#D32F2F] shadow-inner z-10"></div>
+        <div className="absolute w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-[#1E5BFF] shadow-inner z-10"></div>
         
         <div 
           className="relative w-full h-full rounded-full transition-transform ease-[cubic-bezier(0.25,1,0.5,1)] border-8 border-white dark:border-gray-800 shadow-xl"
@@ -290,15 +290,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
                <div className="inline-block p-3 bg-white dark:bg-gray-700 rounded-full shadow-lg mb-3 animate-jelly">
                     {spinResult.prize_type === 'nao_foi_dessa_vez' && <ThumbsDown size={32} className="text-gray-500" />}
                     {spinResult.prize_type === 'gire_de_novo' && <RefreshCw size={32} className="text-blue-500"/>}
-                    {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={32} className="text-orange-500" />}
+                    {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={32} className="text-[#1E5BFF]" />}
                </div>
                <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                   {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Que pena!' : (spinResult.prize_type === 'gire_de_novo' ? 'Mais uma chance!' : 'Você ganhou!')}
-               </h3>
-               <p className="text-base font-semibold text-orange-600 dark:text-orange-400 mt-1">{spinResult.prize_label}</p>
-           </div>
-        </div>
-      )}
-    </div>
-  );
-};
+                   {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Que pena!' : (spinResult.prize_type === 'gire_de_novo'

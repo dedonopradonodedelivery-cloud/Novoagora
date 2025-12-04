@@ -111,7 +111,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 value={formData.cnpj}
                 onChange={handleInputChange}
                 placeholder="00.000.000/0001-00"
-                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#FF6501] transition-colors"
+                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#1E5BFF] transition-colors"
                 required
             />
             <p className="text-[10px] text-gray-400 mt-1">Digite 12345678000199 para simular loja existente.</p>
@@ -123,7 +123,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Ex: Padaria do Bairro"
-                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#FF6501] transition-colors"
+                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#1E5BFF] transition-colors"
                 required
             />
         </div>
@@ -134,7 +134,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="(21) 99999-9999"
-                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#FF6501] transition-colors"
+                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#1E5BFF] transition-colors"
                 required
             />
         </div>
@@ -146,7 +146,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="contato@loja.com.br"
-                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#FF6501] transition-colors"
+                className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 outline-none focus:border-[#1E5BFF] transition-colors"
                 required
             />
         </div>
@@ -154,7 +154,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
         <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full bg-[#FF6501] hover:bg-[#e65a00] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
         >
             {isLoading ? 'Buscando...' : 'Continuar cadastro'}
             {!isLoading && <ArrowRight className="w-5 h-5" />}
@@ -165,7 +165,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
 
   const renderNotFound = () => (
     <div className="animate-in slide-in-from-right duration-300 flex flex-col items-center text-center pt-8">
-        <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6 text-blue-600">
+        <div className="w-20 h-20 bg-[#EAF0FF] dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6 text-[#1E5BFF]">
             <Building2 className="w-10 h-10" />
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Não encontramos sua loja</h2>
@@ -174,7 +174,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
         </p>
         <button 
             onClick={() => onComplete()} // For demo purposes, just finish
-            className="w-full bg-[#FF6501] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20"
+            className="w-full bg-[#1E5BFF] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20"
         >
             Criar novo cadastro
         </button>
@@ -186,9 +186,9 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
 
   const renderFound = () => (
     <div className="animate-in slide-in-from-right duration-300 pt-4">
-        <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 rounded-2xl p-4 flex gap-3 items-start mb-6">
-            <AlertTriangle className="w-6 h-6 text-orange-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-orange-800 dark:text-orange-200 leading-relaxed">
+        <div className="bg-[#EAF0FF] dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex gap-3 items-start mb-6">
+            <AlertTriangle className="w-6 h-6 text-[#1E5BFF] shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
                 Esta loja já está cadastrada no Localizei Freguesia. Para administrar o perfil, você precisa reivindicar a propriedade.
             </p>
         </div>
@@ -212,7 +212,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
 
         <button 
             onClick={() => setStep('select_method')}
-            className="w-full bg-[#FF6501] hover:bg-[#e65a00] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all"
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all"
         >
             Reivindicar esta loja
         </button>
@@ -237,8 +237,8 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 </div>
             </button>
 
-            <button onClick={() => sendVerificationCode('sms')} className="w-full bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 hover:border-blue-500 transition-colors shadow-sm group">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+            <button onClick={() => sendVerificationCode('sms')} className="w-full bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 hover:border-[#1E5BFF] transition-colors shadow-sm group">
+                <div className="w-10 h-10 bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Smartphone className="w-5 h-5" />
                 </div>
                 <div className="text-left">
@@ -247,8 +247,8 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                 </div>
             </button>
 
-            <button onClick={() => sendVerificationCode('email')} className="w-full bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 hover:border-orange-500 transition-colors shadow-sm group">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 text-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+            <button onClick={() => sendVerificationCode('email')} className="w-full bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center gap-4 hover:border-[#1E5BFF] transition-colors shadow-sm group">
+                <div className="w-10 h-10 bg-[#EAF0FF] dark:bg-blue-900/20 text-[#1E5BFF] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Mail className="w-5 h-5" />
                 </div>
                 <div className="text-left">
@@ -263,7 +263,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
   const renderOtp = () => (
     <div className="animate-in slide-in-from-right duration-300 pt-8 flex flex-col items-center">
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-            <ShieldCheck className="w-8 h-8 text-primary-500" />
+            <ShieldCheck className="w-8 h-8 text-[#1E5BFF]" />
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Digite o código</h2>
         <p className="text-gray-500 text-sm mb-8 text-center max-w-[260px]">
@@ -280,7 +280,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
                     value={digit}
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                    className="w-11 h-14 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-center text-xl font-bold focus:border-[#FF6501] focus:ring-2 focus:ring-orange-500/20 outline-none transition-all dark:text-white"
+                    className="w-11 h-14 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-center text-xl font-bold focus:border-[#1E5BFF] focus:ring-2 focus:ring-blue-500/20 outline-none transition-all dark:text-white"
                 />
             ))}
         </div>
@@ -288,13 +288,13 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
         <button 
             onClick={verifyOtp}
             disabled={otp.some(d => !d) || isLoading}
-            className="w-full bg-[#FF6501] hover:bg-[#e65a00] text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
         >
             {isLoading ? 'Verificando...' : 'Confirmar Código'}
         </button>
 
         <div className="mt-6 flex flex-col gap-3 items-center">
-            <button className="text-xs font-bold text-primary-500">Reenviar código</button>
+            <button className="text-xs font-bold text-[#1E5BFF]">Reenviar código</button>
             <button onClick={() => setStep('manual_verify')} className="text-xs text-gray-400 underline">
                 Não recebi o código
             </button>
@@ -329,8 +329,8 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
 
   const renderSuccess = () => (
     <div className="animate-in zoom-in duration-500 flex flex-col items-center text-center pt-10 h-full justify-center pb-20">
-        <div className="w-24 h-24 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-200 dark:shadow-none">
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+        <div className="w-24 h-24 bg-[#EAF0FF] dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-blue-200 dark:shadow-none">
+            <CheckCircle2 className="w-12 h-12 text-[#1E5BFF]" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Parabéns!</h2>
         <p className="text-gray-600 dark:text-gray-300 text-sm mb-8 max-w-xs leading-relaxed">
@@ -339,7 +339,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
 
         <button 
             onClick={onComplete}
-            className="w-full bg-[#FF6501] text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full bg-[#1E5BFF] text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
             Ir para o painel do lojista
             <ArrowRight className="w-5 h-5 stroke-[3]" />
@@ -357,24 +357,26 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
             <div className="flex-1">
                 <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                     <div 
-                        className="h-full bg-[#FF6501] transition-all duration-500"
+                        className="h-full bg-[#1E5BFF] transition-all duration-500"
                         style={{ width: 
                             step === 'search' ? '10%' : 
-                            step === 'found' ? '30%' :
+                            step === 'found' ? '30%' : 
                             step === 'not_found' ? '30%' :
                             step === 'select_method' ? '50%' :
-                            step === 'otp' ? '80%' :
-                            '100%'
+                            step === 'otp' ? '70%' :
+                            step === 'manual_verify' ? '80%' :
+                            '100%' 
                         }}
                     ></div>
                 </div>
             </div>
         </div>
 
-        <div className="p-6 pb-12">
+        {/* Content */}
+        <div className="p-6 pb-24 max-w-md mx-auto">
             {step === 'search' && renderSearch()}
-            {step === 'not_found' && renderNotFound()}
             {step === 'found' && renderFound()}
+            {step === 'not_found' && renderNotFound()}
             {step === 'select_method' && renderSelectMethod()}
             {step === 'otp' && renderOtp()}
             {step === 'manual_verify' && renderManualVerify()}

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Send, Clock, MapPin, AlertCircle, CheckCircle2, Camera } from 'lucide-react';
 
@@ -79,7 +80,7 @@ export const QuoteRequestModal: React.FC<QuoteRequestModalProps> = ({ isOpen, on
 
             <div className="flex justify-between items-start mb-6">
               <div>
-                <span className="text-primary-500 font-bold text-xs uppercase tracking-wider">Solicitar Orçamento</span>
+                <span className="text-[#1E5BFF] font-bold text-xs uppercase tracking-wider">Solicitar Orçamento</span>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{categoryName}</h2>
               </div>
               <button onClick={onClose} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -96,7 +97,7 @@ export const QuoteRequestModal: React.FC<QuoteRequestModalProps> = ({ isOpen, on
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva o serviço com detalhes (ex: Preciso trocar a fiação do chuveiro e instalar 2 tomadas...)"
-                  className="w-full h-32 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none resize-none text-sm dark:text-white"
+                  className="w-full h-32 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-[#1E5BFF] outline-none resize-none text-sm dark:text-white"
                   required
                 />
               </div>
@@ -170,9 +171,9 @@ export const QuoteRequestModal: React.FC<QuoteRequestModalProps> = ({ isOpen, on
               </div>
 
               {/* Info Note */}
-              <div className="bg-orange-50 dark:bg-orange-900/10 p-3 rounded-xl flex gap-3 items-start">
-                <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-orange-700 dark:text-orange-300">
+              <div className="bg-[#EAF0FF] dark:bg-blue-900/10 p-3 rounded-xl flex gap-3 items-start">
+                <MapPin className="w-5 h-5 text-[#1E5BFF] flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-700 dark:text-blue-300">
                   Seu pedido será enviado para profissionais verificados da <strong>Freguesia</strong>.
                 </p>
               </div>
@@ -181,7 +182,7 @@ export const QuoteRequestModal: React.FC<QuoteRequestModalProps> = ({ isOpen, on
               <button 
                 type="submit"
                 disabled={isSending || !description.trim()}
-                className="w-full py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-2xl shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                className="w-full py-4 bg-[#1E5BFF] hover:bg-[#1749CC] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               >
                 {isSending ? (
                   <span className="animate-pulse">Enviando...</span>

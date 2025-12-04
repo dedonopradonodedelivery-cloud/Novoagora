@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Store } from '../types';
 import { ChevronLeft, Search, SlidersHorizontal, Coins, ShoppingCart } from 'lucide-react';
@@ -25,7 +24,7 @@ const MarketplaceProductCard: React.FC<{ item: Store }> = ({ item }) => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {hasDiscount && (
-                    <div className="absolute top-2 left-2 bg-[#FF6500] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
+                    <div className="absolute top-2 left-2 bg-[#1E5BFF] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
                         {discountPercent}% OFF
                     </div>
                 )}
@@ -33,7 +32,7 @@ const MarketplaceProductCard: React.FC<{ item: Store }> = ({ item }) => {
                     className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-transform duration-200"
                     aria-label="Adicionar ao carrinho"
                 >
-                    <ShoppingCart className="w-4 h-4 text-[#FF7A00]" />
+                    <ShoppingCart className="w-4 h-4 text-[#1E5BFF]" />
                 </button>
             </div>
             <div className="p-3 flex-1 flex flex-col">

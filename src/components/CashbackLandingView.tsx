@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Sparkles, ArrowRight } from 'lucide-react';
 import { CashbackIcon } from './CashbackIcon';
@@ -28,9 +29,9 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300 flex flex-col relative overflow-hidden">
       
       {/* Background Decorativo */}
-      <div className="absolute top-0 left-0 right-0 h-[60vh] bg-[#FF6501] rounded-b-[40px] z-0">
+      <div className="absolute top-0 left-0 right-0 h-[60vh] bg-[#1E5BFF] rounded-b-[40px] z-0">
          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 2px, transparent 2.5px)', backgroundSize: '24px 24px' }}></div>
-         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#FF6501] to-transparent"></div>
+         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#1E5BFF] to-transparent"></div>
       </div>
 
       {/* Header */}
@@ -57,7 +58,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
             <h1 className="text-3xl font-bold text-white mb-3 font-display drop-shadow-sm">
                 Cashback Localizei
             </h1>
-            <p className="text-orange-100 text-sm leading-relaxed max-w-xs mx-auto font-medium">
+            <p className="text-blue-100 text-sm leading-relaxed max-w-xs mx-auto font-medium">
                 Ganhe parte do seu dinheiro de volta ao comprar em estabelecimentos parceiros da Freguesia.
             </p>
         </div>
@@ -72,7 +73,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
 
                 {/* Passo 1 */}
                 <div className="relative flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#FF6501] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-orange-500/30 z-10 shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#1E5BFF] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30 z-10 shrink-0">
                         1
                     </div>
                     <div>
@@ -85,7 +86,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
 
                 {/* Passo 2 */}
                 <div className="relative flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#FF6501] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-orange-500/30 z-10 shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#1E5BFF] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30 z-10 shrink-0">
                         2
                     </div>
                     <div>
@@ -98,7 +99,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
 
                 {/* Passo 3 */}
                 <div className="relative flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#FF6501] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-orange-500/30 z-10 shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#1E5BFF] text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30 z-10 shrink-0">
                         3
                     </div>
                     <div>
@@ -112,7 +113,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
         </div>
 
         {/* Card Ilustrativo de Saldo */}
-        <div className="w-full max-w-xs bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl shadow-orange-900/20 border border-white/50 dark:border-gray-700 mb-10 transform hover:scale-105 transition-transform duration-500 relative z-20 overflow-hidden">
+        <div className="w-full max-w-xs bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl shadow-blue-900/20 border border-white/50 dark:border-gray-700 mb-10 transform hover:scale-105 transition-transform duration-500 relative z-20 overflow-hidden">
             
             {/* New Cashback Icon Positioned Decoratively */}
             <div className="absolute -right-4 -top-4 opacity-10 pointer-events-none">
@@ -121,7 +122,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
 
             <div className="flex justify-between items-start mb-4 relative z-10">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-[#FF6501] overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[#1E5BFF] overflow-hidden">
                         <CashbackIcon className="w-12 h-12" />
                     </div>
                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400">Meu Saldo</span>
@@ -136,7 +137,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
                 </span>
             </div>
             <div className="mt-4 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden relative z-10">
-                <div className="h-full bg-gradient-to-r from-orange-400 to-[#FF6501] w-[70%] rounded-full animate-pulse"></div>
+                <div className="h-full bg-gradient-to-r from-blue-400 to-[#1E5BFF] w-[70%] rounded-full animate-pulse"></div>
             </div>
             <p className="text-center text-[10px] text-gray-400 mt-2 relative z-10">
                 Cashback acumulado em compras locais (exemplo)
@@ -148,7 +149,7 @@ export const CashbackLandingView: React.FC<CashbackLandingViewProps> = ({ onBack
       <div className="fixed bottom-0 left-0 right-0 p-5 pb-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-30 flex flex-col gap-3 max-w-md mx-auto shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <button 
             onClick={onLogin}
-            className="w-full bg-[#FF6501] hover:bg-[#FF7A00] text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
             Criar conta e ativar cashback
             <ArrowRight className="w-5 h-5 stroke-[3]" />

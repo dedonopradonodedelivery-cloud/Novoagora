@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ChevronLeft, Search, Star, BadgeCheck, ChevronRight, X, AlertCircle, Check } from 'lucide-react';
 import { Category, Store, AdType } from '../types';
@@ -12,7 +13,7 @@ interface CategoryViewProps {
 
 // Vibrant gradients for the subcategory cards
 const CARD_GRADIENTS = [
-  "bg-gradient-to-br from-[#FF6501] to-[#FF8A3D]", // Brand Orange
+  "bg-gradient-to-br from-[#1E5BFF] to-[#4D7CFF]", // Blue Theme
   "bg-gradient-to-br from-red-500 to-rose-600",     // Red
   "bg-gradient-to-br from-purple-500 to-indigo-600", // Purple
   "bg-gradient-to-br from-emerald-500 to-teal-600",  // Green
@@ -246,8 +247,8 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                     <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentBanner ? 'opacity-100' : 'opacity-0'}`}>
                     <img src={img} alt="Destaque" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2 py-1 rounded-lg shadow-sm">
-                        <span className="text-[9px] font-bold text-gray-900 uppercase tracking-wide">Patrocinado</span>
+                    <div className="absolute top-3 right-3 bg-[#EAF0FF]/90 backdrop-blur-md px-2 py-1 rounded-lg shadow-sm">
+                        <span className="text-[9px] font-bold text-[#1E5BFF] uppercase tracking-wide">Patrocinado</span>
                     </div>
                     </div>
                 ))}
@@ -346,14 +347,14 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                                          </div>
                                          
                                          {isSponsored && (
-                                             <span className="flex-shrink-0 text-[9px] font-bold bg-[#FF6501] text-white px-1.5 py-0.5 rounded shadow-sm leading-none">
+                                             <span className="flex-shrink-0 text-[9px] font-bold bg-[#EAF0FF] text-[#1E5BFF] px-1.5 py-0.5 rounded shadow-sm leading-none">
                                                  PATROCINADO
                                              </span>
                                          )}
                                     </div>
             
                                     <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-1.5">
-                                         <div className="flex items-center gap-0.5 text-orange-500 font-bold">
+                                         <div className="flex items-center gap-0.5 text-[#1E5BFF] font-bold">
                                             <Star className="w-3 h-3 fill-current" />
                                             <span>{store.rating}</span>
                                          </div>

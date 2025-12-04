@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, Search, ImageIcon, Star, BadgeCheck, ChevronRight, X, AlertCircle } from 'lucide-react';
 import { SUBCATEGORIES } from '../constants';
@@ -43,7 +44,7 @@ const HighlightBanner: React.FC<{ banner: BannerAd; onClick: (id: string) => voi
       </div>
       {banner.merchantName && (
         <div className="absolute top-3 right-3 flex flex-col items-end">
-          <div className="bg-white/85 text-black/85 text-[10px] font-bold px-2 py-1 rounded-xl backdrop-blur-sm shadow-sm border border-black/10 tracking-tight">
+          <div className="bg-[#EAF0FF]/85 text-[#1E5BFF] text-[10px] font-bold px-2 py-1 rounded-xl backdrop-blur-sm shadow-sm border border-black/10 tracking-tight">
             Patrocinado
           </div>
           <p className="text-white text-[11px] font-semibold drop-shadow-sm transform -translate-y-3">
@@ -121,7 +122,7 @@ const SponsoredCarousel: React.FC<{
                     <div 
                         key={index} 
                         className={`h-2 rounded-full transition-all duration-300 ${
-                            index === currentSlide ? 'w-4 bg-gradient-to-r from-[#FF7A00] to-[#FF6501]' : 'w-2 bg-gray-300'
+                            index === currentSlide ? 'w-4 bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF]' : 'w-2 bg-gray-300'
                         }`}
                     />
                 ))}
@@ -138,7 +139,7 @@ const SubcategoryCard: React.FC<{ icon: React.ReactNode; name: string; onClick: 
     <button 
       onClick={onClick}
       className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg shadow-black/5 px-3 py-6 flex flex-col items-center justify-center cursor-pointer active:scale-95 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10 transition-all duration-150 ease-out border border-gray-100 dark:border-gray-700 group">
-        <div className="w-[100px] h-[100px] bg-gradient-to-br from-[#FF7A00]/20 to-[#FF6501]/20 rounded-full mb-2.5 flex items-center justify-center transition-colors group-hover:from-[#FF7A00]/25 group-hover:to-[#FF6501]/25">
+        <div className="w-[100px] h-[100px] bg-gradient-to-br from-[#1E5BFF]/20 to-[#4D7CFF]/20 rounded-full mb-2.5 flex items-center justify-center transition-colors group-hover:from-[#1E5BFF]/25 group-hover:to-[#4D7CFF]/25">
             {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "w-10 h-10 text-primary-600 dark:text-primary-400"})}
         </div>
         <p className="text-sm font-semibold text-[#1A1A1A] dark:text-gray-200 text-center">{name}</p>
@@ -389,14 +390,14 @@ export const CategoriaAlimentacao: React.FC<CategoriaAlimentacaoProps> = ({ onBa
                                      </div>
                                      
                                      {isSponsored && (
-                                         <span className="flex-shrink-0 text-[9px] font-bold bg-[#FF6501] text-white px-1.5 py-0.5 rounded shadow-sm leading-none">
+                                         <span className="flex-shrink-0 text-[9px] font-bold bg-[#EAF0FF] text-[#1E5BFF] px-1.5 py-0.5 rounded shadow-sm leading-none">
                                              PATROCINADO
                                          </span>
                                      )}
                                 </div>
 
                                 <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-1.5">
-                                     <div className="flex items-center gap-0.5 text-orange-500 font-bold">
+                                     <div className="flex items-center gap-0.5 text-[#1E5BFF] font-bold">
                                         <Star className="w-3 h-3 fill-current" />
                                         <span>{store.rating}</span>
                                      </div>

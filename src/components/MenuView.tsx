@@ -67,6 +67,44 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
     }
   };
 
+  // --- GUEST VIEW (Not Authenticated) ---
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in slide-in-from-right duration-300 flex flex-col">
+        
+        {/* Header Simples */}
+        <div className="bg-white dark:bg-gray-900 px-5 pt-10 pb-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white font-display">Perfil</h2>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-6 pb-28 text-center">
+          
+          <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transform -rotate-6">
+             <UserIcon className="w-10 h-10 text-[#1E5BFF]" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+            Entre na sua conta
+          </h2>
+          
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 max-w-[260px] leading-relaxed font-medium">
+            Faça login para acessar seus favoritos, cashback e acompanhar sua experiência no Localizei Freguesia.
+          </p>
+
+          <button 
+            onClick={onAuthClick}
+            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          >
+            Entrar ou criar conta
+            <ChevronRight className="w-5 h-5 opacity-80" />
+          </button>
+
+        </div>
+      </div>
+    );
+  }
+
+  // --- LOGGED IN VIEW ---
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in duration-300">
       
@@ -80,7 +118,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         
         {/* 2) Card de Perfil do Usuário */}
         <div 
-          onClick={() => user ? onNavigate('edit_profile') : onAuthClick()}
+          onClick={() => onNavigate('edit_profile')}
           className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform mb-4"
         >
           <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-white dark:border-gray-600 shadow-sm">
@@ -92,17 +130,17 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
           </div>
           <div className="flex-1">
             <h3 className="font-bold text-gray-900 dark:text-white text-base">
-                {user ? (user.displayName || 'Usuário Localizei') : 'Entrar na conta'}
+                {user.displayName || 'Usuário Localizei'}
             </h3>
             <p className="text-xs text-primary-500 font-bold mt-0.5 flex items-center gap-1">
-                {user ? 'Ver meu perfil completo' : 'Clique para fazer login'}
+                Ver meu perfil completo
                 <ChevronRight className="w-3 h-3" />
             </p>
           </div>
         </div>
 
         {/* 3) Merchant Area (Conditional) */}
-        {user && isMerchant ? (
+        {isMerchant ? (
             <button 
                 onClick={() => onNavigate('store_area')}
                 className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-4 rounded-2xl shadow-md shadow-indigo-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
@@ -118,10 +156,10 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
                 </div>
                 <ChevronRight className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
             </button>
-        ) : user && (
+        ) : (
             <button 
                 onClick={() => onNavigate('business_registration')}
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-2xl shadow-md shadow-orange-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
+                className="w-full bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white p-4 rounded-2xl shadow-md shadow-blue-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
             >
                 <div className="flex items-center gap-4">
                     <div className="p-2 rounded-xl bg-white/20 text-white">
@@ -129,10 +167,10 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
                     </div>
                     <div className="text-left">
                         <h3 className="font-bold text-white text-sm">Cadastrar meu negócio</h3>
-                        <p className="text-xs text-orange-100">Sou lojista na Freguesia</p>
+                        <p className="text-xs text-blue-100">Sou lojista na Freguesia</p>
                     </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-orange-200 group-hover:text-white transition-colors" />
+                <ChevronRight className="w-5 h-5 text-blue-200 group-hover:text-white transition-colors" />
             </button>
         )}
 
@@ -149,7 +187,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
             icon={Coins} 
             label="Cashback" 
             onClick={() => onNavigate('cashback')} 
-            colorClass="bg-yellow-500" 
+            colorClass="bg-[#1E5BFF]" 
             subLabel="Acompanhe seu saldo e ganhos"
         />
 
@@ -157,7 +195,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         <SectionTitle title="Comunidade & Suporte" />
         
         {/* Item Exclusivo para Lojistas */}
-        {user && isMerchant && (
+        {isMerchant && (
              <MenuItem 
                 icon={Users} 
                 label="Freguesia Connect" 
@@ -185,7 +223,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         {/* 6) Seção Parceiros & Publicidade */}
         <SectionTitle title="Parceiros & Publicidade" />
         
-        {/* Patrocinador Master Banner - Using Reusable Component */}
+        {/* Patrocinador Master Banner */}
         <MasterSponsorBanner 
             onClick={() => onNavigate('patrocinador_master')}
             className="mb-4"
@@ -201,17 +239,15 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         />
 
         {/* 8) Logout Button */}
-        {user && (
-            <div className="mt-8">
-                <button 
-                    onClick={handleLogout}
-                    className="w-full p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border border-red-100 dark:border-red-900/30"
-                >
-                    <LogOut className="w-4 h-4" />
-                    Sair do aplicativo
-                </button>
-            </div>
-        )}
+        <div className="mt-8">
+            <button 
+                onClick={handleLogout}
+                className="w-full p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border border-red-100 dark:border-red-900/30"
+            >
+                <LogOut className="w-4 h-4" />
+                Sair do aplicativo
+            </button>
+        </div>
 
         {/* Version Info */}
         <div className="text-center pt-8 pb-4">
