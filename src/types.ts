@@ -104,3 +104,16 @@ export interface LocalUserWallet {
   balance: number;
   transactions: LocalTransaction[];
 }
+
+export interface CashbackTransaction {
+  id?: string;
+  merchant_id: string;
+  store_id: string;
+  customer_id: string;
+  total_amount: number;
+  cashback_used: number;
+  cashback_to_earn: number; // Calculated based on store %
+  amount_to_pay_now: number;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at?: string;
+}

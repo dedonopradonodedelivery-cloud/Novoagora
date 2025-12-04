@@ -41,10 +41,11 @@ const SEGMENT_COUNT = PRIZES.length;
 const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
 const SPIN_DURATION_MS = 5000;
 
+// Use remote URLs for sounds to work in all environments
 const SOUND_URLS = {
-  spin: "/sounds/spin-wheel.mp3",
-  win: "/sounds/win.mp3",
-  lose: "/sounds/lose.mp3",
+  spin: "https://assets.mixkit.co/sfx/preview/mixkit-game-wheel-spinning-2012.mp3",
+  win: "https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3",
+  lose: "https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3",
 };
 
 type SpinStatus = 'loading' | 'ready' | 'cooldown' | 'no_user' | 'error';
@@ -71,6 +72,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       audio.preload = 'auto';
       audioRefs.current[key] = audio;
     });
+    // Ensure spin sound loops properly
     if (audioRefs.current.spin) {
         audioRefs.current.spin.loop = true;
         audioRefs.current.spin.volume = 0.4;

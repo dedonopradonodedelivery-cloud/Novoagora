@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Star, Loader2, AlertCircle, ChevronRight, BadgeCheck, Heart, Check, Coins } from 'lucide-react';
 import { Store, AdType } from '../types';
+import { useFavorites } from '../hooks/useFavorites';
+import { auth } from '../lib/firebase';
 
 interface LojasEServicosListProps {
   onStoreClick?: (store: Store) => void;
@@ -79,7 +81,9 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  
+  // Hook de Favoritos
+  const { toggleFavorite, isFavorite } = useFavorites(auth.currentUser);
   
   // Referência para o observador de scroll
   const observer = useRef<IntersectionObserver | null>(null);
@@ -146,12 +150,13 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
     if (node) observer.current.observe(node);
   }, [loading, hasMore, loadMore]);
 
-  const toggleFavorite = (e: React.MouseEvent, id: string) => {
+  const handleToggleFavorite = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setFavorites(prev => ({
-        ...prev,
-        [id]: !prev[id]
-    }));
+    if (!auth.currentUser) {
+        alert("Faça login para favoritar lojas!");
+        return;
+    }
+    await toggleFavorite(id);
   };
 
 
@@ -183,7 +188,7 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
         {visibleStores.map((store, index) => {
             const isLastElement = index === visibleStores.length - 1;
             const isSponsored = store.isSponsored || store.adType === AdType.PREMIUM;
-            const isFavorited = !!favorites[store.id];
+            const isFavorited = isFavorite(store.id);
             
             return (
                 <div
@@ -249,7 +254,7 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                     
                     {/* Botão Favoritar - Canto Inferior Direito */}
                     <button 
-                        onClick={(e) => toggleFavorite(e, store.id)}
+                        onClick={(e) => handleToggleFavorite(e, store.id)}
                         className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border transition-all duration-200 z-20 ${
                             isFavorited 
                             ? 'bg-[#E8EFFF] border-blue-100' 

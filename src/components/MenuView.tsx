@@ -11,7 +11,7 @@ import {
   LogOut, 
   Store, 
   Users,
-  Briefcase
+  Clock
 } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { MasterSponsorBanner } from './MasterSponsorBanner';
@@ -57,6 +57,8 @@ const SectionTitle: React.FC<{ title: string }> = ({ title }) => (
 
 export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick, onNavigate }) => {
   const isMerchant = userRole === 'lojista';
+  // Mock para simulação de status pendente se necessário no futuro
+  // const isPending = userRole === 'pending'; 
 
   const handleLogout = async () => {
     try {
@@ -91,13 +93,22 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
             Faça login para acessar seus favoritos, cashback e acompanhar sua experiência no Localizei Freguesia.
           </p>
 
-          <button 
-            onClick={onAuthClick}
-            className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            Entrar ou criar conta
-            <ChevronRight className="w-5 h-5 opacity-80" />
-          </button>
+          <div className="w-full space-y-4">
+            <button 
+                onClick={onAuthClick}
+                className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+                Entrar ou criar conta
+                <ChevronRight className="w-5 h-5 opacity-80" />
+            </button>
+
+            <button 
+                onClick={() => onNavigate('business_registration')}
+                className="w-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+                Sou lojista – cadastrar meu negócio
+            </button>
+          </div>
 
         </div>
       </div>
@@ -108,7 +119,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in duration-300">
       
-      {/* 1) Header - Fixo (Sticky), Z-index alto, padding ajustado */}
+      {/* 1) Header - Fixo (Sticky) */}
       <div className="bg-white dark:bg-gray-900 px-5 pt-10 pb-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white font-display mb-0.5">Menu</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">Configurações e Atalhos</p>
@@ -116,10 +127,10 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
 
       <div className="px-5 pb-5">
         
-        {/* 2) Card de Perfil do Usuário */}
+        {/* 2) Card de Perfil do Usuário (Cabeçalho) */}
         <div 
           onClick={() => onNavigate('edit_profile')}
-          className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform mb-4"
+          className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform mb-6"
         >
           <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-white dark:border-gray-600 shadow-sm">
             {user?.photoURL ? (
@@ -139,8 +150,8 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
           </div>
         </div>
 
-        {/* 3) Merchant Area (Conditional) */}
-        {isMerchant ? (
+        {/* 3) Merchant Area (Only if Merchant) */}
+        {isMerchant && (
             <button 
                 onClick={() => onNavigate('store_area')}
                 className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-4 rounded-2xl shadow-md shadow-indigo-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
@@ -150,29 +161,26 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
                         <Store className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                        <h3 className="font-bold text-white text-sm">Área do Lojista</h3>
-                        <p className="text-xs text-indigo-100">Acesse seu painel</p>
+                        <h3 className="font-bold text-white text-sm">Painel do Lojista</h3>
+                        <p className="text-xs text-indigo-100">Gerenciar minha loja</p>
                     </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
             </button>
-        ) : (
-            <button 
-                onClick={() => onNavigate('business_registration')}
-                className="w-full bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white p-4 rounded-2xl shadow-md shadow-blue-500/20 flex items-center justify-between group active:scale-[0.98] transition-transform mb-6"
-            >
-                <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-xl bg-white/20 text-white">
-                        <Briefcase className="w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-white text-sm">Cadastrar meu negócio</h3>
-                        <p className="text-xs text-blue-100">Sou lojista na Freguesia</p>
-                    </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-blue-200 group-hover:text-white transition-colors" />
-            </button>
         )}
+
+        {/* Simulando estado de aprovação, caso existisse a prop 'pending' ou similar */}
+        {/* 
+        {userRole === 'pending' && (
+            <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-2xl border border-yellow-200 dark:border-yellow-800 flex items-center gap-3 mb-6">
+                <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                <div>
+                    <h3 className="font-bold text-yellow-800 dark:text-yellow-200 text-sm">Aprovação em Análise</h3>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">Seu cadastro de lojista está sendo verificado.</p>
+                </div>
+            </div>
+        )} 
+        */}
 
         {/* 4) Seção Minha Conta */}
         <SectionTitle title="Minha Conta" />
@@ -251,7 +259,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
 
         {/* Version Info */}
         <div className="text-center pt-8 pb-4">
-            <p className="text-[10px] text-gray-400">Localizei Freguesia v1.0.4</p>
+            <p className="text-[10px] text-gray-400">Localizei Freguesia v1.0.5</p>
         </div>
 
       </div>

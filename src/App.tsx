@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
@@ -28,18 +27,6 @@ import { StoreAreaView } from './components/StoreAreaView';
 import { QuoteRequestModal } from './components/QuoteRequestModal';
 import { ServiceSuccessView } from './components/ServiceSuccessView';
 import { EditorialListView, EditorialCollection } from './components/EditorialListView';
-import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './components/SimplePages';
-import { CashbackInfoView } from './components/CashbackInfoView';
-import { EditProfileView } from './components/EditProfileView';
-import { ServiceTermsView } from './components/ServiceTermsView';
-import { PatrocinadorMasterScreen } from './components/PatrocinadorMasterScreen';
-import { BusinessRegistrationFlow } from './components/BusinessRegistrationFlow';
-import { StoreCashbackModule } from './components/StoreCashbackModule';
-import { StoreAdsModule } from './components/StoreAdsModule';
-import { StoreConnectModule } from './components/StoreConnectModule';
-import { StoreProfileEdit } from './components/StoreProfileEdit';
-import { StoreFinanceModule } from './components/StoreFinanceModule';
-import { StoreSupportModule } from './components/StoreSupportModule';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -64,7 +51,6 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true, // Marked as verified
   },
   {
     id: '2',
@@ -76,12 +62,11 @@ const MOCK_STORES: Store[] = [
     reviewsCount: 87,
     distance: 'Freguesia • RJ',
     cashback: 3,
-    adType: AdType.PREMIUM,
+    adType: AdType.SPONSORED,
     subcategory: 'Padaria',
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true, // Marked as verified
   },
   {
     id: '3',
@@ -98,7 +83,6 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Araguaia, 300 - Freguesia',
     phone: '(21) 97777-3333',
     hours: 'Seg a Sáb • 6h às 22h',
-    verified: false,
   },
   {
     id: '4',
@@ -115,7 +99,6 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true, // Marked as verified
   },
 ];
 
@@ -168,12 +151,12 @@ const App: React.FC = () => {
       setUserRole(null);
       return;
     }
-    setUserRole('cliente'); 
+    setUserRole('cliente');
   }, [user]);
 
   // SPLASH
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 5000);
+    const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -228,10 +211,10 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-[#2D6DF6] to-[#1B54D9] flex flex-col items-center justify-center text-white z-50">
-        <div className="relative flex flex-col items-center justify-center">
+      <div className="fixed inset-0 bg-gradient-to-br from-primary-500 to-orange-700 flex flex-col items-center justify-center text-white z-50">
+        <div className="relative flex flex-col items-center justify-center mb-8">
           <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-4 animate-pop-in opacity-0">
-            <MapPin className="w-8 h-8 text-[#2D6DF6] fill-[#2D6DF6]" />
+            <MapPin className="w-8 h-8 text-primary-600 fill-primary-600" />
           </div>
           <div className="text-4xl font-bold font-display animate-slide-up opacity-0 [animation-delay:500ms]">
             Localizei
@@ -240,7 +223,7 @@ const App: React.FC = () => {
             Freguesia
           </div>
         </div>
-        <div className="mt-16 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
+        <div className="absolute bottom-12 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
           <p className="text-[9px] opacity-70 uppercase tracking-wider mb-1">
             Patrocinador Master
           </p>
@@ -280,38 +263,21 @@ const App: React.FC = () => {
     'category_detail',
     'food_category',
     'subcategory_store_list',
-    'verified_stores', // Hide main header for verified stores list
     'store_detail',
     'store_category',
     'cashback',
     'cashback_landing',
-    'cashback_info',
     'profile',
     'store_area',
-    'store_cashback_module',
-    'store_ads_module',
-    'store_connect',
-    'store_profile',
-    'store_finance',
-    'store_support',
     'service_subcategories',
     'service_specialties',
     'service_success',
-    'service_terms', 
     'editorial_list',
     'freguesia_connect_public',
     'freguesia_connect_dashboard',
     'freguesia_connect_restricted',
     'reward_details',
     'prize_history',
-    'support',
-    'invite_friend',
-    'about',
-    'favorites',
-    'become_sponsor',
-    'edit_profile',
-    'patrocinador_master',
-    'business_registration'
   ].includes(activeTab);
 
   return (
@@ -352,7 +318,6 @@ const App: React.FC = () => {
                 onSelectCategory={handleSelectCategory}
                 onNavigate={setActiveTab}
                 onStoreClick={handleSelectStore}
-                onViewAllVerified={() => setActiveTab('verified_stores')}
                 stores={stores}
                 searchTerm={globalSearch}
               />
@@ -367,28 +332,8 @@ const App: React.FC = () => {
               />
             )}
 
-            {activeTab === 'verified_stores' && (
-              <SubcategoryStoreList
-                subcategoryName="Lojas Verificadas"
-                onBack={() => setActiveTab('explore')}
-                onStoreClick={handleSelectStore}
-                stores={stores.filter(s => s.verified)}
-                sponsoredBanners={[]} // No banners for this view
-              />
-            )}
-
             {activeTab === 'services' && (
-              <ServicesView 
-                onSelectMacro={handleSelectServiceMacro} 
-                onOpenTerms={() => setActiveTab('service_terms')}
-                onNavigate={setActiveTab}
-              />
-            )}
-
-            {activeTab === 'service_terms' && (
-              <ServiceTermsView 
-                onBack={() => setActiveTab('services')} 
-              />
+              <ServicesView onSelectMacro={handleSelectServiceMacro} />
             )}
 
             {activeTab === 'service_subcategories' && selectedServiceMacro && (
@@ -481,61 +426,16 @@ const App: React.FC = () => {
               />
             )}
 
-            {activeTab === 'cashback_info' && (
-              <CashbackInfoView
-                user={user}
-                userRole={userRole}
-                onBack={() => setActiveTab('home')}
-                onLogin={() => setIsAuthOpen(true)}
-                onNavigate={setActiveTab}
-              />
-            )}
-
             {activeTab === 'profile' && (
               <MenuView
                 user={user}
-                userRole={userRole}
                 onAuthClick={() => setIsAuthOpen(true)}
                 onNavigate={setActiveTab}
               />
             )}
 
             {activeTab === 'store_area' && (
-              <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
-            )}
-
-            {activeTab === 'business_registration' && (
-              <BusinessRegistrationFlow 
-                onBack={() => setActiveTab('profile')} 
-                onComplete={() => {
-                    setUserRole('lojista'); // Simulate logic
-                    setActiveTab('store_area');
-                }}
-              />
-            )}
-
-            {activeTab === 'store_cashback_module' && (
-                <StoreCashbackModule onBack={() => setActiveTab('store_area')} />
-            )}
-
-            {activeTab === 'store_ads_module' && (
-                <StoreAdsModule onBack={() => setActiveTab('store_area')} />
-            )}
-
-            {activeTab === 'store_connect' && (
-                <StoreConnectModule onBack={() => setActiveTab('store_area')} />
-            )}
-
-            {activeTab === 'store_profile' && (
-                <StoreProfileEdit onBack={() => setActiveTab('store_area')} />
-            )}
-
-            {activeTab === 'store_finance' && (
-                <StoreFinanceModule onBack={() => setActiveTab('store_area')} />
-            )}
-
-            {activeTab === 'store_support' && (
-                <StoreSupportModule onBack={() => setActiveTab('store_area')} />
+              <StoreAreaView onBack={() => setActiveTab('profile')} />
             )}
 
             {activeTab === 'freguesia_connect_public' && (
@@ -568,19 +468,6 @@ const App: React.FC = () => {
                 onGoToSpinWheel={() => setActiveTab('home')}
               />
             )}
-
-            {/* Simple Pages Routing */}
-            {activeTab === 'support' && <SupportView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'invite_friend' && <InviteFriendView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'about' && <AboutView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'favorites' && <FavoritesView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'become_sponsor' && <SponsorInfoView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'edit_profile' && user && <EditProfileView user={user} onBack={() => setActiveTab('profile')} />}
-            
-            {activeTab === 'patrocinador_master' && (
-                <PatrocinadorMasterScreen onBack={() => setActiveTab('profile')} />
-            )}
-
           </main>
 
           <AuthModal

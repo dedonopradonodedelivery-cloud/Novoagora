@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ChevronLeft, 
   BadgeCheck, 
@@ -17,8 +17,10 @@ import {
   CreditCard,
   LayoutDashboard,
   Calendar,
-  Filter
+  Filter,
+  Bell
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface StoreAreaViewProps {
   onBack: () => void;
@@ -64,24 +66,34 @@ const MenuLink: React.FC<{
   icon: React.ElementType; 
   label: string; 
   onClick?: () => void;
-}> = ({ icon: Icon, label, onClick }) => (
+  badge?: number;
+}> = ({ icon: Icon, label, onClick, badge }) => (
   <button 
     onClick={onClick}
     className="w-full bg-white dark:bg-gray-800 p-4 border-b last:border-b-0 border-gray-100 dark:border-gray-700 flex items-center justify-between group active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors"
   >
     <div className="flex items-center gap-3">
-      <div className="text-gray-400 group-hover:text-[#2D6DF6] transition-colors">
+      <div className="text-gray-400 group-hover:text-[#2D6DF6] transition-colors relative">
         <Icon className="w-5 h-5" />
+        {badge ? (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+        ) : null}
       </div>
       <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{label}</span>
     </div>
-    <ChevronRight className="w-4 h-4 text-gray-300" />
+    <div className="flex items-center gap-2">
+        {badge ? (
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{badge}</span>
+        ) : null}
+        <ChevronRight className="w-4 h-4 text-gray-300" />
+    </div>
   </button>
 );
 
 export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate }) => {
   const [isCashbackEnabled, setIsCashbackEnabled] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>('30d');
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   // Logic to recalculate KPIs based on selected filter
   const currentKpis = useMemo(() => {
@@ -103,6 +115,33 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
         adBalance: STORE_DATA.baseKpis.adBalance // Balance doesn't typically scale with time range view
     };
   }, [dateRange]);
+
+  // Realtime Pending Requests Listener
+  useEffect(() => {
+    if (!supabase) return;
+    
+    const merchantId = 'merchant_123_uuid'; // Mock ID needs to match whatever we use in app state
+
+    // Initial count
+    const fetchCount = async () => {
+        const { count } = await supabase
+            .from('cashback_transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('merchant_id', merchantId)
+            .eq('status', 'pending');
+        setPendingRequestsCount(count || 0);
+    };
+    fetchCount();
+
+    // Subscribe
+    const sub = supabase.channel('pending_count')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'cashback_transactions', filter: `merchant_id=eq.${merchantId}` }, () => {
+            fetchCount();
+        })
+        .subscribe();
+
+    return () => { supabase.removeChannel(sub); };
+  }, []);
 
   const formatCurrency = (val: number) => 
     val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -154,6 +193,25 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
 
       <div className="p-5 space-y-8">
         
+        {/* --- ALERT BLOCK FOR PENDING REQUESTS --- */}
+        {pendingRequestsCount > 0 && (
+            <button 
+                onClick={() => onNavigate && onNavigate('merchant_requests')}
+                className="w-full bg-red-500 text-white p-4 rounded-2xl shadow-lg shadow-red-500/30 flex items-center justify-between animate-pulse"
+            >
+                <div className="flex items-center gap-3">
+                    <Bell className="w-6 h-6 fill-white" />
+                    <div className="text-left">
+                        <p className="font-bold text-sm">Solicitações Pendentes</p>
+                        <p className="text-xs text-red-100">Clientes aguardando aprovação</p>
+                    </div>
+                </div>
+                <div className="w-8 h-8 bg-white text-red-600 rounded-full flex items-center justify-center font-bold text-sm">
+                    {pendingRequestsCount}
+                </div>
+            </button>
+        )}
+
         {/* --- VISÃO GERAL & FILTROS --- */}
         <div>
             <div className="flex items-center justify-between mb-4 px-1">
@@ -217,6 +275,41 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
                     label="Saldo Anúncios" 
                     value={formatCurrency(currentKpis.adBalance)} 
                     color="bg-gray-500"
+                />
+            </div>
+        </div>
+
+        {/* --- NAVIGATION LIST --- */}
+        <div>
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3 ml-2">
+                Ações
+            </h3>
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
+                <MenuLink 
+                    icon={Bell} 
+                    label="Solicitações de Cashback" 
+                    onClick={() => onNavigate && onNavigate('merchant_requests')}
+                    badge={pendingRequestsCount}
+                />
+                <MenuLink 
+                    icon={LayoutDashboard} 
+                    label="Home do Painel" 
+                    onClick={() => onNavigate && onNavigate('store_area')}
+                />
+                <MenuLink 
+                    icon={Settings} 
+                    label="Minha Loja (Perfil Público)" 
+                    onClick={() => onNavigate && onNavigate('store_profile')}
+                />
+                <MenuLink 
+                    icon={CreditCard} 
+                    label="Minha conta / Financeiro" 
+                    onClick={() => onNavigate && onNavigate('store_finance')}
+                />
+                <MenuLink 
+                    icon={HelpCircle} 
+                    label="Suporte ao Lojista" 
+                    onClick={() => onNavigate && onNavigate('store_support')}
                 />
             </div>
         </div>
@@ -289,63 +382,6 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
             >
                 Gerenciar campanhas
             </button>
-        </div>
-
-        {/* --- BLOCK: FREGUESIA CONNECT --- */}
-        <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-5 shadow-lg text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-            
-            <div className="flex justify-between items-start mb-2 relative z-10">
-                <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    <h3 className="font-bold">Freguesia Connect</h3>
-                </div>
-                {STORE_DATA.connectStatus === 'active' ? (
-                    <span className="text-[10px] font-bold bg-green-500 text-white px-2 py-0.5 rounded-full">Membro</span>
-                ) : (
-                    <span className="text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full">Não Membro</span>
-                )}
-            </div>
-
-            <p className="text-sm text-indigo-100 mb-4 leading-relaxed relative z-10">
-                Participe da maior rede de networking empresarial do bairro. Eventos, parcerias e descontos B2B.
-            </p>
-
-            <button 
-                onClick={() => onNavigate && onNavigate('store_connect')}
-                className="w-full bg-white text-indigo-600 py-3 rounded-xl text-sm font-bold shadow-sm active:scale-[0.98] transition-all relative z-10"
-            >
-                {STORE_DATA.connectStatus === 'active' ? 'Acessar Comunidade' : 'Quero participar'}
-            </button>
-        </div>
-
-        {/* --- NAVIGATION LIST --- */}
-        <div>
-            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3 ml-2">
-                Navegação Rápida
-            </h3>
-            <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
-                <MenuLink 
-                    icon={LayoutDashboard} 
-                    label="Home do Painel" 
-                    onClick={() => onNavigate && onNavigate('store_area')}
-                />
-                <MenuLink 
-                    icon={Settings} 
-                    label="Minha Loja (Perfil Público)" 
-                    onClick={() => onNavigate && onNavigate('store_profile')}
-                />
-                <MenuLink 
-                    icon={CreditCard} 
-                    label="Minha conta / Financeiro" 
-                    onClick={() => onNavigate && onNavigate('store_finance')}
-                />
-                <MenuLink 
-                    icon={HelpCircle} 
-                    label="Suporte ao Lojista" 
-                    onClick={() => onNavigate && onNavigate('store_support')}
-                />
-            </div>
         </div>
 
       </div>
