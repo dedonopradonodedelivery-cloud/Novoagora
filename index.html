@@ -7,110 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Poppins', 'sans-serif'],
-              display: ['Outfit', 'sans-serif'],
-            },
-            colors: {
-              primary: {
-                DEFAULT: '#2D6DF6', // Primary Blue
-                50: '#F0F5FF',
-                100: '#E0EBFF',
-                500: '#2D6DF6',
-                600: '#1B54D9', // CTA Blue
-                700: '#1540AD',
-              }
-            },
-            animation: {
-              'pop-in': 'popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-              'slide-up': 'slideUp 0.8s ease-out forwards',
-              'fade-in': 'fadeIn 1.2s ease-out forwards',
-              'tracking-expand': 'trackingExpand 1.5s ease-out forwards',
-              'jelly': 'jelly 0.6s ease-in-out',
-              'spin-in': 'spinIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
-              'float': 'float 3s ease-in-out infinite',
-              'float-delayed': 'float 3s ease-in-out 1.5s infinite',
-              'sponsor-float': 'sponsorFloat 2.5s ease-in-out infinite',
-              'coin-rotate': 'coinRotate 6s ease-in-out infinite',
-            },
-            keyframes: {
-              popIn: {
-                '0%': { opacity: '0', transform: 'scale(0.5)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
-              },
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              trackingExpand: {
-                '0%': { letterSpacing: '0em', opacity: '0' },
-                '100%': { letterSpacing: '0.2em', opacity: '0.9' },
-              },
-              jelly: {
-                '0%, 100%': { transform: 'scale(1, 1)' },
-                '25%': { transform: 'scale(1.15, 0.85)' },
-                '50%': { transform: 'scale(0.9, 1.1)' },
-                '75%': { transform: 'scale(1.05, 0.95)' },
-              },
-              spinIn: {
-                '0%': { opacity: '0', transform: 'rotate(0deg) scale(0)' },
-                '100%': { opacity: '1', transform: 'rotate(360deg) scale(1)' },
-              },
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-6px)' },
-              },
-              sponsorFloat: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-4px)' },
-              },
-              coinRotate: {
-                '0%, 100%': { transform: 'rotateY(0deg)' },
-                '50%': { transform: 'rotateY(15deg)' },
-              }
-            }
-          }
-        }
-      }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      .no-scrollbar::-webkit-scrollbar {
-          display: none;
-      }
-      /* Hide scrollbar for IE, Edge and Firefox */
-      .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
-      }
+      body { font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.84.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/src/index.css">
-</head>
+  </head>
   <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
     <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
