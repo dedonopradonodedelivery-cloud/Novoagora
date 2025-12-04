@@ -19,6 +19,7 @@ interface HeaderProps {
   onSearchChange?: (term: string) => void;
   onNavigate?: (view: string) => void;
   activeTab?: string;
+  userRole?: 'cliente' | 'lojista' | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -29,7 +30,8 @@ export const Header: React.FC<HeaderProps> = ({
   searchTerm = '', 
   onSearchChange,
   onNavigate,
-  activeTab
+  activeTab,
+  userRole
 }) => {
   const [locationText, setLocationText] = useState<string>('Localização não ativa');
 
@@ -48,6 +50,20 @@ export const Header: React.FC<HeaderProps> = ({
       setLocationText('Freguesia, RJ');
     }
   }, []);
+
+  const showQrButton = !!user && !!userRole && !!onNavigate;
+
+  const handleQrClick = () => {
+    if (!onNavigate || !userRole) return;
+
+    if (userRole === 'lojista') {
+      // Lojista: mostra o QR individual da loja
+      onNavigate('merchant_qr');
+    } else if (userRole === 'cliente') {
+      // Cliente: abre o scanner para ler o QR do lojista
+      onNavigate('qrcode_scan');
+    }
+  };
 
   // Placeholder fixo atualizado
   const placeholderText = "Busque por lojas, serviços ou produtos";
@@ -86,13 +102,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2">
             
             {/* Botão QR Code */}
-            <button 
-              onClick={() => onNavigate && onNavigate('qrcode_scan')}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm"
-              aria-label="Ler QR Code"
-            >
-              <QrCode className="w-5 h-5" />
-            </button>
+            {showQrButton && (
+              <button 
+                onClick={handleQrClick}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm"
+                aria-label={userRole === 'lojista' ? 'Mostrar QR Code da loja' : 'Ler QR Code do lojista'}
+              >
+                <QrCode className="w-5 h-5" />
+              </button>
+            )}
 
             {/* Botão Tema */}
             <button 

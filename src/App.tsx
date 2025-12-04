@@ -383,6 +383,7 @@ const App: React.FC = () => {
               onSearchChange={setGlobalSearch}
               onNavigate={setActiveTab}
               activeTab={activeTab}
+              userRole={userRole}
             />
           )}
 
