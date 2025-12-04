@@ -139,7 +139,7 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-display leading-tight">
                         {STORE_DATA.name}
                     </h1>
-                    {STORE_DATA.isVerified && <BadgeCheck className="w-5 h-5 text-blue-500 fill-blue-50 dark:fill-blue-900" />}
+                    {STORE_DATA.isVerified && <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF]" />}
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                     <span className="flex h-2 w-2 relative">

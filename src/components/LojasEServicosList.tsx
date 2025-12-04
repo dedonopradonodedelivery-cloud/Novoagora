@@ -222,9 +222,7 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                                
                                {/* Selo Verificado (Azul Royal) */}
                                {store.verified && (
-                                 <div className="w-3.5 h-3.5 bg-[#1E5BFF] rounded-full flex items-center justify-center shrink-0" title="Loja Verificada">
-                                    <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />
-                                 </div>
+                                 <BadgeCheck className="w-4 h-4 text-white fill-[#1E5BFF] shrink-0" title="Loja Verificada" />
                                )}
 
                                {/* Selo Cashback Ativo (Preto + Moeda) */}

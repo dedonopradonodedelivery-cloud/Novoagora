@@ -84,10 +84,11 @@ const SpinWheelModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   userId: string | null;
+  userRole: 'cliente' | 'lojista' | null;
   onWin: (reward: any) => void;
   onRequireLogin: () => void;
   onViewHistory: () => void;
-}> = ({ isOpen, onClose, userId, onWin, onRequireLogin, onViewHistory }) => {
+}> = ({ isOpen, onClose, userId, userRole, onWin, onRequireLogin, onViewHistory }) => {
   if (!isOpen) return null;
 
   return (
@@ -112,6 +113,7 @@ const SpinWheelModal: React.FC<{
         <div className="animate-in slide-in-from-bottom duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
             <SpinWheelView 
               userId={userId}
+              userRole={userRole}
               onWin={onWin}
               onRequireLogin={onRequireLogin}
               onViewHistory={onViewHistory}
@@ -500,8 +502,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                         <div key={store.id} onClick={() => onStoreClick && onStoreClick(store)} className="min-w-[140px] w-[140px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
                             <div className="h-24 w-full relative bg-gray-200 dark:bg-gray-700">
                                 <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 p-1 rounded-full shadow-sm">
-                                    <BadgeCheck className="w-3.5 h-3.5 text-[#1E5BFF] fill-white dark:fill-gray-800" />
+                                <div className="absolute top-2 right-2 z-10">
+                                    <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF]" />
                                 </div>
                             </div>
                             <div className="p-2.5 flex flex-col flex-1 justify-between">
@@ -683,6 +685,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
         isOpen={isSpinWheelOpen}
         onClose={() => setIsSpinWheelOpen(false)}
         userId={user?.uid || null}
+        userRole={userRole || null}
         onWin={handleSpinWin}
         onRequireLogin={onRequireLogin}
         onViewHistory={() => onNavigate('prize_history')}

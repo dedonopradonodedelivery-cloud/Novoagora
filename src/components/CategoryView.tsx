@@ -342,7 +342,7 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                                               {store.name}
                                            </h4>
                                            {store.verified && (
-                                             <BadgeCheck className="w-3.5 h-3.5 text-blue-500 fill-white flex-shrink-0" />
+                                             <BadgeCheck className="w-4 h-4 text-white fill-[#1E5BFF] flex-shrink-0" />
                                            )}
                                          </div>
                                          

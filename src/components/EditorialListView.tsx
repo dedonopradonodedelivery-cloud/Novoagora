@@ -151,7 +151,7 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
                      )}
                      {store.verified && (
                        <div className="flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 font-medium">
-                          <BadgeCheck className="w-3 h-3" />
+                          <BadgeCheck className="w-4 h-4 text-white fill-[#1E5BFF]" />
                           Verificado
                        </div>
                      )}

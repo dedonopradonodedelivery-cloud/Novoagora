@@ -1,12 +1,13 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Ticket, Meh, Volume2, VolumeX } from 'lucide-react';
+import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Volume2, VolumeX, Lock, ArrowRight, PartyPopper, CheckCircle } from 'lucide-react';
 import { useCountdown } from '../hooks/useCountdown';
 
 // --- Tipos e Constantes ---
 interface SpinWheelViewProps {
   userId: string | null;
+  userRole: 'cliente' | 'lojista' | null;
   onWin: (reward: any) => void;
   onRequireLogin: () => void;
   onViewHistory: () => void;
@@ -14,7 +15,9 @@ interface SpinWheelViewProps {
 
 interface Prize {
   prize_key: string;
-  prize_label: string;
+  line1: string;
+  line2: string;
+  prize_label: string; // Full label for DB/history
   prize_type: 'cashback' | 'cupom' | 'nao_foi_dessa_vez' | 'gire_de_novo';
   prize_value?: number;
   status: 'creditado' | 'pendente' | 'nao_aplicavel';
@@ -24,14 +27,14 @@ interface Prize {
 }
 
 const PRIZES: Prize[] = [
-  { prize_key: 'reais_5', prize_label: 'R$5 de Volta', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FFFFFF', textColor: '#E65100', description: 'Creditado na sua carteira Cashback Local.' },
-  { prize_key: 'cashback_5', prize_label: '5% Cashback', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
-  { prize_key: 'lose', prize_label: 'Não foi dessa vez', prize_type: 'nao_foi_dessa_vez', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#E65100', description: 'Mais sorte amanhã!' },
-  { prize_key: 'cashback_10', prize_label: '10% Cashback', prize_type: 'cashback', prize_value: 10, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
-  { prize_key: 'spin_again', prize_label: 'Gire de Novo', prize_type: 'gire_de_novo', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#E65100', description: 'Boa sorte na próxima tentativa!' },
-  { prize_key: 'reais_10', prize_label: 'Cupom R$10', prize_type: 'cupom', prize_value: 10, status: 'pendente', color: '#FF6501', textColor: '#FFFFFF', description: 'Use em qualquer loja parceira.' },
-  { prize_key: 'gift_local', prize_label: 'Brinde Local', prize_type: 'cupom', status: 'pendente', color: '#FFFFFF', textColor: '#E65100', description: 'Apresente o código para retirar.' },
-  { prize_key: 'cashback_15', prize_label: '15% Cashback', prize_type: 'cashback', prize_value: 15, status: 'creditado', color: '#FF6501', textColor: '#FFFFFF', description: 'Válido na próxima compra em parceiros.' },
+  { prize_key: 'reais_5', line1: 'R$ 5', line2: 'de Volta', prize_label: 'R$ 5,00 de Volta', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#FFFFFF', textColor: '#1E5BFF', description: 'O valor foi creditado na sua carteira digital.' },
+  { prize_key: 'cashback_5', line1: '5%', line2: 'Cashback', prize_label: '5% Cashback', prize_type: 'cashback', prize_value: 5, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: '5% de cashback garantido na próxima compra.' },
+  { prize_key: 'lose', line1: 'Não foi', line2: 'dessa vez', prize_label: 'Não foi dessa vez', prize_type: 'nao_foi_dessa_vez', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#6B7280', description: 'Tente novamente amanhã para ganhar prêmios.' },
+  { prize_key: 'cashback_10', line1: '10%', line2: 'Cashback', prize_label: '10% Cashback', prize_type: 'cashback', prize_value: 10, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: '10% de cashback acumulado na sua carteira.' },
+  { prize_key: 'spin_again', line1: 'Gire', line2: 'de Novo', prize_label: 'Gire de Novo', prize_type: 'gire_de_novo', status: 'nao_aplicavel', color: '#FFFFFF', textColor: '#1E5BFF', description: 'Você ganhou uma nova chance! Gire agora.' },
+  { prize_key: 'reais_10', line1: 'Cupom', line2: 'R$ 10', prize_label: 'Cupom R$ 10,00', prize_type: 'cupom', prize_value: 10, status: 'pendente', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Cupom de R$ 10 para usar em parceiros locais.' },
+  { prize_key: 'gift_local', line1: 'Brinde', line2: 'Local', prize_label: 'Brinde Surpresa', prize_type: 'cupom', status: 'pendente', color: '#FFFFFF', textColor: '#1E5BFF', description: 'Você ganhou um brinde exclusivo em lojas participantes.' },
+  { prize_key: 'cashback_15', line1: '15%', line2: 'Cashback', prize_label: '15% Cashback', prize_type: 'cashback', prize_value: 15, status: 'creditado', color: '#1E5BFF', textColor: '#FFFFFF', description: 'Incríveis 15% de volta na sua próxima compra!' },
 ];
 
 const SEGMENT_COUNT = PRIZES.length;
@@ -39,7 +42,7 @@ const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
 const SPIN_DURATION_MS = 5000;
 
 const SOUND_URLS = {
-  spin: "/sounds/spin.mp3",
+  spin: "/sounds/spin-wheel.mp3",
   win: "/sounds/win.mp3",
   lose: "/sounds/lose.mp3",
 };
@@ -47,7 +50,7 @@ const SOUND_URLS = {
 type SpinStatus = 'loading' | 'ready' | 'cooldown' | 'no_user' | 'error';
 
 // --- Componente ---
-export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onRequireLogin, onViewHistory }) => {
+export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, onWin, onRequireLogin, onViewHistory }) => {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinStatus, setSpinStatus] = useState<SpinStatus>('loading');
@@ -68,13 +71,17 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
       audio.preload = 'auto';
       audioRefs.current[key] = audio;
     });
-    audioRefs.current.spin!.loop = true;
+    if (audioRefs.current.spin) {
+        audioRefs.current.spin.loop = true;
+        audioRefs.current.spin.volume = 0.4;
+    }
   }, []);
   
   const playSound = (key: 'spin' | 'win' | 'lose') => {
     if (isMuted) return;
     const audio = audioRefs.current[key];
     if (audio) {
+      if (key === 'spin') audio.volume = 0.4;
       audio.currentTime = 0;
       audio.play().catch(e => console.log("Audio play failed:", e));
     }
@@ -102,7 +109,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
           .limit(1)
           .single();
 
-        if (error && error.code !== 'PGRST116') throw error; // Ignore "not found" error
+        if (error && error.code !== 'PGRST116') throw error;
 
         if (data) {
           const lastDate = new Date(data.spin_date);
@@ -150,6 +157,8 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
   };
 
   const handleSpin = () => {
+    if (userRole === 'lojista') return;
+
     if (isSpinning || spinStatus !== 'ready') {
       if (spinStatus === 'no_user') onRequireLogin();
       return;
@@ -160,46 +169,69 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
     playSound('spin');
 
     const winningSegmentIndex = Math.floor(Math.random() * SEGMENT_COUNT);
-    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.8);
-    const baseRotation = 360 * 8;
-    const finalAngle = 360 - (winningSegmentIndex * SEGMENT_ANGLE + randomOffset);
+    // Add extra rotations to ensure good spin effect
+    const baseRotation = 360 * 5; 
+    // Calculate angle to land on the chosen segment at the top (270deg in SVG or -90)
+    // Current SVG starts at 0 (3 o'clock). 
+    // To land segment i at top, we need to rotate so that the segment aligns with -90deg.
+    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5); // Add some randomness within segment
+    const segmentCenter = winningSegmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const finalAngle = 270 - segmentCenter + randomOffset; 
+    
+    // Ensure positive rotation
+    const targetRotation = rotation + baseRotation + (360 - (rotation % 360)) + finalAngle;
 
-    setRotation(rotation + baseRotation + finalAngle);
+    setRotation(targetRotation);
 
     setTimeout(async () => {
       stopSound('spin');
+      
       const result = PRIZES[winningSegmentIndex];
       playSound(result.prize_type === 'nao_foi_dessa_vez' ? 'lose' : 'win');
       setSpinResult(result);
 
-      const saved = await saveSpinResult(result);
-      if (saved) {
-        setLastSpinDate(new Date());
-        setSpinStatus('cooldown');
-      }
-
       if (result.prize_type === 'gire_de_novo') {
+        // Don't save "Spin Again" to DB as a used turn, just reset state
         setTimeout(() => {
           setIsSpinning(false);
           setSpinResult(null);
-          setSpinStatus('ready'); // Permite girar de novo
+          // Keep status 'ready'
         }, 2000);
-        return;
-      }
-      
-      setTimeout(() => {
-        if (result.prize_type !== 'nao_foi_dessa_vez') {
-          onWin({ ...result, code: `LF-${Date.now().toString().slice(-6)}` });
-        } else {
-          setIsSpinning(false);
-          setSpinResult(null);
+      } else {
+        // Save result and set cooldown
+        const saved = await saveSpinResult(result);
+        if (saved) {
+          setLastSpinDate(new Date());
+          setSpinStatus('cooldown');
         }
-      }, 1500);
+        setIsSpinning(false);
+      }
 
     }, SPIN_DURATION_MS);
   };
 
+  const handleCloseResult = () => {
+    // Navigate to extract/wallet
+    onViewHistory();
+    // Reset internal state
+    setSpinResult(null);
+  };
+
   const renderSpinButton = () => {
+    if (userRole === 'lojista') {
+      return (
+        <div className="w-full flex flex-col gap-3">
+          <button disabled className="w-full h-14 bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-bold text-base rounded-2xl cursor-not-allowed flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 opacity-70">
+            <Lock className="w-4 h-4" />
+            Acesso Restrito
+          </button>
+          <p className="text-xs text-center text-red-500 dark:text-red-400 font-medium bg-red-50 dark:bg-red-900/10 p-2 rounded-lg border border-red-100 dark:border-red-900/30">
+            A Roleta da Freguesia é exclusiva para usuários. Acesse com sua conta de cliente para participar.
+          </p>
+        </div>
+      );
+    }
+
     if (spinStatus === 'cooldown') {
       return (
         <div className="w-full text-center bg-gray-100 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -214,13 +246,27 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
     let text: React.ReactNode = 'Girar Agora!';
     let disabled = isSpinning || spinStatus === 'loading' || spinStatus === 'error';
 
-    if (isSpinning) text = 'Girando...';
-    else if (spinStatus === 'loading') text = <Loader2 className="w-5 h-5 animate-spin" />;
-    else if (spinStatus === 'no_user') text = 'Faça Login para Girar';
-    else if (spinStatus === 'error') text = 'Erro de Conexão';
+    if (isSpinning) {
+      text = (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+          Girando...
+        </>
+      );
+    } else if (spinStatus === 'loading') {
+      text = <Loader2 className="w-5 h-5 animate-spin" />;
+    } else if (spinStatus === 'no_user') {
+      text = 'Faça Login para Girar';
+    } else if (spinStatus === 'error') {
+      text = 'Erro de Conexão';
+    }
 
     return (
-      <button onClick={handleSpin} disabled={disabled} className="w-full h-14 bg-gradient-to-r from-[#FF6501] to-[#FF7A00] text-white font-bold text-base rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+      <button 
+        onClick={handleSpin} 
+        disabled={disabled} 
+        className="w-full h-14 bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] text-white font-bold text-base rounded-2xl shadow-lg shadow-blue-500/30 active:scale-95 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
+      >
         {text}
       </button>
     );
@@ -230,15 +276,33 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
     const angle = SEGMENT_ANGLE;
     const startAngle = index * angle;
     const endAngle = startAngle + angle;
+    
+    // Convert degrees to radians
+    const startRad = (Math.PI / 180) * startAngle;
+    const endRad = (Math.PI / 180) * endAngle;
+
     const start = {
-        x: 100 + 100 * Math.cos(startAngle * Math.PI / 180),
-        y: 100 + 100 * Math.sin(startAngle * Math.PI / 180)
+        x: 100 + 100 * Math.cos(startRad),
+        y: 100 + 100 * Math.sin(startRad)
     };
     const end = {
-        x: 100 + 100 * Math.cos(endAngle * Math.PI / 180),
-        y: 100 + 100 * Math.sin(endAngle * Math.PI / 180)
+        x: 100 + 100 * Math.cos(endRad),
+        y: 100 + 100 * Math.sin(endRad)
     };
+    
     return `M100,100 L${start.x},${start.y} A100,100 0 0,1 ${end.x},${end.y} Z`;
+  };
+
+  const getTextPosition = (index: number) => {
+    const midAngle = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const rad = midAngle * (Math.PI / 180);
+    const radius = 70; // Text distance from center
+    const x = 100 + radius * Math.cos(rad);
+    const y = 100 + radius * Math.sin(rad);
+    
+    // Rotate text to point outwards from center
+    // SVG rotation is clockwise. 
+    return { x, y, rotation: midAngle }; 
   };
 
   return (
@@ -246,59 +310,121 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
       <div className="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-3"></div>
       
       <div className="flex items-center justify-between mb-5">
-        <button onClick={() => setIsMuted(!isMuted)} className="p-2 text-gray-400 hover:text-gray-600">
+        <button onClick={() => setIsMuted(!isMuted)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
         <div className="text-center">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white font-display">Roleta da Freguesia</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Gire uma vez por dia e ganhe prêmios!</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Gire uma vez por dia e ganhe!</p>
         </div>
-        <button onClick={onViewHistory} className="p-2 text-gray-400 hover:text-gray-600">
+        <button onClick={onViewHistory} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
             <History size={18} />
         </button>
       </div>
       
       <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center mb-5">
+        {/* Pointer (North) */}
         <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20" style={{ filter: 'drop-shadow(0 4px 5px rgba(0,0,0,0.25))' }}>
-          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#D32F2F]"></div>
+          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#1E5BFF]"></div>
         </div>
-        <div className="absolute w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-[#D32F2F] shadow-inner z-10"></div>
+        <div className="absolute w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-[#1E5BFF] shadow-inner z-10 flex items-center justify-center">
+            <div className="w-2 h-2 bg-[#1E5BFF] rounded-full"></div>
+        </div>
         
         <div 
           className="relative w-full h-full rounded-full transition-transform ease-[cubic-bezier(0.25,1,0.5,1)] border-8 border-white dark:border-gray-800 shadow-xl"
-          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: `${SPIN_DURATION_MS}ms` }}
+          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: `${isSpinning ? SPIN_DURATION_MS : 0}ms` }}
         >
           <svg viewBox="0 0 200 200" className="w-full h-full rounded-full overflow-hidden">
-            {PRIZES.map((prize, i) => (
-              <g key={i}>
-                <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
-                <path id={`textPath-${i}`} d={`M100,100 L${100 + 95 * Math.cos((i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2) * Math.PI / 180)},${100 + 95 * Math.sin((i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2) * Math.PI / 180)}`} fill="none" />
-                <text dy="-4" className="font-display" style={{ fontSize: '10px', fill: prize.textColor, fontWeight: 600, textAnchor: 'end' }}>
-                  <textPath href={`#textPath-${i}`} startOffset="95%">{prize.prize_label}</textPath>
-                </text>
-              </g>
-            ))}
+            {PRIZES.map((prize, i) => {
+              const { x, y, rotation } = getTextPosition(i);
+              return (
+                <g key={i}>
+                  <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
+                  
+                  {/* Text Label */}
+                  <text 
+                    x={x} 
+                    y={y} 
+                    fill={prize.textColor} 
+                    fontSize="7.5" 
+                    fontWeight="800" 
+                    fontFamily="sans-serif"
+                    textAnchor="middle" 
+                    dominantBaseline="middle"
+                    transform={`rotate(${rotation + 90}, ${x}, ${y})`} // +90 to make text perpendicular to radius (tangential) or simple rotation
+                  >
+                    <tspan x={x} dy="-3">{prize.line1}</tspan>
+                    <tspan x={x} dy="8">{prize.line2}</tspan>
+                  </text>
+                </g>
+              );
+            })}
           </svg>
         </div>
       </div>
 
       {renderSpinButton()}
 
-      {spinResult && (
-        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-30 flex items-center justify-center rounded-3xl animate-in fade-in duration-300">
-           <div className="text-center p-4 flex flex-col items-center">
-               <div className="inline-block p-3 bg-white dark:bg-gray-700 rounded-full shadow-lg mb-3 animate-jelly">
-                    {spinResult.prize_type === 'nao_foi_dessa_vez' && <ThumbsDown size={32} className="text-gray-500" />}
-                    {spinResult.prize_type === 'gire_de_novo' && <RefreshCw size={32} className="text-blue-500"/>}
-                    {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={32} className="text-[#1E5BFF]" />}
+      {/* RESULT MODAL */}
+      {spinResult && spinResult.prize_type !== 'gire_de_novo' && (
+        <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-30 flex items-center justify-center rounded-t-3xl animate-in fade-in duration-300">
+           <div className="text-center p-6 flex flex-col items-center max-w-xs w-full">
+               
+               {/* Icon */}
+               <div className={`mb-6 p-6 rounded-full shadow-lg animate-bounce-short ${
+                   spinResult.prize_type === 'nao_foi_dessa_vez' 
+                   ? 'bg-gray-100 dark:bg-gray-800 text-gray-400' 
+                   : 'bg-gradient-to-br from-[#1E5BFF] to-[#4D7CFF] text-white'
+               }`}>
+                    {spinResult.prize_type === 'nao_foi_dessa_vez' ? (
+                        <ThumbsDown size={48} strokeWidth={1.5} />
+                    ) : spinResult.prize_type === 'cashback' ? (
+                        <Wallet size={48} strokeWidth={1.5} />
+                    ) : (
+                        <Gift size={48} strokeWidth={1.5} />
+                    )}
                </div>
-               <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                   {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Que pena!' : (spinResult.prize_type === 'gire_de_novo' ? 'Mais uma chance!' : 'Você ganhou!')}
+
+               {/* Title */}
+               <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 leading-tight">
+                   {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Poxa, não foi dessa vez!' : 'Você ganhou!'}
                </h3>
-               <p className="text-base font-semibold text-[#1E5BFF] dark:text-[#A9C7FF] mt-1">{spinResult.prize_label}</p>
+
+               {/* Prize Name */}
+               {spinResult.prize_type !== 'nao_foi_dessa_vez' && (
+                   <p className="text-xl font-bold text-[#1E5BFF] mb-2">{spinResult.prize_label}</p>
+               )}
+
+               {/* Description */}
+               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+                   {spinResult.description}
+               </p>
+               
+               {/* Action Button */}
+               <button 
+                 onClick={handleCloseResult}
+                 className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+               >
+                 {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Tentar amanhã' : 'Ver na Carteira'}
+                 <ArrowRight className="w-5 h-5" />
+               </button>
+
            </div>
         </div>
       )}
+      
+      {/* Spin Again Overlay */}
+      {spinResult && spinResult.prize_type === 'gire_de_novo' && (
+        <div className="absolute inset-0 bg-black/60 z-30 flex items-center justify-center rounded-t-3xl">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl flex flex-col items-center animate-in zoom-in duration-300">
+                <RefreshCw className="w-12 h-12 text-[#1E5BFF] mb-3 animate-spin" />
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Gire de Novo!</h3>
+                <p className="text-xs text-gray-500">Preparando nova rodada...</p>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 };

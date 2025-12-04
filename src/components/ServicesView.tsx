@@ -90,19 +90,13 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
           <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute bottom-[-20px] left-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
 
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-inner shrink-0">
-              <Wrench className="w-7 h-7 text-white drop-shadow-sm" />
-            </div>
-            
-            <div className="flex-1 flex flex-col justify-center pt-1">
-              <h2 className="text-xl font-semibold text-white leading-tight mb-1">
-                Precisando de um serviço?
-              </h2>
-              <p className="text-[13px] text-white/90 font-medium leading-relaxed max-w-[260px]">
-                Receba até 5 orçamentos grátis pelo seu WhatsApp agora mesmo de profissionais da Freguesia.
-              </p>
-            </div>
+          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+            <h2 className="text-2xl font-bold text-white leading-tight mb-2 tracking-tight">
+              Precisando de um serviço?
+            </h2>
+            <p className="text-sm text-white/90 font-medium leading-relaxed max-w-xs mx-auto">
+              Receba até 5 orçamentos grátis pelo seu WhatsApp agora mesmo de profissionais da Freguesia.
+            </p>
           </div>
         </div>
 
