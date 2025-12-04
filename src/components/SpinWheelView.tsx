@@ -293,4 +293,8 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, onWin, onR
                     {spinResult.prize_type !== 'nao_foi_dessa_vez' && spinResult.prize_type !== 'gire_de_novo' && <Gift size={32} className="text-[#1E5BFF]" />}
                </div>
                <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                   {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Que pena!' : (spinResult.prize_type === 'gire_de_novo'
+                  {spinResult.prize_type === 'nao_foi_dessa_vez'
+    ? 'Que pena!'
+    : spinResult.prize_type === 'gire_de_novo'
+    ? 'Gire de novo!'
+    : 'Parabéns!'}
