@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Volume2, VolumeX, Lock, ArrowRight, PartyPopper, CheckCircle } from 'lucide-react';
+import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Volume2, VolumeX, Lock, ArrowRight } from 'lucide-react';
 import { useCountdown } from '../hooks/useCountdown';
 
 // --- Tipos e Constantes ---
@@ -72,7 +72,6 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       audio.preload = 'auto';
       audioRefs.current[key] = audio;
     });
-    // Ensure spin sound loops properly
     if (audioRefs.current.spin) {
         audioRefs.current.spin.loop = true;
         audioRefs.current.spin.volume = 0.4;
@@ -171,16 +170,11 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     playSound('spin');
 
     const winningSegmentIndex = Math.floor(Math.random() * SEGMENT_COUNT);
-    // Add extra rotations to ensure good spin effect
     const baseRotation = 360 * 5; 
-    // Calculate angle to land on the chosen segment at the top (270deg in SVG or -90)
-    // Current SVG starts at 0 (3 o'clock). 
-    // To land segment i at top, we need to rotate so that the segment aligns with -90deg.
-    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5); // Add some randomness within segment
+    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5); 
     const segmentCenter = winningSegmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const finalAngle = 270 - segmentCenter + randomOffset; 
     
-    // Ensure positive rotation
     const targetRotation = rotation + baseRotation + (360 - (rotation % 360)) + finalAngle;
 
     setRotation(targetRotation);
@@ -193,14 +187,11 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       setSpinResult(result);
 
       if (result.prize_type === 'gire_de_novo') {
-        // Don't save "Spin Again" to DB as a used turn, just reset state
         setTimeout(() => {
           setIsSpinning(false);
           setSpinResult(null);
-          // Keep status 'ready'
         }, 2000);
       } else {
-        // Save result and set cooldown
         const saved = await saveSpinResult(result);
         if (saved) {
           setLastSpinDate(new Date());
@@ -213,9 +204,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
   };
 
   const handleCloseResult = () => {
-    // Navigate to extract/wallet
     onViewHistory();
-    // Reset internal state
     setSpinResult(null);
   };
 
@@ -279,7 +268,6 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     const startAngle = index * angle;
     const endAngle = startAngle + angle;
     
-    // Convert degrees to radians
     const startRad = (Math.PI / 180) * startAngle;
     const endRad = (Math.PI / 180) * endAngle;
 
@@ -298,12 +286,10 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
   const getTextPosition = (index: number) => {
     const midAngle = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const rad = midAngle * (Math.PI / 180);
-    const radius = 70; // Text distance from center
+    const radius = 70;
     const x = 100 + radius * Math.cos(rad);
     const y = 100 + radius * Math.sin(rad);
     
-    // Rotate text to point outwards from center
-    // SVG rotation is clockwise. 
     return { x, y, rotation: midAngle }; 
   };
 
@@ -343,8 +329,6 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
               return (
                 <g key={i}>
                   <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
-                  
-                  {/* Text Label */}
                   <text 
                     x={x} 
                     y={y} 
@@ -354,7 +338,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
                     fontFamily="sans-serif"
                     textAnchor="middle" 
                     dominantBaseline="middle"
-                    transform={`rotate(${rotation + 90}, ${x}, ${y})`} // +90 to make text perpendicular to radius (tangential) or simple rotation
+                    transform={`rotate(${rotation + 90}, ${x}, ${y})`}
                   >
                     <tspan x={x} dy="-3">{prize.line1}</tspan>
                     <tspan x={x} dy="8">{prize.line2}</tspan>
