@@ -1,6 +1,6 @@
 
-import React, { useMemo, useState } from 'react';
-import { Category, Store } from '../types';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Category, Store, AdType } from '../types';
 import {
   MapPin,
   Star,
@@ -9,6 +9,13 @@ import {
   Compass,
   Filter,
   Crown,
+  ChevronLeft,
+  ChevronRight,
+  BadgeCheck,
+  Coins,
+  Zap,
+  Clock,
+  Phone
 } from 'lucide-react';
 
 interface ExploreViewProps {
@@ -17,6 +24,7 @@ interface ExploreViewProps {
   onStoreClick: (store: Store) => void;
   stores: Store[];
   searchTerm?: string;
+  onViewAllVerified?: () => void;
 }
 
 type QuickFilter = 'all' | 'cashback' | 'top_rated';
@@ -35,6 +43,48 @@ const HORIZONTAL_SCROLL_CSS = `
 .horizontal-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
+// Imagens para o carrossel automático
+const EXPLORE_BANNERS = [
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format=fit=crop', // Academia
+  'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format=fit=crop', // Moda Feminina
+  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format=fit=crop', // Celular
+  'https://images.unsplash.com/photo-1599447421405-0c323d27bc8d?q=80&w=800&auto=format=fit=crop', // Yoga
+  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format=fit=crop', // Tech/Work
+];
+
+// Dados dos Serviços 24h (movido da Home)
+const SERVICES_24H = [
+  { id: 'srv1', name: 'Chaveiro Expresso', category: 'Chaveiro', image: 'https://images.unsplash.com/photo-1585664811087-47f65be1bac6?q=80&w=400&auto=format=fit=crop' },
+  { id: 'srv2', name: 'Farmácia Pacheco', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=400&auto=format=fit=crop' },
+  { id: 'srv3', name: 'Vet 24h', category: 'Veterinário', image: 'https://images.unsplash.com/photo-1606425271394-c3ca9aa1fc06?q=80&w=400&auto=format=fit=crop' },
+  { id: 'srv4', name: 'Reboque Rápido', category: 'Auto Socorro', image: 'https://images.unsplash.com/photo-1562920616-0b63f03b22b7?q=80&w=400&auto=format=fit=crop' },
+  { id: 'srv5', name: 'Desentupidora', category: 'Emergência', image: 'https://images.unsplash.com/photo-1584622050111-993a426fbf0a?q=80&w=400&auto=format=fit=crop' },
+];
+
+// --- Lógica de Ordenação e Alternância (Interleaving) ---
+const interleaveStores = (stores: Store[]): Store[] => {
+  // 1. Separate into buckets based on priority
+  // Priority: Sponsored > Cashback > Verified > Others
+  // We use exclusive buckets for the interleaving loop to ensure we pick unique items
+  const sponsored = stores.filter(s => s.isSponsored || s.adType === AdType.PREMIUM);
+  const cashback = stores.filter(s => (s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
+  const verified = stores.filter(s => s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
+  const others = stores.filter(s => !s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
+
+  const result: Store[] = [];
+  const maxLength = Math.max(sponsored.length, cashback.length, verified.length);
+
+  // 2. Interleave: Sponsored -> Cashback -> Verified
+  for (let i = 0; i < maxLength; i++) {
+    if (sponsored[i]) result.push(sponsored[i]);
+    if (cashback[i]) result.push(cashback[i]);
+    if (verified[i]) result.push(verified[i]);
+  }
+
+  // 3. Append remaining "others"
+  return [...result, ...others];
+};
+
 // --- Componente de seção horizontal reutilizável ---
 const HorizontalStoreSection: React.FC<{
   title: string;
@@ -48,9 +98,9 @@ const HorizontalStoreSection: React.FC<{
     <section className="mb-6">
       <div className="flex items-baseline justify-between mb-2 px-1">
         <div>
-          <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
           {subtitle && (
-            <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
@@ -72,35 +122,63 @@ const HorizontalStoreSection: React.FC<{
             (store as any).category || (store as any).categoria || '';
           const distance = (store as any).distance || 'Freguesia • RJ';
 
+          const isSponsored = store.isSponsored || store.adType === AdType.PREMIUM;
+          const hasCashback = store.cashback && store.cashback > 0;
+          const isVerified = store.verified;
+
           return (
             <button
               key={store.id}
-              className="min-w-[190px] max-w-[210px] bg-white rounded-2xl shadow-sm border border-gray-100 flex-shrink-0 text-left overflow-hidden active:scale-[0.98] transition-transform"
+              className="min-w-[190px] max-w-[210px] bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex-shrink-0 text-left overflow-hidden active:scale-[0.98] transition-transform group"
               onClick={() => onStoreClick(store)}
             >
-              <div className="h-24 w-full bg-gray-100 overflow-hidden">
+              <div className="h-28 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
                 {image ? (
                   <img
                     src={image}
                     alt={name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <MapPin className="w-6 h-6" />
                   </div>
                 )}
+
+                {/* --- BADGES (PRIORITY ORDER, RIGHT ALIGNED) --- */}
+                <div className="absolute top-2 right-2 flex gap-1.5 flex-row-reverse z-10">
+                    
+                    {/* 1. Patrocinado (Azul Royal) */}
+                    {isSponsored && (
+                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm" title="Patrocinado">
+                            <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                        </div>
+                    )}
+
+                    {/* 2. Cashback (Preto + Amarelo) */}
+                    {hasCashback && (
+                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm" title="Cashback">
+                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" />
+                        </div>
+                    )}
+
+                    {/* 3. Verificado (Azul Royal + Branco) */}
+                    {isVerified && (
+                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" title="Verificado" />
+                    )}
+                </div>
+
               </div>
               <div className="px-3 py-2.5">
-                <p className="font-semibold text-sm text-gray-900 line-clamp-2">
+                <p className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 leading-tight">
                   {name}
                 </p>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-[11px] text-gray-500 truncate max-w-[70%]">
-                    {category || distance}
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-[70%]">
+                    {category}
                   </span>
                   {rating > 0 && (
-                    <span className="flex items-center gap-0.5 text-[11px] text-yellow-600 font-medium">
+                    <span className="flex items-center gap-0.5 text-[11px] text-[#1E5BFF] font-medium">
                       <Star className="w-3 h-3" fill="currentColor" />
                       {rating.toFixed(1)}
                     </span>
@@ -124,8 +202,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 }) => {
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [activeStyle, setActiveStyle] = useState<string | null>(null);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  // Banner Auto-Rotation Logic
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % EXPLORE_BANNERS.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   // --- Base: filtrar por busca ---
   const searchFilteredStores = useMemo(() => {
@@ -188,23 +275,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     return styleFilteredStores;
   }, [styleFilteredStores, quickFilter]);
 
-  // --- Seções de recomendação ---
+  // --- Seções de recomendação (USANDO INTERLEAVE) ---
 
-  // 1. Lojas perto de você (por enquanto só as primeiras, simulando proximidade)
+  // 1. Lojas perto de você (simulando proximidade com interleave)
   const nearYouStores = useMemo(() => {
-    return finalFilteredStores.slice(0, 10);
+    return interleaveStores(finalFilteredStores).slice(0, 10);
   }, [finalFilteredStores]);
 
-  // 2. Pra você (mais bem avaliadas)
+  // 2. Pra você (interleave também para garantir visibilidade comercial)
   const forYouStores = useMemo(() => {
-    const sorted = [...finalFilteredStores].sort((a, b) => {
-      const ratingA =
-        (a as any).rating || (a as any).nota || (a as any).avaliacao || 0;
-      const ratingB =
-        (b as any).rating || (b as any).nota || (b as any).avaliacao || 0;
-      return ratingB - ratingA;
-    });
-    return sorted.slice(0, 10);
+    // Basic recommendation logic (here just interleaving, normally would check user prefs)
+    return interleaveStores([...finalFilteredStores].reverse()).slice(0, 10);
   }, [finalFilteredStores]);
 
   // 3. Com cashback
@@ -216,12 +297,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     [finalFilteredStores]
   );
 
-  // 4. Tendências na Freguesia (aleatório)
+  // 4. Tendências na Freguesia (interleave shuffled)
   const trendingStores = useMemo(() => {
     const shuffled = [...finalFilteredStores].sort(
       () => Math.random() - 0.5
     );
-    return shuffled.slice(0, 10);
+    return interleaveStores(shuffled).slice(0, 10);
   }, [finalFilteredStores]);
 
   const hasAnyStore = finalFilteredStores.length > 0;
@@ -235,10 +316,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         {/* Filtros rápidos */}
         <div className="horizontal-scroll flex gap-2 overflow-x-auto pb-1">
           <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
               quickFilter === 'all'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-gray-700 border-gray-200'
+                ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
             onClick={() => setQuickFilter('all')}
           >
@@ -246,10 +327,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             Todos
           </button>
           <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
               quickFilter === 'cashback'
                 ? 'bg-green-500 text-white border-green-500'
-                : 'bg-white text-gray-700 border-gray-200'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
             onClick={() => setQuickFilter('cashback')}
           >
@@ -257,10 +338,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             Cashback
           </button>
           <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
               quickFilter === 'top_rated'
-                ? 'bg-yellow-500 text-white border-yellow-500'
-                : 'bg-white text-gray-700 border-gray-200'
+                ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
             onClick={() => setQuickFilter('top_rated')}
           >
@@ -268,41 +349,45 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             Melhor avaliadas
           </button>
           <button
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap bg-white text-gray-400 border-gray-200"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700"
             type="button"
           >
             ⏱ Abertos agora
           </button>
         </div>
 
-        {/* Card Patrocinador Master com cores da logo e botão clicável */}
-        <section className="rounded-2xl p-4 flex flex-col gap-3 shadow-sm border bg-[#f4f6fb] border-[#1f2740]/15">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <p className="text-[10px] font-semibold tracking-[0.18em] uppercase flex items-center gap-1 text-[#1f2740]">
-                <Crown className="w-3.5 h-3.5 text-yellow-400 fill-yellow-300" />
-                <span>Patrocinador Master</span>
-              </p>
-              <h2 className="text-sm font-bold text-[#1f2740] mt-1">
-                Grupo Esquematiza
-              </h2>
+        {/* --- CARROSSEL DE IMAGENS AUTOMÁTICO --- */}
+        <div className="w-full">
+            <div className="w-full h-[150px] rounded-2xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-gray-700">
+                {EXPLORE_BANNERS.map((banner, index) => (
+                    <div 
+                        key={index} 
+                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out bg-gray-200 dark:bg-gray-800 ${
+                            index === currentBannerIndex ? 'opacity-100' : 'opacity-0'
+                        }`}
+                    >
+                        <img 
+                            src={banner} 
+                            alt={`Banner ${index + 1}`} 
+                            className="w-full h-full object-cover" 
+                        />
+                    </div>
+                ))}
             </div>
-            <a
-              href="https://www.instagram.com/grupoesquematiza/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-gradient-to-r from-[#ff6501] to-[#ff7a00] text-white text-xs font-semibold shadow-md active:scale-95 transition-transform"
-            >
-              Seguir
-            </a>
-          </div>
-
-          <div className="mt-1">
-            <p className="text-[11px] text-[#1f2740]">
-              Transformando desafios em soluções seguras para a Freguesia.
-            </p>
-          </div>
-        </section>
+            {/* Indicadores (Dots) */}
+            <div className="flex justify-center gap-1.5 mt-3">
+                {EXPLORE_BANNERS.map((_, idx) => (
+                    <div 
+                        key={idx} 
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === currentBannerIndex 
+                            ? 'w-6 bg-[#1E5BFF]' 
+                            : 'w-1.5 bg-gray-300 dark:bg-gray-700'
+                        }`} 
+                    />
+                ))}
+            </div>
+        </div>
 
         {/* Seções de recomendação */}
         {hasAnyStore ? (
@@ -338,8 +423,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             />
           </>
         ) : (
-          <div className="pt-8 pb-4 flex flex-col items-center text-center text-gray-500">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+          <div className="pt-8 pb-4 flex flex-col items-center text-center text-gray-500 dark:text-gray-400">
+            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
               <Compass className="w-5 h-5 text-gray-400" />
             </div>
             <p className="font-semibold text-sm">Nenhuma loja encontrada</p>
@@ -349,9 +434,39 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
+        {/* Serviços 24h (Moved from Home) */}
+        <section>
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
+            </div>
+            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
+                {SERVICES_24H.map((service) => (
+                    <div key={service.id} className="min-w-[130px] w-[130px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
+                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
+                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
+                                <Clock className="w-3 h-3" />
+                                24h
+                            </div>
+                        </div>
+                        <div className="p-2.5 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
+                            </div>
+                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-green-500" />
+                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
         {/* Descubra por estilo - no final da página */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-900 mb-2">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
             Descubra por estilo
           </h2>
           <div className="flex flex-wrap gap-1.5">
@@ -362,10 +477,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 onClick={() =>
                   setActiveStyle((prev) => (prev === chip.id ? null : chip.id))
                 }
-                className={`px-3 py-1.5 rounded-full text-xs border ${
+                className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
                   activeStyle === chip.id
-                    ? 'bg-orange-500 text-white border-orange-500'
-                    : 'bg-white text-gray-700 border-gray-200'
+                    ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
                 }`}
               >
                 {chip.label}
@@ -373,6 +488,33 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             ))}
           </div>
         </section>
+
+        {/* Patrocinador Master Banner - New Dark Blue Style */}
+        <div 
+          onClick={() => onNavigate('patrocinador_master')}
+          className="w-full bg-[#1F2A44] rounded-2xl p-4 shadow-sm border border-transparent relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all mt-4"
+        >
+          <div className="flex items-center gap-4 relative z-10">
+             {/* Icon - White container for contrast */}
+             <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1E5BFF]" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" fill="currentColor"/>
+                  <path d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z" fill="white"/>
+                </svg>
+             </div>
+
+             {/* Text - 100% White */}
+             <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">Patrocinador Master</p>
+                <h3 className="text-white font-bold text-lg leading-tight truncate">Grupo Esquematiza</h3>
+                <p className="text-white text-xs mt-0.5 font-medium truncate">Transformando desafios em soluções seguras!</p>
+             </div>
+
+             {/* Arrow - White */}
+             <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
+          </div>
+        </div>
+
       </div>
     </>
   );

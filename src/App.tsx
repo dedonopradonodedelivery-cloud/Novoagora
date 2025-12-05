@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from './components/Layout';
-import { Header } from './components/Header';
-import HomeFeedUltra from './components/HomeFeedUltra';
-import { ExploreView } from './components/ExploreView';
-import { StatusView } from './components/StatusView';
-import { MarketplaceView } from './components/MarketplaceView';
-import { CategoryView } from './components/CategoryView';
-import { CategoriaAlimentacao } from './components/CategoriaAlimentacao';
-import { SubcategoryStoreList } from './components/SubcategoryStoreList';
-import { StoreDetailView } from './components/StoreDetailView';
-import { StoreCategoryView } from './components/StoreCategoryView';
-import { CashbackView } from './components/CashbackView';
-import { CashbackLandingView } from './components/CashbackLandingView';
-import { FreguesiaConnectPublic } from './components/FreguesiaConnectPublic';
-import { FreguesiaConnectDashboard } from './components/FreguesiaConnectDashboard';
-import { FreguesiaConnectRestricted } from './components/FreguesiaConnectRestricted';
-import { RewardDetailsView } from './components/RewardDetailsView';
-import { PrizeHistoryView } from './components/PrizeHistoryView';
-import { AuthModal } from './components/AuthModal';
-import { QuickRegister } from './components/QuickRegister';
-import { MenuView } from './components/MenuView';
-import { ServicesView } from './components/ServicesView';
-import { SubcategoriesView } from './components/SubcategoriesView';
-import { SpecialtiesView } from './components/SpecialtiesView';
-import { StoreAreaView } from './components/StoreAreaView';
-import { QuoteRequestModal } from './components/QuoteRequestModal';
-import { ServiceSuccessView } from './components/ServiceSuccessView';
-import { EditorialListView, EditorialCollection } from './components/EditorialListView';
-import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './components/SimplePages';
-import { CashbackInfoView } from './components/CashbackInfoView';
-import { EditProfileView } from './components/EditProfileView';
-import { ServiceTermsView } from './components/ServiceTermsView';
-import { PatrocinadorMasterScreen } from './components/PatrocinadorMasterScreen';
-import { BusinessRegistrationFlow } from './components/BusinessRegistrationFlow';
-import { StoreCashbackModule } from './components/StoreCashbackModule';
-import { StoreAdsModule } from './components/StoreAdsModule';
-import { StoreConnectModule } from './components/StoreConnectModule';
-import { StoreProfileEdit } from './components/StoreProfileEdit';
-import { StoreFinanceModule } from './components/StoreFinanceModule';
-import { StoreSupportModule } from './components/StoreSupportModule';
-import { MerchantQrScreen } from './components/MerchantQrScreen';
-import { CashbackScanScreen } from './components/CashbackScanScreen';
-import { CashbackPaymentScreen } from './components/CashbackPaymentScreen';
-import { MerchantCashbackRequests } from './components/MerchantCashbackRequests';
-import { MerchantPayRoute } from './components/MerchantPayRoute';
-import { CashbackPayFromQrScreen } from './components/CashbackPayFromQrScreen';
+import { Layout } from './components/layout/Layout';
+import { Header } from './components/layout/Header';
+import { HomeFeed } from './components/home/HomeFeed';
+import { ExploreView } from './pages/ExplorePage';
+import { StatusView } from './pages/StatusPage';
+import { MarketplaceView } from './pages/MarketplacePage';
+import { CategoryView } from './pages/CategoryPage';
+import { CategoriaAlimentacao } from './pages/FoodCategoryPage';
+import { SubcategoryStoreList } from './pages/SubcategoryPage';
+import { StoreDetailView } from './pages/StoreDetailPage';
+import { StoreCategoryView } from './pages/StoreProductsPage';
+import { CashbackView } from './pages/CashbackPage';
+import { CashbackLandingView } from './pages/CashbackLandingPage';
+import { FreguesiaConnectPublic } from './pages/connect/FreguesiaConnectPublic';
+import { FreguesiaConnectDashboard } from './pages/connect/FreguesiaConnectDashboard';
+import { FreguesiaConnectRestricted } from './pages/connect/FreguesiaConnectRestricted';
+import { RewardDetailsView } from './pages/RewardDetailsPage';
+import { PrizeHistoryView } from './pages/PrizeHistoryPage';
+import { AuthModal } from './components/shared/AuthModal';
+import { QuickRegister } from './components/auth/QuickRegister';
+import { MenuView } from './pages/ProfileMenuPage';
+import { ServicesView } from './pages/services/ServicesView';
+import { SubcategoriesView } from './pages/services/SubcategoriesView';
+import { SpecialtiesView } from './pages/services/SpecialtiesView';
+import { StoreAreaView } from './pages/store/StoreAreaView';
+import { QuoteRequestModal } from './components/shared/QuoteRequestModal';
+import { ServiceSuccessView } from './pages/services/ServiceSuccessView';
+import { EditorialListView, EditorialCollection } from './pages/EditorialPage';
+import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './pages/SimplePages';
+import { CashbackInfoView } from './pages/CashbackInfoPage';
+import { EditProfileView } from './pages/EditProfilePage';
+import { ServiceTermsView } from './pages/services/ServiceTermsView';
+import { PatrocinadorMasterScreen } from './pages/PatrocinadorMasterScreen';
+import { BusinessRegistrationFlow } from './pages/store/modules/BusinessRegistrationFlow';
+import { StoreCashbackModule } from './pages/store/modules/StoreCashbackModule';
+import { StoreAdsModule } from './pages/store/modules/StoreAdsModule';
+import { StoreConnectModule } from './pages/store/modules/StoreConnectModule';
+import { StoreProfileEdit } from './pages/store/modules/StoreProfileEdit';
+import { StoreFinanceModule } from './pages/store/modules/StoreFinanceModule';
+import { StoreSupportModule } from './pages/store/modules/StoreSupportModule';
+import { MerchantQrScreen } from './pages/store/MerchantQrScreen';
+import { CashbackScanScreen } from './pages/CashbackScanScreen';
+import { CashbackPaymentScreen } from './pages/CashbackPaymentScreen';
+import { MerchantCashbackRequests } from './pages/store/modules/MerchantCashbackRequests';
+import { MerchantPayRoute } from './pages/MerchantPayRoute';
+import { CashbackPayFromQrScreen } from './pages/CashbackPayFromQrScreen';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -149,25 +149,22 @@ const App: React.FC = () => {
   const [quoteCategoryName, setQuoteCategoryName] = useState('');
 
   const [selectedReward, setSelectedReward] = useState<any>(null);
-  
   const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(null);
   const [deepLinkMerchantId, setDeepLinkMerchantId] = useState<string | null>(null);
   const [qrMerchantId, setQrMerchantId] = useState<string | null>(null);
-
   const [lastTransaction, setLastTransaction] = useState<any>(null);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
+  // URL Parsing for Deep Links
   useEffect(() => {
     const path = window.location.pathname;
-    
     const matchMerchantPay = path.match(/\/merchant\/([^/]+)\/pay/);
     if (matchMerchantPay && matchMerchantPay[1]) {
       setDeepLinkMerchantId(matchMerchantPay[1]);
       setActiveTab('merchant_pay_route');
       return;
     }
-
     const matchCashbackQr = path.match(/\/cashback\/loja\/([^/]+)/);
     if (matchCashbackQr && matchCashbackQr[1]) {
       setQrMerchantId(matchCashbackQr[1]);
@@ -374,9 +371,20 @@ const App: React.FC = () => {
 
           <main className="animate-in fade-in duration-500">
             {activeTab === 'home' && (
-              <HomeFeedUltra />
+              <HomeFeed
+                onNavigate={setActiveTab}
+                onSelectCategory={handleSelectCategory}
+                onSelectCollection={handleSelectCollection}
+                onStoreClick={handleSelectStore}
+                stores={stores}
+                searchTerm={globalSearch}
+                user={user}
+                userRole={userRole}
+                onSpinWin={handleSpinWin}
+                onRequireLogin={() => setIsAuthOpen(true)}
+              />
             )}
-            
+
             {activeTab === 'explore' && (
               <ExploreView
                 onSelectCategory={handleSelectCategory}
@@ -426,7 +434,7 @@ const App: React.FC = () => {
                 macroId={selectedServiceMacro.id}
                 macroName={selectedServiceMacro.name}
                 onBack={() => setActiveTab('services')}
-                onSelectSubcategory={setSelectedServiceSubcategory}
+                onSelectSubcategory={handleSelectServiceSubcategory}
               />
             )}
 
@@ -503,7 +511,7 @@ const App: React.FC = () => {
             {activeTab === 'cashback' && (
               <CashbackView 
                 onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction}
+                newTransaction={lastTransaction} 
               />
             )}
 
@@ -580,7 +588,7 @@ const App: React.FC = () => {
 
             {activeTab === 'merchant_requests' && (
               <MerchantCashbackRequests 
-                merchantId="merchant_123_uuid"
+                merchantId="merchant_123_uuid" 
                 onBack={() => setActiveTab('store_area')}
               />
             )}
