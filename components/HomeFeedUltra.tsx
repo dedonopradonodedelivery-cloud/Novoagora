@@ -1,191 +1,166 @@
-import React, { lazy, Suspense, useState, useEffect } from "react";
-import useHomeLogic from "../hooks/useHomeLogic";
-import useTrending from "../hooks/useTrending";
+import React from "react";
 
-const NowHappeningSection = lazy(() => import("./home/sections/NowHappeningSection"));
-const IntentExploreSection = lazy(() => import("./home/sections/IntentExploreSection"));
-const RankingWeekSection = lazy(() => import("./home/sections/RankingWeekSection"));
-const LocalFeedSection = lazy(() => import("./home/sections/LocalFeedSection"));
-const DailyMissionsSection = lazy(() => import("./home/sections/DailyMissionsSection"));
-const HeaderPremium = lazy(() => import("./home/ui/HeaderPremium"));
-const SearchBarPremium = lazy(() => import("./home/ui/SearchBarPremium"));
-const StoriesLojistas = lazy(() => import("./home/stories/StoriesLojistas"));
-const CategoriesPremium = lazy(() => import("./home/sections/CategoriesPremium"));
-const AchadinhoCard = lazy(() => import("./home/cards/AchadinhoCard"));
-const VerifiedStoreCard = lazy(() => import("./home/cards/VerifiedStoreCard"));
-const LoadingSkeletonHome = lazy(() => import("./home/ui/LoadingSkeletonHome"));
-
-export const HomeFeedUltra = () => {
-  console.time("HomeFeedUltra Render");
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.timeEnd("HomeFeedUltra Render");
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const {
-    timeOfDay,
-    weather,
-    cashbackActive,
-    recommendations,
-  } = useHomeLogic();
-
-  const {
-    trendingCategories,
-    trendingStores,
-    trendingSearches,
-  } = useTrending();
-
-  const intentTitle =
-    timeOfDay === "morning"
-      ? "Bom dia! O que você precisa agora?"
-      : timeOfDay === "afternoon"
-      ? "Boa tarde! Descubra algo novo"
-      : "Boa noite! Que tal aproveitar a noite?";
-
-  if (loading) {
-    return (
-      <Suspense fallback={<div>Carregando...</div>}>
-        <LoadingSkeletonHome />
-      </Suspense>
-    );
-  }
-
+const HomeFeedUltra: React.FC = () => {
   return (
-    <Suspense fallback={<div>Carregando...</div>}>
-      <div className="w-full flex flex-col gap-10 pb-40 pt-3 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="w-full bg-black text-white">
+      {/* Bloco preto principal (fica logo abaixo do header azul global) */}
+      <section className="px-4 pt-4 pb-6 rounded-t-3xl bg-[#050505]">
+        {/* Linha: VOCÊ ESTÁ EM / Sou lojista / Sino */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FF6501] flex items-center justify-center text-sm font-semibold shadow-[0_0_18px_rgba(255,122,0,0.65)]">
+              LF
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[10px] tracking-[0.18em] uppercase text-white/60">
+                Você está em
+              </span>
+              <button className="flex items-center gap-1 text-xs font-medium text-white">
+                Freguesia, Jacarepaguá
+                <span className="text-[10px]">▾</span>
+              </button>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-2 section-animate">
-          <HeaderPremium timeOfDay={timeOfDay} />
-          <SearchBarPremium timeOfDay={timeOfDay} />
-          <StoriesLojistas />
+          <div className="flex items-center gap-2">
+            <button className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-white/5 transition">
+              Sou lojista
+            </button>
+            <button className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center text-xs hover:bg-white/10 transition">
+              🔔
+            </button>
+          </div>
         </div>
 
-        {weather === "rainy" && (
-          <div className="mx-5 mt-2 p-4 rounded-premium bg-blue-600 dark:bg-blue-900 text-white shadow-premium section-animate transition-colors">
-            <p className="text-sm font-semibold text-white dark:text-gray-100">Dia chuvoso na Freguesia ☔</p>
-            <p className="text-xs opacity-90 text-blue-50 dark:text-gray-300">
-              Veja serviços com entrega rápida e lugares abertos agora.
+        {/* Saudação + saldo */}
+        <div className="flex items-end justify-between mb-4">
+          <div className="space-y-1">
+            <p className="text-xs text-white/70">Boa tarde, Rafael 👋</p>
+            <h1 className="text-[20px] font-semibold leading-snug">
+              Bora girar a economia da
+              <br />
+              Freguesia?
+            </h1>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-white/60">
+              Saldo Localizei Pay
             </p>
+            <p className="text-sm font-bold text-emerald-400">R$ 32,80</p>
           </div>
-        )}
+        </div>
 
-        {/* Categorias principais */}
-        <section className="section-animate">
-          <CategoriesPremium />
-        </section>
-
-        {/* Acontecendo Agora na Freguesia */}
-        <section id="now-happening" className="w-full section-animate">
-          <NowHappeningSection />
-        </section>
-
-        {/* Explorar por Intenções */}
-        <section id="intent-explore" className="w-full section-animate">
-          <IntentExploreSection title={intentTitle} />
-        </section>
-
-        {/* Cashback (condicional) */}
-        <section id="cashback-section" className="w-full px-5 mt-2 section-animate">
-          {cashbackActive && (
-            <div className="rounded-premium bg-gradient-to-r from-amber-400 to-yellow-500 dark:from-amber-600 dark:to-yellow-700 text-white p-4 shadow-premium">
-              <p className="text-xs uppercase tracking-wide opacity-90 text-amber-50 dark:text-gray-200">Cashback disponível</p>
-              <p className="text-base font-semibold mt-1 text-white dark:text-gray-100">
-                Ganhe dinheiro de volta comprando na Freguesia
+        {/* Card laranja: Cashback ativo */}
+        <div className="flex items-stretch gap-3 mb-6">
+          <div className="relative flex-1">
+            <div className="absolute inset-0 rounded-[28px] bg-[radial-gradient(circle_at_50%_120%,rgba(255,165,0,0.55),transparent_60%)] pointer-events-none" />
+            <div className="relative rounded-[28px] bg-gradient-to-r from-[#FF7A00] to-[#FF6501] px-4 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.7)]">
+              <p className="text-[10px] tracking-[0.24em] uppercase text-white/70 mb-1">
+                Cashback ativo
               </p>
-              <p className="text-xs mt-1 opacity-90 text-amber-50 dark:text-gray-300">
-                Veja lojas participantes e comece a acumular saldo Localizei.
+              <p className="text-[13px] leading-snug font-semibold">
+                Ganhe até 10% de volta nas compras em parceiros Localizei.
               </p>
             </div>
-          )}
-        </section>
-
-        {/* Achadinhos */}
-        <section id="achadinhos" className="w-full px-5 mt-2 section-animate">
-          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Achadinhos da Freguesia</h2>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {trendingStores?.map((store: any) => (
-              <AchadinhoCard key={store.id} name={store.name} reason={store.reason} />
-            ))}
           </div>
-        </section>
+          <button className="w-11 rounded-[20px] bg-white/6 flex items-center justify-center text-xl text-white/80 border border-white/10 hover:bg-white/10 transition">
+            +
+          </button>
+        </div>
 
-        {/* Rankings da Semana */}
-        <section id="ranking-week" className="w-full section-animate">
-          <RankingWeekSection />
-        </section>
-
-        {/* Lojas Verificadas */}
-        <section id="verified-stores" className="w-full px-5 mt-2 section-animate">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100">Lojas verificadas</h2>
-            <span className="text-xs text-primary-600 dark:text-primary-400 font-medium cursor-pointer hover:underline">ver todas</span>
+        {/* Destaques da semana */}
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold">Destaques da semana</h2>
+            <button className="text-[11px] text-white/60 hover:text-white/85 transition">
+              Ver todos
+            </button>
           </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {["Barbearia ZN", "Pet Club", "Dona Ana"].map((name, i) => (
-              <VerifiedStoreCard key={i} name={name} />
-            ))}
-          </div>
-        </section>
 
-        {/* Recomendados para Você */}
-        <section id="recommended" className="w-full px-5 mt-2 section-animate">
-          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Recomendado para você</h2>
-          <div className="flex flex-col gap-2">
-            {recommendations?.map((rec: any) => (
-              <div
-                key={rec.id}
-                className="p-3 rounded-premium bg-white dark:bg-gray-800 shadow-light border border-gray-100 dark:border-gray-700 transition-colors"
-              >
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{rec.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{rec.reason}</p>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {/* Card 1 */}
+            <article className="min-w-[240px] max-w-[240px] rounded-[24px] border border-[#FF7A00] bg-gradient-to-b from-[#141414] to-[#050505] px-4 py-3 flex flex-col justify-between shadow-[0_0_18px_rgba(255,122,0,0.35)]">
+              <div className="mb-3">
+                <h3 className="text-[13px] font-semibold mb-1">
+                  Cashback em toda a Freguesia
+                </h3>
+                <p className="text-[11px] text-white/70 leading-snug">
+                  Ative seu Localizei Pay e ganhe parte do dinheiro de volta em
+                  cada compra.
+                </p>
               </div>
-            ))}
+              <button className="self-start rounded-full bg-white text-[11px] font-medium text-black px-3 py-1.5 flex items-center gap-1 hover:bg-neutral-100 transition">
+                Ver lojas com cashback
+                <span className="text-[10px]">↗</span>
+              </button>
+            </article>
+
+            {/* Card 2 */}
+            <article className="min-w-[240px] max-w-[240px] rounded-[24px] border border-[#FF7A00] bg-gradient-to-b from-[#141414] to-[#050505] px-4 py-3 flex flex-col justify-between">
+              <div className="mb-3">
+                <h3 className="text-[13px] font-semibold mb-1">
+                  Freguesia Connect
+                </h3>
+                <p className="text-[11px] text-white/70 leading-snug">
+                  Rede exclusiva para empreendedores locais crescerem juntos.
+                </p>
+              </div>
+              <button className="self-start rounded-full bg-white text-[11px] font-medium text-black px-3 py-1.5 flex items-center gap-1 hover:bg-neutral-100 transition">
+                Conhecer os planos
+                <span className="text-[10px]">›</span>
+              </button>
+            </article>
           </div>
-        </section>
 
-        {/* Newsfeed Local */}
-        <section id="local-feed" className="w-full section-animate">
-          <LocalFeedSection />
-        </section>
+          {/* Barra de progresso fake, como no print */}
+          <div className="mt-1 h-1 w-full rounded-full bg-white/10">
+            <div className="h-1 w-1/3 rounded-full bg-white/70" />
+          </div>
+        </div>
 
-        {/* Missões Diárias */}
-        <section id="daily-missions" className="w-full section-animate">
-          <DailyMissionsSection />
-        </section>
+        {/* O que você quer fazer agora? */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold mb-1">
+            O que você quer fazer agora?
+          </h2>
 
-        {/* Patrocinador Master (placeholder) */}
-        <section id="sponsor-master" className="w-full px-5 mt-2 section-animate">
-          <div className="mt-2 rounded-premium bg-white dark:bg-gray-800 border border-dashed border-yellow-400 dark:border-yellow-600 p-4 flex items-center justify-between shadow-sm dark:shadow-none transition-colors">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-yellow-500 dark:text-yellow-400 font-semibold">
-                Patrocinador master
-              </p>
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Seu negócio aqui em destaque</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Espaço reservado para quem quer ser visto por todo o bairro.
+          {/* Botão 1 */}
+          <button className="w-full flex items-center justify-between rounded-[999px] border border-white/18 px-4 py-3 bg-transparent hover:bg-white/[0.06] transition">
+            <div className="text-left">
+              <p className="text-xs font-medium">Explorar categorias</p>
+              <p className="text-[11px] text-white/70">
+                Encontre restaurantes, serviços, saúde, beleza e muito mais.
               </p>
             </div>
-            <span className="text-xs font-semibold text-yellow-600 dark:text-yellow-500">Em breve</span>
-          </div>
-        </section>
+            <span className="text-sm text-white/70">›</span>
+          </button>
 
-        {/* Lojas & Serviços – placeholder para feed geral */}
-        <section id="stores-services" className="w-full px-5 mt-2 pb-8 section-animate">
-          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Lojas e serviços</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Em breve, uma lista completa de estabelecimentos para você explorar.
-          </p>
-        </section>
-      </div>
-    </Suspense>
+          {/* Botão 2 */}
+          <button className="w-full flex items-center justify-between rounded-[999px] border border-white/18 px-4 py-3 bg-transparent hover:bg-white/[0.06] transition">
+            <div className="text-left">
+              <p className="text-xs font-medium">Ver ofertas de hoje</p>
+              <p className="text-[11px] text-white/70">
+                Promoções com cashback extra em parceiros selecionados.
+              </p>
+            </div>
+            <span className="text-sm text-white/70">›</span>
+          </button>
+
+          {/* Botão 3 */}
+          <button className="w-full flex items-center justify-between rounded-[999px] border border-white/18 px-4 py-3 bg-transparent hover:bg-white/[0.06] transition">
+            <div className="text-left">
+              <p className="text-xs font-medium">Sou lojista</p>
+              <p className="text-[11px] text-white/70">
+                Cadastre seu negócio, ative o cashback e apareça para quem está
+                perto.
+              </p>
+            </div>
+            <span className="text-sm text-white/70">›</span>
+          </button>
+        </div>
+      </section>
+    </div>
   );
 };
 
-export default React.memo(HomeFeedUltra);
+export default HomeFeedUltra;
