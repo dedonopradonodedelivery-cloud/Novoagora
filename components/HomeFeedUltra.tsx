@@ -1,260 +1,191 @@
-import React from "react";
+import React, { lazy, Suspense, useState, useEffect } from "react";
+import useHomeLogic from "../hooks/useHomeLogic";
+import useTrending from "../hooks/useTrending";
 
-type HighlightBanner = {
-  id: string;
-  title: string;
-  subtitle: string;
-  ctaLabel: string;
-};
+const NowHappeningSection = lazy(() => import("./home/sections/NowHappeningSection"));
+const IntentExploreSection = lazy(() => import("./home/sections/IntentExploreSection"));
+const RankingWeekSection = lazy(() => import("./home/sections/RankingWeekSection"));
+const LocalFeedSection = lazy(() => import("./home/sections/LocalFeedSection"));
+const DailyMissionsSection = lazy(() => import("./home/sections/DailyMissionsSection"));
+const HeaderPremium = lazy(() => import("./home/ui/HeaderPremium"));
+const SearchBarPremium = lazy(() => import("./home/ui/SearchBarPremium"));
+const StoriesLojistas = lazy(() => import("./home/stories/StoriesLojistas"));
+const CategoriesPremium = lazy(() => import("./home/sections/CategoriesPremium"));
+const AchadinhoCard = lazy(() => import("./home/cards/AchadinhoCard"));
+const VerifiedStoreCard = lazy(() => import("./home/cards/VerifiedStoreCard"));
+const LoadingSkeletonHome = lazy(() => import("./home/ui/LoadingSkeletonHome"));
 
-type QuickAction = {
-  id: string;
-  label: string;
-  description: string;
-};
+export const HomeFeedUltra = () => {
+  console.time("HomeFeedUltra Render");
 
-type CashbackSpotlight = {
-  id: string;
-  name: string;
-  category: string;
-  cashback: number;
-  distance: string;
-};
+  const [loading, setLoading] = useState(true);
 
-const highlightBanners: HighlightBanner[] = [
-  {
-    id: "1",
-    title: "Cashback em toda a Freguesia",
-    subtitle: "Ative seu Localizei Pay e ganhe parte do dinheiro de volta em cada compra.",
-    ctaLabel: "Ver lojas com cashback",
-  },
-  {
-    id: "2",
-    title: "Freguesia Connect",
-    subtitle: "Rede exclusiva para empreendedores locais crescerem juntos.",
-    ctaLabel: "Conhecer os planos",
-  },
-];
+  useEffect(() => {
+    console.timeEnd("HomeFeedUltra Render");
+  }, []);
 
-const quickActions: QuickAction[] = [
-  {
-    id: "1",
-    label: "Explorar categorias",
-    description: "Encontre restaurantes, serviços, saúde, beleza e muito mais.",
-  },
-  {
-    id: "2",
-    label: "Ver ofertas de hoje",
-    description: "Promoções com cashback extra em parceiros selecionados.",
-  },
-  {
-    id: "3",
-    label: "Sou lojista",
-    description: "Cadastre seu negócio, ative o cashback e apareça para quem está perto.",
-  },
-];
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 700);
+    return () => clearTimeout(timer);
+  }, []);
 
-const cashbackSpotlights: CashbackSpotlight[] = [
-  {
-    id: "1",
-    name: "Burger da Freguesia",
-    category: "Hamburgueria",
-    cashback: 8,
-    distance: "350 m",
-  },
-  {
-    id: "2",
-    name: "Studio Fit 21",
-    category: "Academia e Funcional",
-    cashback: 6,
-    distance: "600 m",
-  },
-  {
-    id: "3",
-    name: "Pet & Love",
-    category: "Petshop e Banho & Tosa",
-    cashback: 5,
-    distance: "900 m",
-  },
-];
+  const {
+    timeOfDay,
+    weather,
+    cashbackActive,
+    recommendations,
+  } = useHomeLogic();
 
-const HomeFeedUltra: React.FC = () => {
+  const {
+    trendingCategories,
+    trendingStores,
+    trendingSearches,
+  } = useTrending();
+
+  const intentTitle =
+    timeOfDay === "morning"
+      ? "Bom dia! O que você precisa agora?"
+      : timeOfDay === "afternoon"
+      ? "Boa tarde! Descubra algo novo"
+      : "Boa noite! Que tal aproveitar a noite?";
+
+  if (loading) {
+    return (
+      <Suspense fallback={<div>Carregando...</div>}>
+        <LoadingSkeletonHome />
+      </Suspense>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
-      {/* Top Bar */}
-      <header className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 backdrop-blur-md bg-neutral-950/80 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center text-sm font-semibold shadow-lg shadow-orange-500/30">
-            LF
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-[11px] uppercase tracking-[0.16em] text-white/50">
-              Você está em
-            </span>
-            <button className="flex items-center gap-1 text-xs font-medium text-white">
-              Freguesia, Jacarepaguá
-              <span className="text-[10px]">▾</span>
-            </button>
-          </div>
+    <Suspense fallback={<div>Carregando...</div>}>
+      <div className="w-full flex flex-col gap-10 pb-40 pt-3 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+
+        <div className="flex flex-col gap-2 section-animate">
+          <HeaderPremium timeOfDay={timeOfDay} />
+          <SearchBarPremium timeOfDay={timeOfDay} />
+          <StoriesLojistas />
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="rounded-2xl border border-white/10 px-3 py-1.5 text-[11px] font-medium text-white/80 hover:bg-white/5 transition">
-            Sou lojista
-          </button>
-          <button className="h-8 w-8 rounded-2xl bg-white/5 flex items-center justify-center text-xs hover:bg-white/10 transition">
-            🔔
-          </button>
-        </div>
-      </header>
+        {weather === "rainy" && (
+          <div className="mx-5 mt-2 p-4 rounded-premium bg-blue-600 dark:bg-blue-900 text-white shadow-premium section-animate transition-colors">
+            <p className="text-sm font-semibold text-white dark:text-gray-100">Dia chuvoso na Freguesia ☔</p>
+            <p className="text-xs opacity-90 text-blue-50 dark:text-gray-300">
+              Veja serviços com entrega rápida e lugares abertos agora.
+            </p>
+          </div>
+        )}
 
-      {/* Content */}
-      <main className="px-4 pb-6 pt-3 space-y-6">
-        {/* Saudações + Saldo */}
-        <section className="space-y-3">
-          <div className="flex items-end justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs text-white/60">Boa tarde, Rafael 👋</p>
-              <h1 className="text-lg font-semibold tracking-tight">
-                Bora girar a economia da Freguesia?
-              </h1>
+        {/* Categorias principais */}
+        <section className="section-animate">
+          <CategoriesPremium />
+        </section>
+
+        {/* Acontecendo Agora na Freguesia */}
+        <section id="now-happening" className="w-full section-animate">
+          <NowHappeningSection />
+        </section>
+
+        {/* Explorar por Intenções */}
+        <section id="intent-explore" className="w-full section-animate">
+          <IntentExploreSection title={intentTitle} />
+        </section>
+
+        {/* Cashback (condicional) */}
+        <section id="cashback-section" className="w-full px-5 mt-2 section-animate">
+          {cashbackActive && (
+            <div className="rounded-premium bg-gradient-to-r from-amber-400 to-yellow-500 dark:from-amber-600 dark:to-yellow-700 text-white p-4 shadow-premium">
+              <p className="text-xs uppercase tracking-wide opacity-90 text-amber-50 dark:text-gray-200">Cashback disponível</p>
+              <p className="text-base font-semibold mt-1 text-white dark:text-gray-100">
+                Ganhe dinheiro de volta comprando na Freguesia
+              </p>
+              <p className="text-xs mt-1 opacity-90 text-amber-50 dark:text-gray-300">
+                Veja lojas participantes e comece a acumular saldo Localizei.
+              </p>
             </div>
-            <div className="text-right">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-white/50">
-                Saldo Localizei Pay
+          )}
+        </section>
+
+        {/* Achadinhos */}
+        <section id="achadinhos" className="w-full px-5 mt-2 section-animate">
+          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Achadinhos da Freguesia</h2>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            {trendingStores?.map((store: any) => (
+              <AchadinhoCard key={store.id} name={store.name} reason={store.reason} />
+            ))}
+          </div>
+        </section>
+
+        {/* Rankings da Semana */}
+        <section id="ranking-week" className="w-full section-animate">
+          <RankingWeekSection />
+        </section>
+
+        {/* Lojas Verificadas */}
+        <section id="verified-stores" className="w-full px-5 mt-2 section-animate">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100">Lojas verificadas</h2>
+            <span className="text-xs text-primary-600 dark:text-primary-400 font-medium cursor-pointer hover:underline">ver todas</span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            {["Barbearia ZN", "Pet Club", "Dona Ana"].map((name, i) => (
+              <VerifiedStoreCard key={i} name={name} />
+            ))}
+          </div>
+        </section>
+
+        {/* Recomendados para Você */}
+        <section id="recommended" className="w-full px-5 mt-2 section-animate">
+          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Recomendado para você</h2>
+          <div className="flex flex-col gap-2">
+            {recommendations?.map((rec: any) => (
+              <div
+                key={rec.id}
+                className="p-3 rounded-premium bg-white dark:bg-gray-800 shadow-light border border-gray-100 dark:border-gray-700 transition-colors"
+              >
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{rec.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{rec.reason}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Newsfeed Local */}
+        <section id="local-feed" className="w-full section-animate">
+          <LocalFeedSection />
+        </section>
+
+        {/* Missões Diárias */}
+        <section id="daily-missions" className="w-full section-animate">
+          <DailyMissionsSection />
+        </section>
+
+        {/* Patrocinador Master (placeholder) */}
+        <section id="sponsor-master" className="w-full px-5 mt-2 section-animate">
+          <div className="mt-2 rounded-premium bg-white dark:bg-gray-800 border border-dashed border-yellow-400 dark:border-yellow-600 p-4 flex items-center justify-between shadow-sm dark:shadow-none transition-colors">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-yellow-500 dark:text-yellow-400 font-semibold">
+                Patrocinador master
               </p>
-              <p className="text-sm font-semibold text-emerald-400">R$ 32,80</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Seu negócio aqui em destaque</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Espaço reservado para quem quer ser visto por todo o bairro.
+              </p>
             </div>
-          </div>
-
-          <div className="flex gap-2">
-            <button className="flex-1 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-400 px-3 py-3 text-left text-xs shadow-lg shadow-orange-500/40">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-white/70">
-                Cashback ativo
-              </p>
-              <p className="mt-0.5 text-[13px] font-semibold">
-                Ganhe até 10% de volta nas compras em parceiros Localizei.
-              </p>
-            </button>
-            <button className="w-10 rounded-2xl bg-white/5 flex items-center justify-center text-lg hover:bg-white/10 transition">
-              ➕
-            </button>
+            <span className="text-xs font-semibold text-yellow-600 dark:text-yellow-500">Em breve</span>
           </div>
         </section>
 
-        {/* Banners em destaque */}
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold tracking-tight">
-              Destaques da semana
-            </h2>
-            <button className="text-[11px] text-white/50 hover:text-white/80 transition">
-              Ver todos
-            </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            {highlightBanners.map((banner) => (
-              <article
-                key={banner.id}
-                className="min-w-[260px] max-w-[260px] rounded-2xl bg-gradient-to-br from-orange-500 via-orange-400 to-yellow-400 p-[1px] shadow-lg shadow-orange-500/40"
-              >
-                <div className="h-full w-full rounded-[1rem] bg-neutral-950/95 p-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <h3 className="text-[13px] font-semibold leading-snug">
-                      {banner.title}
-                    </h3>
-                    <p className="text-[11px] text-white/70 leading-snug">
-                      {banner.subtitle}
-                    </p>
-                  </div>
-                  <button className="mt-3 inline-flex items-center gap-1 rounded-2xl bg-white text-[11px] font-medium text-neutral-950 px-3 py-1.5 self-start hover:bg-neutral-100 transition">
-                    {banner.ctaLabel}
-                    <span className="text-[10px]">↗</span>
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Ações rápidas */}
-        <section className="space-y-2">
-          <h2 className="text-sm font-semibold tracking-tight">
-            O que você quer fazer agora?
-          </h2>
-          <div className="grid grid-cols-1 gap-2">
-            {quickActions.map((action) => (
-              <button
-                key={action.id}
-                className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.06] transition"
-              >
-                <div className="text-left">
-                  <p className="text-xs font-medium">{action.label}</p>
-                  <p className="text-[11px] text-white/60 mt-0.5">
-                    {action.description}
-                  </p>
-                </div>
-                <span className="text-[13px]">›</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Lojas com cashback em destaque */}
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold tracking-tight">
-              Lojas com cashback perto de você
-            </h2>
-            <button className="text-[11px] text-white/50 hover:text-white/80 transition">
-              Ver mapa
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            {cashbackSpotlights.map((store) => (
-              <article
-                key={store.id}
-                className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.06] transition"
-              >
-                <div className="flex flex-col">
-                  <h3 className="text-xs font-medium leading-snug">
-                    {store.name}
-                  </h3>
-                  <p className="text-[11px] text-white/60">
-                    {store.category} · {store.distance}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-emerald-400/80">
-                    Cashback
-                  </p>
-                  <p className="text-xs font-semibold text-emerald-400">
-                    {store.cashback}% de volta
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Rodapé / Aviso */}
-        <section className="mt-3 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
-          <p className="text-[10px] text-white/50 leading-relaxed">
-            Comprando pelos parceiros do Localizei Freguesia você ajuda a{" "}
-            <span className="text-white/80 font-medium">
-              fortalecer o comércio local
-            </span>{" "}
-            e ainda ganha{" "}
-            <span className="text-emerald-400 font-medium">
-              cashback em cada compra
-            </span>
-            . Bora fazer a Freguesia girar.
+        {/* Lojas & Serviços – placeholder para feed geral */}
+        <section id="stores-services" className="w-full px-5 mt-2 pb-8 section-animate">
+          <h2 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-3">Lojas e serviços</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Em breve, uma lista completa de estabelecimentos para você explorar.
           </p>
         </section>
-      </main>
-    </div>
+      </div>
+    </Suspense>
   );
 };
 
-export default HomeFeedUltra;
+export default React.memo(HomeFeedUltra);
