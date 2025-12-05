@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
-import { HomeFeed } from './components/HomeFeed';
+import HomeFeedUltra from './components/HomeFeedUltra';
 import { ExploreView } from './components/ExploreView';
 import { StatusView } from './components/StatusView';
 import { MarketplaceView } from './components/MarketplaceView';
@@ -28,7 +27,13 @@ import { StoreAreaView } from './components/StoreAreaView';
 import { QuoteRequestModal } from './components/QuoteRequestModal';
 import { ServiceSuccessView } from './components/ServiceSuccessView';
 import { EditorialListView, EditorialCollection } from './components/EditorialListView';
-import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './components/SimplePages';
+import {
+  SupportView,
+  InviteFriendView,
+  AboutView,
+  FavoritesView,
+  SponsorInfoView,
+} from './components/SimplePages';
 import { CashbackInfoView } from './components/CashbackInfoView';
 import { EditProfileView } from './components/EditProfileView';
 import { ServiceTermsView } from './components/ServiceTermsView';
@@ -60,7 +65,8 @@ const MOCK_STORES: Store[] = [
     name: 'Burger Freguesia',
     category: 'Alimentação',
     description: 'Hambúrgueres artesanais com sabor de bairro.',
-    image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80',
     rating: 4.8,
     reviewsCount: 124,
     distance: 'Freguesia • RJ',
@@ -70,14 +76,15 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '2',
     name: 'Padaria do Vale',
     category: 'Alimentação',
     description: 'Pães fresquinhos e café da manhã completo.',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
     rating: 4.6,
     reviewsCount: 87,
     distance: 'Freguesia • RJ',
@@ -87,14 +94,15 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '3',
     name: 'Studio Vida Fitness',
     category: 'Saúde & Bem-estar',
     description: 'Treinos funcionais e personal trainer.',
-    image: 'https://images.unsplash.com/photo-1554344058-8d1d1dbc5960?auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1554344058-8d1d1dbc5960?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
     reviewsCount: 54,
     distance: 'Freguesia • RJ',
@@ -111,7 +119,8 @@ const MOCK_STORES: Store[] = [
     name: 'Pet Club Freguesia',
     category: 'Pets',
     description: 'Banho, tosa e boutique pet.',
-    image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=800&q=80',
     rating: 4.7,
     reviewsCount: 98,
     distance: 'Freguesia • RJ',
@@ -121,7 +130,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true, // Marked as verified
+    verified: true,
   },
 ];
 
@@ -134,7 +143,7 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<'cliente' | 'lojista' | null>(null);
 
   const [globalSearch, setGlobalSearch] = useState('');
-  const [stores] = useState<Store[]>(MOCK_STORES); // usa apenas os mocks
+  const [stores] = useState<Store[]>(MOCK_STORES);
 
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
@@ -144,16 +153,20 @@ const App: React.FC = () => {
 
   const [selectedCollection, setSelectedCollection] = useState<EditorialCollection | null>(null);
 
-  const [selectedServiceMacro, setSelectedServiceMacro] = useState<{ id: string; name: string } | null>(null);
-  const [selectedServiceSubcategory, setSelectedServiceSubcategory] = useState<string | null>(null);
+  const [selectedServiceMacro, setSelectedServiceMacro] =
+    useState<{ id: string; name: string } | null>(null);
+  const [selectedServiceSubcategory, setSelectedServiceSubcategory] =
+    useState<string | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [quoteCategoryName, setQuoteCategoryName] = useState('');
 
   const [selectedReward, setSelectedReward] = useState<any>(null);
-  
+
   // State for Scanning Flow
-  const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(null);
-  
+  const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(
+    null,
+  );
+
   // State for Deep Link Route
   const [deepLinkMerchantId, setDeepLinkMerchantId] = useState<string | null>(null);
   // State for QR Code URL Route
@@ -167,7 +180,7 @@ const App: React.FC = () => {
   // URL Parsing for Deep Links
   useEffect(() => {
     const path = window.location.pathname;
-    
+
     // Match /merchant/:id/pay
     const matchMerchantPay = path.match(/\/merchant\/([^/]+)\/pay/);
     if (matchMerchantPay && matchMerchantPay[1]) {
@@ -200,14 +213,11 @@ const App: React.FC = () => {
 
   // ROLE DO USUÁRIO
   useEffect(() => {
-    // em ambiente fake, mantém lógica básica
     if (!user) {
       setUserRole(null);
       return;
     }
-    // Simulate user role based on some logic or hardcoded for demo
-    // For now, defaulting to 'cliente' but can be toggled via business registration flow
-    if (!userRole) setUserRole('cliente'); 
+    if (!userRole) setUserRole('cliente');
   }, [user]);
 
   // SPLASH
@@ -290,9 +300,7 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="mt-16 text-center animate-spin-in opacity-0 [animation-delay:1500ms]">
-          <p className="text-[9px] opacity-70 uppercase tracking-wider mb-1">
-            Patrocinador Master
-          </p>
+          <p className="text-[9px] opacity-70 uppercase tracking-wider mb-1">Patrocinador Master</p>
           <div className="bg-white/10 backdrop-blur-sm px-5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 shadow-lg">
             <Crown className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300 drop-shadow-md" />
             <p className="font-bold text-base tracking-wide text-white drop-shadow-sm">
@@ -346,7 +354,7 @@ const App: React.FC = () => {
     'service_subcategories',
     'service_specialties',
     'service_success',
-    'service_terms', 
+    'service_terms',
     'editorial_list',
     'freguesia_connect_public',
     'freguesia_connect_dashboard',
@@ -366,7 +374,7 @@ const App: React.FC = () => {
     'cashback_payment',
     'merchant_requests',
     'merchant_pay_route',
-    'cashback_pay_qr'
+    'cashback_pay_qr',
   ].includes(activeTab);
 
   return (
@@ -388,20 +396,7 @@ const App: React.FC = () => {
           )}
 
           <main className="animate-in fade-in duration-500">
-            {activeTab === 'home' && (
-              <HomeFeed
-                onNavigate={setActiveTab}
-                onSelectCategory={handleSelectCategory}
-                onSelectCollection={handleSelectCollection}
-                onStoreClick={handleSelectStore}
-                stores={stores}
-                searchTerm={globalSearch}
-                user={user}
-                userRole={userRole}
-                onSpinWin={handleSpinWin}
-                onRequireLogin={() => setIsAuthOpen(true)}
-              />
-            )}
+            {activeTab === 'home' && <HomeFeedUltra />}
 
             {activeTab === 'explore' && (
               <ExploreView
@@ -428,22 +423,22 @@ const App: React.FC = () => {
                 subcategoryName="Lojas Verificadas"
                 onBack={() => setActiveTab('explore')}
                 onStoreClick={handleSelectStore}
-                stores={stores.filter(s => s.verified)}
-                sponsoredBanners={[]} 
+                stores={stores.filter((s) => s.verified)}
+                sponsoredBanners={[]}
               />
             )}
 
             {activeTab === 'services' && (
-              <ServicesView 
-                onSelectMacro={handleSelectServiceMacro} 
+              <ServicesView
+                onSelectMacro={handleSelectServiceMacro}
                 onOpenTerms={() => setActiveTab('service_terms')}
                 onNavigate={setActiveTab}
               />
             )}
 
             {activeTab === 'service_terms' && (
-              <ServiceTermsView 
-                onBack={() => setActiveTab('services')} 
+              <ServiceTermsView
+                onBack={() => setActiveTab('services')}
               />
             )}
 
@@ -491,8 +486,7 @@ const App: React.FC = () => {
                 onStoreClick={handleSelectStore}
                 stores={stores.filter(
                   (s: any) =>
-                    s.subcategory?.toLowerCase() ===
-                    selectedSubcategoryName.toLowerCase(),
+                    s.subcategory?.toLowerCase() === selectedSubcategoryName.toLowerCase(),
                 )}
                 sponsoredBanners={MOCK_BANNERS}
               />
@@ -511,9 +505,7 @@ const App: React.FC = () => {
               <StoreDetailView
                 store={selectedStore}
                 onBack={() =>
-                  setActiveTab(
-                    selectedSubcategoryName ? 'subcategory_store_list' : 'home',
-                  )
+                  setActiveTab(selectedSubcategoryName ? 'subcategory_store_list' : 'home')
                 }
                 onOpenCashback={() => setActiveTab('cashback')}
               />
@@ -527,9 +519,9 @@ const App: React.FC = () => {
             )}
 
             {activeTab === 'cashback' && (
-              <CashbackView 
-                onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction} // Pass new transaction to view
+              <CashbackView
+                onBack={() => setActiveTab('home')}
+                newTransaction={lastTransaction}
               />
             )}
 
@@ -570,9 +562,9 @@ const App: React.FC = () => {
 
             {/* QR Code Scanner (Customer) */}
             {activeTab === 'qrcode_scan' && (
-              <CashbackScanScreen 
-                onBack={() => setActiveTab('home')} 
-                onScanSuccess={handleScanSuccess} 
+              <CashbackScanScreen
+                onBack={() => setActiveTab('home')}
+                onScanSuccess={handleScanSuccess}
               />
             )}
 
@@ -583,13 +575,13 @@ const App: React.FC = () => {
                 merchantId={scannedData.merchantId}
                 storeId={scannedData.storeId}
                 onBack={() => setActiveTab('home')}
-                onComplete={handlePaymentComplete} // Redirects to wallet with history
+                onComplete={handlePaymentComplete}
               />
             )}
 
             {/* Merchant Payment Route (Legacy Deep Link) */}
             {activeTab === 'merchant_pay_route' && deepLinkMerchantId && (
-              <MerchantPayRoute 
+              <MerchantPayRoute
                 merchantId={deepLinkMerchantId}
                 user={user}
                 onLogin={() => setIsAuthOpen(true)}
@@ -600,7 +592,7 @@ const App: React.FC = () => {
 
             {/* NEW QR Route Payment Screen */}
             {activeTab === 'cashback_pay_qr' && qrMerchantId && (
-              <CashbackPayFromQrScreen 
+              <CashbackPayFromQrScreen
                 merchantId={qrMerchantId}
                 user={user}
                 onLogin={() => setIsAuthOpen(true)}
@@ -611,44 +603,44 @@ const App: React.FC = () => {
 
             {/* Merchant Pending Requests */}
             {activeTab === 'merchant_requests' && (
-              <MerchantCashbackRequests 
+              <MerchantCashbackRequests
                 merchantId="merchant_123_uuid" // In real app, derived from user.uid
                 onBack={() => setActiveTab('store_area')}
               />
             )}
 
             {activeTab === 'business_registration' && (
-              <BusinessRegistrationFlow 
-                onBack={() => setActiveTab('profile')} 
+              <BusinessRegistrationFlow
+                onBack={() => setActiveTab('profile')}
                 onComplete={() => {
-                    setUserRole('lojista');
-                    setActiveTab('store_area');
+                  setUserRole('lojista');
+                  setActiveTab('store_area');
                 }}
               />
             )}
 
             {activeTab === 'store_cashback_module' && (
-                <StoreCashbackModule onBack={() => setActiveTab('store_area')} />
+              <StoreCashbackModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'store_ads_module' && (
-                <StoreAdsModule onBack={() => setActiveTab('store_area')} />
+              <StoreAdsModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'store_connect' && (
-                <StoreConnectModule onBack={() => setActiveTab('store_area')} />
+              <StoreConnectModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'store_profile' && (
-                <StoreProfileEdit onBack={() => setActiveTab('store_area')} />
+              <StoreProfileEdit onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'store_finance' && (
-                <StoreFinanceModule onBack={() => setActiveTab('store_area')} />
+              <StoreFinanceModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'store_support' && (
-                <StoreSupportModule onBack={() => setActiveTab('store_area')} />
+              <StoreSupportModule onBack={() => setActiveTab('store_area')} />
             )}
 
             {activeTab === 'freguesia_connect_public' && (
@@ -684,23 +676,26 @@ const App: React.FC = () => {
 
             {/* Simple Pages Routing */}
             {activeTab === 'support' && <SupportView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'invite_friend' && <InviteFriendView onBack={() => setActiveTab('profile')} />}
+            {activeTab === 'invite_friend' && (
+              <InviteFriendView onBack={() => setActiveTab('profile')} />
+            )}
             {activeTab === 'about' && <AboutView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'favorites' && <FavoritesView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />}
-            {activeTab === 'become_sponsor' && <SponsorInfoView onBack={() => setActiveTab('profile')} />}
-            {activeTab === 'edit_profile' && user && <EditProfileView user={user} onBack={() => setActiveTab('profile')} />}
-            
-            {activeTab === 'patrocinador_master' && (
-                <PatrocinadorMasterScreen onBack={() => setActiveTab('profile')} />
+            {activeTab === 'favorites' && (
+              <FavoritesView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
+            )}
+            {activeTab === 'become_sponsor' && (
+              <SponsorInfoView onBack={() => setActiveTab('profile')} />
+            )}
+            {activeTab === 'edit_profile' && user && (
+              <EditProfileView user={user} onBack={() => setActiveTab('profile')} />
             )}
 
+            {activeTab === 'patrocinador_master' && (
+              <PatrocinadorMasterScreen onBack={() => setActiveTab('profile')} />
+            )}
           </main>
 
-          <AuthModal
-            isOpen={isAuthOpen}
-            onClose={() => setIsAuthOpen(false)}
-            user={user}
-          />
+          <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} user={user} />
 
           <QuoteRequestModal
             isOpen={isQuoteModalOpen}
