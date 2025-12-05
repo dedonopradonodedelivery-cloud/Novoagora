@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
 import { HomeFeed } from './components/HomeFeed';
-import HomeFeedUltra from './components/HomeFeedUltra';
 import { ExploreView } from './components/ExploreView';
 import { StatusView } from './components/StatusView';
 import { MarketplaceView } from './components/MarketplaceView';
@@ -389,23 +389,18 @@ const App: React.FC = () => {
 
           <main className="animate-in fade-in duration-500">
             {activeTab === 'home' && (
-              <>
-                {/* 
-                <HomeFeed
-                  onNavigate={setActiveTab}
-                  onSelectCategory={handleSelectCategory}
-                  onSelectCollection={handleSelectCollection}
-                  onStoreClick={handleSelectStore}
-                  stores={stores}
-                  searchTerm={globalSearch}
-                  user={user}
-                  userRole={userRole}
-                  onSpinWin={handleSpinWin}
-                  onRequireLogin={() => setIsAuthOpen(true)}
-                />
-                */}
-                <HomeFeedUltra />
-              </>
+              <HomeFeed
+                onNavigate={setActiveTab}
+                onSelectCategory={handleSelectCategory}
+                onSelectCollection={handleSelectCollection}
+                onStoreClick={handleSelectStore}
+                stores={stores}
+                searchTerm={globalSearch}
+                user={user}
+                userRole={userRole}
+                onSpinWin={handleSpinWin}
+                onRequireLogin={() => setIsAuthOpen(true)}
+              />
             )}
 
             {activeTab === 'explore' && (
