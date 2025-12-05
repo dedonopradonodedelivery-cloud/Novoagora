@@ -1,13 +1,12 @@
 import React from 'react';
 
 /**
- * ARQUIVO DE CORREÇÃO (PLACEHOLDER)
- * Este arquivo substitui uma versão anterior corrompida que causava erro de build.
- * Ele não possui lógica e não renderiza nada visível.
+ * Versão simplificada e segura da roleta.
+ * Só existe para evitar erro de build enquanto você não implementar a lógica final.
  */
 
-const SpinWheelViewFixed: React.FC = () => {
-  return <div style={{ display: 'none' }}>Fixed</div>;
+const SpinWheelView_fixed: React.FC = () => {
+  return null;
 };
 
-export default SpinWheelViewFixed;
+export default SpinWheelView_fixed;
