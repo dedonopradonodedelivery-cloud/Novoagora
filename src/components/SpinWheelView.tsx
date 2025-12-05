@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Volume2, VolumeX, Lock, ArrowRight } from 'lucide-react';
+import { Gift, RefreshCw, ThumbsDown, History, Wallet, Volume2, VolumeX, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { useCountdown } from '../hooks/useCountdown';
 
 // --- Tipos e Constantes ---
@@ -72,6 +72,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       audio.preload = 'auto';
       audioRefs.current[key] = audio;
     });
+    // Ensure spin sound loops properly
     if (audioRefs.current.spin) {
         audioRefs.current.spin.loop = true;
         audioRefs.current.spin.volume = 0.4;
@@ -175,6 +176,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     const segmentCenter = winningSegmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const finalAngle = 270 - segmentCenter + randomOffset; 
     
+    // Ensure positive rotation
     const targetRotation = rotation + baseRotation + (360 - (rotation % 360)) + finalAngle;
 
     setRotation(targetRotation);
@@ -286,7 +288,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
   const getTextPosition = (index: number) => {
     const midAngle = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const rad = midAngle * (Math.PI / 180);
-    const radius = 70;
+    const radius = 70; // Text distance from center
     const x = 100 + radius * Math.cos(rad);
     const y = 100 + radius * Math.sin(rad);
     
@@ -329,6 +331,8 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
               return (
                 <g key={i}>
                   <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
+                  
+                  {/* Text Label */}
                   <text 
                     x={x} 
                     y={y} 
