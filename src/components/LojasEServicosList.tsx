@@ -1,21 +1,36 @@
 import React from 'react';
 
-interface LojasEServicosListProps {
+export interface LojasEServicosListProps {
   title?: string;
   stores?: any[];
   onStoreClick?: (store: any) => void;
+  onViewAll?: () => void;
+  activeFilter?: 'all' | 'cashback' | 'top_rated' | 'open_now';
 }
 
 export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({
   title = 'Lojas e Serviços',
   stores = [],
   onStoreClick,
+  onViewAll,
 }) => {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-        {title}
-      </h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+          {title}
+        </h2>
+
+        {onViewAll && (
+          <button
+            type="button"
+            onClick={onViewAll}
+            className="text-xs font-semibold text-[#1E5BFF] hover:underline"
+          >
+            Ver todas
+          </button>
+        )}
+      </div>
 
       <div className="space-y-3">
         {stores.length === 0 && (
