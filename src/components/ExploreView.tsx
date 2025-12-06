@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Category, Store } from '../types';
 import {
@@ -35,6 +34,84 @@ const HORIZONTAL_SCROLL_CSS = `
 .horizontal-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
+// ------- Helpers para ler campos da store de forma segura -------
+const getStoreName = (store: Store): string => {
+  const raw =
+    (store as any).name ??
+    (store as any).nome ??
+    '';
+  return String(raw);
+};
+
+const getStoreImage = (store: Store): string => {
+  return (
+    (store as any).image ||
+    (store as any).image_url ||
+    (store as any).logo ||
+    (store as any).banner ||
+    ''
+  );
+};
+
+const getStoreRating = (store: Store): number => {
+  const raw =
+    (store as any).rating ??
+    (store as any).nota ??
+    (store as any).avaliacao ??
+    0;
+
+  const num = typeof raw === 'string' ? parseFloat(raw.replace(',', '.')) : Number(raw);
+  if (Number.isNaN(num)) return 0;
+  return num;
+};
+
+const getStoreCategoryLabel = (store: Store): string => {
+  return (
+    (store as any).subcategory ||
+    (store as any).subcategoria ||
+    (store as any).category ||
+    (store as any).categoria ||
+    (store as any).neighborhood ||
+    (store as any).bairro ||
+    (store as any).distance ||
+    'Freguesia • RJ'
+  );
+};
+
+const getStoreCashback = (store: Store): number => {
+  const raw = (store as any).cashback ?? 0;
+  const num = typeof raw === 'string' ? parseFloat(raw.replace(',', '.')) : Number(raw);
+  if (Number.isNaN(num)) return 0;
+  return num;
+};
+
+const getStoreSearchHaystack = (store: Store): string => {
+  const name = getStoreName(store);
+  const subcategory =
+    (store as any).subcategory ||
+    (store as any).subcategoria ||
+    '';
+  const category =
+    (store as any).category ||
+    (store as any).categoria ||
+    '';
+  const neighborhood =
+    (store as any).neighborhood ||
+    (store as any).bairro ||
+    (store as any).distance ||
+    '';
+
+  return `${name} ${subcategory} ${category} ${neighborhood}`.toLowerCase();
+};
+
+const getStoreStyleText = (store: Store): string => {
+  const description =
+    (store as any).description ||
+    (store as any).descricao ||
+    '';
+  return `${description} ${getStoreName(store)} ${getStoreCategoryLabel(store)}`.toLowerCase();
+};
+
 // --- Componente de seção horizontal reutilizável ---
 const HorizontalStoreSection: React.FC<{
   title: string;
@@ -56,25 +133,14 @@ const HorizontalStoreSection: React.FC<{
       </div>
       <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
         {stores.map((store) => {
-          const image =
-            (store as any).image ||
-            (store as any).image_url ||
-            (store as any).logo ||
-            (store as any).banner ||
-            '';
-          const name = (store as any).name || (store as any).nome || '';
-          const rating =
-            (store as any).rating ||
-            (store as any).nota ||
-            (store as any).avaliacao ||
-            0;
-          const category =
-            (store as any).category || (store as any).categoria || '';
-          const distance = (store as any).distance || 'Freguesia • RJ';
+          const image = getStoreImage(store);
+          const name = getStoreName(store);
+          const rating = getStoreRating(store);
+          const meta = getStoreCategoryLabel(store);
 
           return (
             <button
-              key={store.id}
+              key={(store as any).id ?? name}
               className="min-w-[190px] max-w-[210px] bg-white rounded-2xl shadow-sm border border-gray-100 flex-shrink-0 text-left overflow-hidden active:scale-[0.98] transition-transform"
               onClick={() => onStoreClick(store)}
             >
@@ -97,7 +163,7 @@ const HorizontalStoreSection: React.FC<{
                 </p>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-[11px] text-gray-500 truncate max-w-[70%]">
-                    {category || distance}
+                    {meta}
                   </span>
                   {rating > 0 && (
                     <span className="flex items-center gap-0.5 text-[11px] text-yellow-600 font-medium">
@@ -132,17 +198,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     if (!normalizedSearch) return stores;
 
     return stores.filter((store) => {
-      const name = (store as any).name || (store as any).nome || '';
-      const subcategory = (store as any).subcategory || (store as any).subcategoria || '';
-      const category = (store as any).category || (store as any).categoria || '';
-      const neighborhood =
-        (store as any).neighborhood ||
-        (store as any).bairro ||
-        (store as any).distance ||
-        '';
-
-      const haystack =
-        `${name} ${subcategory} ${category} ${neighborhood}`.toLowerCase();
+      const haystack = getStoreSearchHaystack(store);
       return haystack.includes(normalizedSearch);
     });
   }, [stores, normalizedSearch]);
@@ -154,15 +210,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     if (!style) return searchFilteredStores;
 
     return searchFilteredStores.filter((store) => {
-      const text = (
-        (store as any).description ||
-        (store as any).descricao ||
-        (store as any).name ||
-        (store as any).nome ||
-        ''
-      )
-        .toString()
-        .toLowerCase();
+      const text = getStoreStyleText(store);
       return style.keywords.some((kw) => text.includes(kw.toLowerCase()));
     });
   }, [searchFilteredStores, activeStyle]);
@@ -170,19 +218,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   // --- Quick filters (cashback, top rated) ---
   const finalFilteredStores = useMemo(() => {
     if (quickFilter === 'cashback') {
-      return styleFilteredStores.filter(
-        (store) => (store as any).cashback && (store as any).cashback > 0
-      );
+      return styleFilteredStores.filter((store) => getStoreCashback(store) > 0);
     }
 
     if (quickFilter === 'top_rated') {
-      return [...styleFilteredStores].sort((a, b) => {
-        const ratingA =
-          (a as any).rating || (a as any).nota || (a as any).avaliacao || 0;
-        const ratingB =
-          (b as any).rating || (b as any).nota || (b as any).avaliacao || 0;
-        return ratingB - ratingA;
-      });
+      return [...styleFilteredStores].sort(
+        (a, b) => getStoreRating(b) - getStoreRating(a)
+      );
     }
 
     return styleFilteredStores;
@@ -197,31 +239,27 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   // 2. Pra você (mais bem avaliadas)
   const forYouStores = useMemo(() => {
-    const sorted = [...finalFilteredStores].sort((a, b) => {
-      const ratingA =
-        (a as any).rating || (a as any).nota || (a as any).avaliacao || 0;
-      const ratingB =
-        (b as any).rating || (b as any).nota || (b as any).avaliacao || 0;
-      return ratingB - ratingA;
-    });
+    const sorted = [...finalFilteredStores].sort(
+      (a, b) => getStoreRating(b) - getStoreRating(a)
+    );
     return sorted.slice(0, 10);
   }, [finalFilteredStores]);
 
   // 3. Com cashback
   const cashbackStores = useMemo(
-    () =>
-      finalFilteredStores.filter(
-        (store) => (store as any).cashback && (store as any).cashback > 0
-      ),
+    () => finalFilteredStores.filter((store) => getStoreCashback(store) > 0),
     [finalFilteredStores]
   );
 
-  // 4. Tendências na Freguesia (aleatório)
+  // 4. Tendências na Freguesia
+  // Em vez de random em todo render, usamos um "score" simples: rating + cashback
   const trendingStores = useMemo(() => {
-    const shuffled = [...finalFilteredStores].sort(
-      () => Math.random() - 0.5
-    );
-    return shuffled.slice(0, 10);
+    const scored = [...finalFilteredStores].sort((a, b) => {
+      const scoreA = getStoreRating(a) + getStoreCashback(a) / 10;
+      const scoreB = getStoreRating(b) + getStoreCashback(b) / 10;
+      return scoreB - scoreA;
+    });
+    return scored.slice(0, 10);
   }, [finalFilteredStores]);
 
   const hasAnyStore = finalFilteredStores.length > 0;
@@ -267,6 +305,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             <Star className="w-3 h-3" />
             Melhor avaliadas
           </button>
+
+          {/* Placeholder: botão "Abertos agora" ainda não filtra de fato */}
           <button
             className="flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap bg-white text-gray-400 border-gray-200"
             type="button"
@@ -275,7 +315,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </button>
         </div>
 
-        {/* Card Patrocinador Master com cores da logo e botão clicável */}
+        {/* Card Patrocinador Master */}
         <section className="rounded-2xl p-4 flex flex-col gap-3 shadow-sm border bg-[#f4f6fb] border-[#1f2740]/15">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
