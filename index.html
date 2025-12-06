@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Localizei Freguesia</title>
+
+    <!-- Tailwind via CDN (pode ficar assim por enquanto) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Config do Tailwind -->
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -19,11 +28,11 @@
             },
             colors: {
               primary: {
-                DEFAULT: '#2D6DF6', // Primary Blue
+                DEFAULT: '#2D6DF6',
                 50: '#F0F5FF',
                 100: '#E0EBFF',
                 500: '#2D6DF6',
-                600: '#1B54D9', // CTA Blue
+                600: '#1B54D9',
                 700: '#1540AD',
               }
             },
@@ -83,35 +92,25 @@
         }
       }
     </script>
+
     <style>
       .no-scrollbar::-webkit-scrollbar {
-          display: none;
+        display: none;
       }
       .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.86.2",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
-    "vite": "https://aistudiocdn.com/vite@^7.2.6",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+
+    <!-- CSS global gerado pelo Vite (se existir) -->
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+
   <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
     <div id="root"></div>
+
+    <!-- AQUI É O PONTO IMPORTANTE: SÓ ESSE SCRIPT -->
     <script type="module" src="/src/main.tsx"></script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>
