@@ -1,3 +1,13 @@
 import React from 'react';
-const SpinWheelView_fixed: React.FC = () => null;
-export default SpinWheelView_fixed;
+
+/**
+ * ARQUIVO DE CORREÇÃO (PLACEHOLDER)
+ * Este arquivo substitui uma versão anterior corrompida que causava erro de build.
+ * Ele não possui lógica e não renderiza nada visível.
+ */
+
+const SpinWheelViewFixed: React.FC = () => {
+  return <div style={{ display: 'none' }}>Fixed</div>;
+};
+
+export default SpinWheelViewFixed;
