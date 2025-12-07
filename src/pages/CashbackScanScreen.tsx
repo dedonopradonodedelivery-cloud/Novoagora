@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserQRCodeReader } from "@zxing/browser";
+import React, { useState } from "react";
+import { X } from "lucide-react";
 
 interface CashbackScanScreenProps {
   onBack: () => void;
@@ -8,76 +8,74 @@ interface CashbackScanScreenProps {
 
 const CashbackScanScreen: React.FC<CashbackScanScreenProps> = ({
   onBack,
-  onScanSuccess
+  onScanSuccess,
 }) => {
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const codeReader = new BrowserQRCodeReader();
+  const handleFile = async (event: any) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const startScanner = async () => {
-      try {
-        const videoInputDevices =
-          await BrowserQRCodeReader.listVideoInputDevices();
-        const backCamera = videoInputDevices.find(device =>
-          device.label.toLowerCase().includes("back")
-        );
+    const formData = new FormData();
+    formData.append("file", file);
 
-        const selectedDeviceId =
-          backCamera?.deviceId || videoInputDevices[0].deviceId;
+    // API pública para ler QR code a partir da imagem
+    const res = await fetch("https://api.qrserver.com/v1/read-qr-code/", {
+      method: "POST",
+      body: formData,
+    });
 
-        const previewElem = document.getElementById(
-          "preview"
-        ) as HTMLVideoElement;
+    const result = await res.json();
+    const decoded = result?.[0]?.symbol?.[0]?.data;
 
-        await codeReader.decodeFromVideoDevice(
-          selectedDeviceId,
-          previewElem,
-          result => {
-            if (result) {
-              try {
-                const payload = JSON.parse(result.getText());
-                if (
-                  payload.type === "localizei_cashback_qr" &&
-                  payload.merchantId &&
-                  payload.storeId
-                ) {
-                  codeReader.reset();
-                  onScanSuccess({
-                    merchantId: payload.merchantId,
-                    storeId: payload.storeId
-                  });
-                }
-              } catch (e) {
-                console.error("Invalid QR Code");
-              }
-            }
-          }
-        );
-      } catch (err) {
-        console.error(err);
+    if (!decoded) {
+      setError("QR Code inválido.");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(decoded);
+      if (!parsed.merchantId || !parsed.storeId) {
+        setError("QR inválido.");
+        return;
       }
-    };
-
-    startScanner();
-
-    return () => codeReader.reset();
-  }, []);
+      onScanSuccess(parsed);
+    } catch (e) {
+      setError("QR inválido.");
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center">
-      <video
-        id="preview"
-        className="w-full h-full object-cover"
-        autoPlay
-        playsInline
-      ></video>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50">
+      <div className="absolute top-5 right-5">
+        <button
+          onClick={onBack}
+          className="p-3 rounded-full bg-white/20 text-white"
+        >
+          <X size={26} />
+        </button>
+      </div>
 
-      <button
-        onClick={onBack}
-        className="absolute top-5 left-5 px-4 py-2 bg-white text-black rounded-xl"
-      >
-        Voltar
-      </button>
+      <div className="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl">
+        <h2 className="text-xl font-bold mb-4">Escanear QR Code</h2>
+
+        <p className="text-gray-600 mb-6">
+          Aponte para um QR Code ou toque para abrir a câmera.
+        </p>
+
+        <label className="bg-blue-600 text-white py-3 px-6 rounded-xl text-sm font-bold inline-block cursor-pointer">
+          Abrir Câmera
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFile}
+            className="hidden"
+          />
+        </label>
+
+        {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+      </div>
     </div>
   );
 };
