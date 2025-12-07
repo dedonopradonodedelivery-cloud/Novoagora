@@ -5,7 +5,7 @@ interface ScanQRProps {
   onBack: () => void;
 }
 
-export default function ScanQR({ onResult, onBack }: ScanQRProps) {
+export default function MerchantQrScreen({ onResult, onBack }: ScanQRProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
