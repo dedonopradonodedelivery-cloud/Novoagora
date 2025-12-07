@@ -1,84 +1,65 @@
-// ScanQR.tsx — versão iPhone SAFE, câmera abre direto
-
-import React, { useEffect, useRef, useState } from "react";
-import { BrowserMultiFormatReader } from "@zxing/browser";
-import { ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef } from "react";
 
 interface ScanQRProps {
+  onResult: (text: string) => void;
   onBack: () => void;
-  onScan: (data: string) => void;
 }
 
-export const ScanQR: React.FC<ScanQRProps> = ({ onBack, onScan }) => {
+// Scanner usando a API nativa sem dependências
+export const ScanQR: React.FC<ScanQRProps> = ({ onResult, onBack }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const codeReader = useRef(new BrowserMultiFormatReader());
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const startCamera = async () => {
       try {
-        const permission = await navigator.mediaDevices.getUserMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "environment" }
         });
 
-        if (!videoRef.current) return;
-        videoRef.current.srcObject = permission;
-        await videoRef.current.play();
-
-        codeReader.current.decodeFromVideoDevice(
-          undefined,
-          videoRef.current,
-          (result, err) => {
-            if (result) {
-              onScan(result.getText());
-            }
-          }
-        );
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+        }
       } catch (err) {
-        console.error(err);
-        setError("A câmera não pôde ser iniciada. Verifique permissões.");
+        console.error("Erro ao abrir a câmera:", err);
+        alert("Não foi possível acessar a câmera.");
+        onBack();
       }
     };
 
     startCamera();
 
     return () => {
-      codeReader.current.reset();
       if (videoRef.current?.srcObject) {
         const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-        tracks.forEach((track) => track.stop());
+        tracks.forEach((t) => t.stop());
       }
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col z-[200]">
+    <div className="fixed inset-0 bg-black z-[999] flex flex-col">
+      {/* Botão Voltar */}
+      <button
+        onClick={onBack}
+        className="text-white absolute top-5 left-5 text-lg bg-black/40 px-4 py-2 rounded-xl"
+      >
+        Voltar
+      </button>
 
-      {/* Header */}
-      <div className="p-4 flex items-center gap-3 text-white">
-        <button onClick={onBack} className="p-2">
-          <ArrowLeft size={26} />
-        </button>
-        <h1 className="text-lg font-semibold">Escanear QR do Lojista</h1>
+      {/* Vídeo da Câmera */}
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        playsInline
+      />
+
+      {/* Mensagem */}
+      <div className="absolute bottom-10 w-full text-center text-white text-lg">
+        Aponte para o QR Code...
       </div>
-
-      {/* Video Preview */}
-      <div className="flex-1 flex items-center justify-center">
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          autoPlay
-          playsInline
-          muted
-        />
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="p-4 bg-red-600 text-white text-center">
-          {error}
-        </div>
-      )}
     </div>
   );
 };
+
+export default ScanQR;
