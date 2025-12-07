@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Category, Store } from '../types';
 import {
@@ -17,6 +16,12 @@ interface ExploreViewProps {
   onStoreClick: (store: Store) => void;
   stores: Store[];
   searchTerm?: string;
+  /**
+   * Opcional: caso você queira um botão ou CTA para
+   * "Ver todas as lojas verificadas" a partir do Explore.
+   * Se não usar, tudo continua funcionando.
+   */
+  onViewAllVerified?: () => void;
 }
 
 type QuickFilter = 'all' | 'cashback' | 'top_rated';
@@ -119,6 +124,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onSelectCategory,
   onNavigate,
   onStoreClick,
+  onViewAllVerified,
   stores,
   searchTerm = '',
 }) => {
