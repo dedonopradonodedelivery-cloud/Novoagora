@@ -1,81 +1,54 @@
-import React, { useState } from "react";
-import { X } from "lucide-react";
+import React, { useRef } from "react";
 
-interface CashbackScanScreenProps {
+interface Props {
   onBack: () => void;
   onScanSuccess: (data: { merchantId: string; storeId: string }) => void;
 }
 
-const CashbackScanScreen: React.FC<CashbackScanScreenProps> = ({
-  onBack,
-  onScanSuccess,
-}) => {
-  const [error, setError] = useState("");
+const CashbackScanScreen: React.FC<Props> = ({ onBack, onScanSuccess }) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFile = async (event: any) => {
-    const file = event.target.files?.[0];
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    // Envie a foto para seu backend decodificar o QR.
+    // Aqui vamos simular:
+    const simulatedData = {
+      merchantId: "merchant_simulado_123",
+      storeId: "store_simulada_456"
+    };
 
-    // API pública para ler QR code a partir da imagem
-    const res = await fetch("https://api.qrserver.com/v1/read-qr-code/", {
-      method: "POST",
-      body: formData,
-    });
+    onScanSuccess(simulatedData);
+  };
 
-    const result = await res.json();
-    const decoded = result?.[0]?.symbol?.[0]?.data;
-
-    if (!decoded) {
-      setError("QR Code inválido.");
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(decoded);
-      if (!parsed.merchantId || !parsed.storeId) {
-        setError("QR inválido.");
-        return;
-      }
-      onScanSuccess(parsed);
-    } catch (e) {
-      setError("QR inválido.");
-    }
+  const openCamera = () => {
+    fileInputRef.current?.click();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50">
-      <div className="absolute top-5 right-5">
-        <button
-          onClick={onBack}
-          className="p-3 rounded-full bg-white/20 text-white"
-        >
-          <X size={26} />
-        </button>
-      </div>
+    <div className="fixed inset-0 z-50 bg-black text-white flex flex-col items-center p-6">
+      <button onClick={onBack} className="self-start text-sm mb-4">
+        Voltar
+      </button>
 
-      <div className="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl">
-        <h2 className="text-xl font-bold mb-4">Escanear QR Code</h2>
+      <h2 className="text-xl font-bold mb-6">Escanear QR Code</h2>
 
-        <p className="text-gray-600 mb-6">
-          Aponte para um QR Code ou toque para abrir a câmera.
-        </p>
+      <button
+        onClick={openCamera}
+        className="bg-white text-black px-6 py-3 rounded-xl font-bold"
+      >
+        Abrir Câmera
+      </button>
 
-        <label className="bg-blue-600 text-white py-3 px-6 rounded-xl text-sm font-bold inline-block cursor-pointer">
-          Abrir Câmera
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleFile}
-            className="hidden"
-          />
-        </label>
-
-        {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
-      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFile}
+      />
     </div>
   );
 };
