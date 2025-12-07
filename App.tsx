@@ -46,7 +46,7 @@ import { StoreProfileEdit } from './components/StoreProfileEdit';
 import { StoreFinanceModule } from './components/StoreFinanceModule';
 import { StoreSupportModule } from './components/StoreSupportModule';
 import { MerchantQrScreen } from './components/MerchantQrScreen';
-import CashbackScanScreen from './pages/CashbackScanScreen';
+import { CashbackScanScreen } from './components/CashbackScanScreen';
 import { CashbackPaymentScreen } from './components/CashbackPaymentScreen';
 import { MerchantCashbackRequests } from './components/MerchantCashbackRequests';
 import { MerchantPayRoute } from './components/MerchantPayRoute';
