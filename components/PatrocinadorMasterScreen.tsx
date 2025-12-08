@@ -5,7 +5,6 @@ import {
   Shield, 
   CheckCircle, 
   Users, 
-  Star, 
   Phone, 
   MapPin, 
   Globe, 
@@ -14,7 +13,8 @@ import {
   Monitor, 
   Heart, 
   Quote,
-  Calendar
+  Calendar,
+  Instagram
 } from 'lucide-react';
 
 interface PatrocinadorMasterScreenProps {
@@ -57,7 +57,11 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
   ];
 
   const managers = [
-    { name: "William Costa", role: "CEO" },
+    { 
+      name: "William Costa", 
+      role: "CEO",
+      image: "/william-costa.png" 
+    },
     { name: "Carlos Panza", role: "COO" },
     { name: "Douglas Braido", role: "Planejamento Estratégico" },
     { name: "Luisa Longo", role: "Gerente Comercial" },
@@ -211,18 +215,60 @@ export const PatrocinadorMasterScreen: React.FC<PatrocinadorMasterScreenProps> =
 
         {/* Gestores */}
         <section>
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-4 pl-1">Conheça nossos gestores</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-6 pl-1">Conheça nossos gestores</h3>
+          <div className="grid grid-cols-2 gap-8">
             {managers.map((m, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 text-center">
-                <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-2 overflow-hidden">
-                   {/* Placeholder avatar */}
-                   <img src={`https://ui-avatars.com/api/?name=${m.name.replace(' ', '+')}&background=random`} alt={m.name} className="w-full h-full object-cover" />
+              <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 text-center shadow-sm flex flex-col items-center gap-4 hover:shadow-md transition-shadow">
+                <div className="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-[2rem] mb-2 overflow-hidden border-4 border-white dark:border-gray-600 shadow-md transform hover:scale-105 transition-transform duration-300">
+                   <img 
+                     src={m.image || `https://ui-avatars.com/api/?name=${m.name.replace(' ', '+')}&background=random&size=512`} 
+                     alt={m.name} 
+                     className="w-full h-full object-cover object-top" 
+                   />
                 </div>
-                <p className="font-bold text-gray-900 dark:text-white text-xs">{m.name}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{m.role}</p>
+                <div className="w-full">
+                    <p className="font-bold text-gray-900 dark:text-white text-base leading-tight">{m.name}</p>
+                    <div className="h-0.5 w-8 bg-blue-500 mx-auto my-2 rounded-full"></div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">{m.role}</p>
+                </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Instagram Block - Redesigned */}
+        <section className="relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-[32px] shadow-xl shadow-blue-900/5 border border-white/50 dark:border-gray-700/50 text-center group">
+          
+          {/* Background Ambient Light */}
+          <div className="absolute top-0 left-0 right-0 h-full bg-gradient-to-b from-white/50 to-transparent pointer-events-none"></div>
+          
+          <div className="relative z-10 flex flex-col items-center">
+            
+            {/* Icon Container with Glow */}
+            <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#FFD600] via-[#FF0069] to-[#D300C5] rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+                <div className="relative w-14 h-14 bg-gradient-to-tr from-[#FFD600] via-[#FF0069] to-[#D300C5] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 z-10">
+                   <Instagram className="w-7 h-7 text-white" strokeWidth={2} />
+                </div>
+            </div>
+            
+            <h3 className="font-bold text-gray-900 dark:text-white text-xl mb-3 font-display tracking-tight leading-tight">
+              Siga o Grupo Esquematiza
+            </h3>
+            
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 font-medium max-w-[240px] mx-auto leading-relaxed">
+              Acompanhe novidades, bastidores e dicas de segurança.
+            </p>
+            
+            <a
+              href="https://instagram.com/grupoesquematiza"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-gradient-to-r from-[#1E5CFF] to-[#3B82F6] text-white font-bold py-4 rounded-full flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-95 transition-all duration-300"
+            >
+              <Instagram className="w-4 h-4" />
+              <span className="text-sm">Seguir no Instagram</span>
+            </a>
           </div>
         </section>
 
