@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Store } from '../types';
 import { ChevronLeft, Search, SlidersHorizontal, Coins, ShoppingCart } from 'lucide-react';

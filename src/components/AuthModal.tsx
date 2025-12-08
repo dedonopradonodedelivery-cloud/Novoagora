@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, ShoppingBag, Eye, EyeOff, LogOut, User as UserIcon } from 'lucide-react';
 import { auth, googleProvider } from '../lib/firebase';

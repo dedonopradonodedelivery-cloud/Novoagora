@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
@@ -41,7 +40,7 @@ import { StoreProfileEdit } from './components/StoreProfileEdit';
 import { StoreFinanceModule } from './components/StoreFinanceModule';
 import { StoreSupportModule } from './components/StoreSupportModule';
 import { MerchantQrScreen } from './components/MerchantQrScreen';
-import { CashbackScanScreen } from './pages/CashbackScanScreen';
+import { CashbackScanScreen } from './components/CashbackScanScreen';
 import { CashbackPaymentScreen } from './components/CashbackPaymentScreen';
 import { MerchantCashbackRequests } from './components/MerchantCashbackRequests';
 import { MerchantPayRoute } from './components/MerchantPayRoute';
@@ -313,14 +312,14 @@ const App: React.FC = () => {
       id: 'sub-ad-1',
       title: 'Desconto especial em Pizzas',
       image:
-        'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=800&auto=format=fit-crop',
       merchantName: 'Pizza Place',
     },
     {
       id: 'sub-ad-2',
       title: 'Seu almoço executivo aqui',
       image:
-        'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=800&auto=format=fit-crop',
       merchantName: 'Sabor & Cia',
     },
   ];

@@ -1,8 +1,7 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { User } from 'firebase/auth';
 import { useProfile } from '../hooks/useProfile';
-import { User as UserIcon, Smartphone, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { User as UserIcon, Smartphone, ChevronRight } from 'lucide-react';
 
 interface QuickRegisterProps {
   user: User;
@@ -70,107 +69,63 @@ export const QuickRegister: React.FC<QuickRegisterProps> = ({ user, onComplete }
       
       {/* Progress / Step Indicator */}
       <div className="w-full max-w-sm flex items-center justify-center gap-2 mb-10 opacity-50">
+        <div className="w-2 h-2 rounded-full bg-blue-600"></div>
         <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-        <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-        <div className="w-8 h-2 rounded-full" style={{ backgroundColor: BRAND_BLUE }}></div>
       </div>
 
       <div className="w-full max-w-sm">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2 tracking-tight">Quase lá!</h1>
-          <p className="text-gray-500 text-sm">
-            Para finalizar, precisamos saber como te chamar e seu contato para o cashback.
-          </p>
-        </div>
-
-        {/* Avatar Preview */}
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-gray-100 p-1 shadow-lg shadow-blue-100 border-2 border-white">
-              {user.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-full h-full rounded-full object-cover" />
-              ) : (
-                <div className="w-full h-full rounded-full bg-blue-50 flex items-center justify-center text-blue-400">
-                  <UserIcon className="w-12 h-12" />
-                </div>
-              )}
-            </div>
-            <div className="absolute bottom-1 right-1 bg-green-500 text-white p-1.5 rounded-full border-4 border-white">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Finalize seu cadastro</h1>
+          <p className="text-gray-500 mb-8">Precisamos apenas de alguns detalhes para personalizar sua experiência.</p>
           
-          {/* Name Input */}
-          <div className="group">
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">
-              Nome Completo
-            </label>
-            <div className="relative flex items-center">
-              <UserIcon className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#2D6DF6] transition-colors" />
-              <input 
-                type="text" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: João da Silva"
-                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#2D6DF6] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder-gray-300 font-medium"
-                required
-              />
-            </div>
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+              
+              {/* Name Input */}
+              <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Nome completo</label>
+                  <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                          <UserIcon className="w-5 h-5" />
+                      </div>
+                      <input 
+                          type="text" 
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                          placeholder="Digite seu nome"
+                      />
+                  </div>
+              </div>
 
-          {/* Phone Input */}
-          <div className="group">
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">
-              WhatsApp / Celular
-            </label>
-            <div className="relative flex items-center">
-              <Smartphone className="absolute left-4 w-5 h-5 text-gray-400 group-focus-within:text-[#2D6DF6] transition-colors" />
-              <input 
-                type="tel" 
-                value={phone}
-                onChange={handlePhoneChange}
-                placeholder="(21) 99999-9999"
-                maxLength={15}
-                className="w-full bg-gray-50 text-gray-800 text-lg py-4 pl-12 pr-4 rounded-2xl border border-gray-100 focus:bg-white focus:border-[#2D6DF6] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder-gray-300 font-medium"
-                required
-              />
-            </div>
-          </div>
+              {/* Phone Input */}
+              <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Telefone (WhatsApp)</label>
+                  <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                          <Smartphone className="w-5 h-5" />
+                      </div>
+                      <input 
+                          type="tel" 
+                          value={phone}
+                          onChange={handlePhoneChange}
+                          className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                          placeholder="(21) 99999-9999"
+                      />
+                  </div>
+              </div>
 
-          {error && (
-            <div className="p-3 rounded-xl bg-red-50 text-red-500 text-xs text-center font-medium">
-              {error}
-            </div>
-          )}
+              {error && (
+                  <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>
+              )}
 
-          {/* Action Button */}
-          <button 
-            type="submit"
-            disabled={isSaving}
-            style={{ backgroundColor: BRAND_BLUE }}
-            className="w-full text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {isSaving ? (
-              <span className="animate-pulse">Salvando...</span>
-            ) : (
-              <>
-                Continuar
-                <ChevronRight className="w-5 h-5 stroke-[3]" />
-              </>
-            )}
-          </button>
-        </form>
-        
-        <div className="mt-8 text-center">
-            <p className="text-xs text-gray-400">
-                Seus dados estão protegidos.
-            </p>
-        </div>
+              <button 
+                  type="submit"
+                  disabled={isSaving}
+                  className="w-full bg-[#2D6DF6] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transform active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
+              >
+                  {isSaving ? 'Salvando...' : 'Concluir cadastro'}
+                  {!isSaving && <ChevronRight className="w-5 h-5" />}
+              </button>
+          </form>
       </div>
     </div>
   );

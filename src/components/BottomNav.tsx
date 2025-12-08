@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Home, Search, Wrench, User, QrCode } from 'lucide-react';
 
