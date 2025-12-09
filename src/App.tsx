@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from './components/Layout';
-import { Header } from './components/Header';
-import { HomeFeed } from './components/HomeFeed';
-import { ExploreView } from './components/ExploreView';
-import { StatusView } from './components/StatusView';
-import { MarketplaceView } from './components/MarketplaceView';
-import { CategoryView } from './components/CategoryView';
-import { CategoriaAlimentacao } from './components/CategoriaAlimentacao';
-import { SubcategoryStoreList } from './components/SubcategoryStoreList';
-import { StoreDetailView } from './components/StoreDetailView';
-import { StoreCategoryView } from './components/StoreCategoryView';
-import { CashbackView } from './components/CashbackView';
-import { CashbackLandingView } from './components/CashbackLandingView';
-import { FreguesiaConnectPublic } from './components/FreguesiaConnectPublic';
-import { FreguesiaConnectDashboard } from './components/FreguesiaConnectDashboard';
-import { FreguesiaConnectRestricted } from './components/FreguesiaConnectRestricted';
-import { RewardDetailsView } from './components/RewardDetailsView';
-import { PrizeHistoryView } from './components/PrizeHistoryView';
-import { AuthModal } from './components/AuthModal';
-import { QuickRegister } from './components/QuickRegister';
-import { MenuView } from './components/MenuView';
-import { ServicesView } from './components/ServicesView';
-import { SubcategoriesView } from './components/SubcategoriesView';
-import { SpecialtiesView } from './components/SpecialtiesView';
-import { StoreAreaView } from './components/StoreAreaView';
-import { QuoteRequestModal } from './components/QuoteRequestModal';
-import { ServiceSuccessView } from './components/ServiceSuccessView';
-import { EditorialListView, EditorialCollection } from './components/EditorialListView';
-import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './components/SimplePages';
-import { CashbackInfoView } from './components/CashbackInfoView';
-import { EditProfileView } from './components/EditProfileView';
-import { ServiceTermsView } from './components/ServiceTermsView';
-import { PatrocinadorMasterScreen } from './components/PatrocinadorMasterScreen';
-import { BusinessRegistrationFlow } from './components/BusinessRegistrationFlow';
-import { StoreCashbackModule } from './components/StoreCashbackModule';
-import { StoreAdsModule } from './components/StoreAdsModule';
-import { StoreConnectModule } from './components/StoreConnectModule';
-import { StoreProfileEdit } from './components/StoreProfileEdit';
-import { StoreFinanceModule } from './components/StoreFinanceModule';
-import { StoreSupportModule } from './components/StoreSupportModule';
-import { MerchantQrScreen } from './components/MerchantQrScreen';
-import { CashbackScanScreen } from './components/CashbackScanScreen';
-import { CashbackPaymentScreen } from './components/CashbackPaymentScreen';
-import { MerchantCashbackRequests } from './components/MerchantCashbackRequests';
-import { MerchantPayRoute } from './components/MerchantPayRoute';
-import { CashbackPayFromQrScreen } from './components/CashbackPayFromQrScreen';
+import { Layout } from './components/layout/Layout';
+import { Header } from './components/layout/Header';
+import { HomeFeed } from './components/home/HomeFeed';
+import { ExploreView } from './pages/ExplorePage';
+import { StatusView } from './pages/StatusPage';
+import { MarketplaceView } from './pages/MarketplacePage';
+import { CategoryView } from './pages/CategoryPage';
+import { CategoriaAlimentacao } from './pages/FoodCategoryPage';
+import { SubcategoryStoreList } from './pages/SubcategoryPage';
+import { StoreDetailView } from './pages/StoreDetailPage';
+import { StoreCategoryView } from './pages/StoreProductsPage';
+import { CashbackView } from './pages/CashbackPage';
+import { CashbackLandingView } from './pages/CashbackLandingPage';
+import { FreguesiaConnectPublic } from './pages/connect/FreguesiaConnectPublic';
+import { FreguesiaConnectDashboard } from './pages/connect/FreguesiaConnectDashboard';
+import { FreguesiaConnectRestricted } from './pages/connect/FreguesiaConnectRestricted';
+import { RewardDetailsView } from './pages/RewardDetailsPage';
+import { PrizeHistoryView } from './pages/PrizeHistoryPage';
+import { AuthModal } from './components/shared/AuthModal';
+import { QuickRegister } from './components/auth/QuickRegister';
+import { MenuView } from './pages/ProfileMenuPage';
+import { ServicesView } from './pages/services/ServicesView';
+import { SubcategoriesView } from './pages/services/SubcategoriesView';
+import { SpecialtiesView } from './pages/services/SpecialtiesView';
+import { StoreAreaView } from './pages/store/StoreAreaView';
+import { QuoteRequestModal } from './components/shared/QuoteRequestModal';
+import { ServiceSuccessView } from './pages/services/ServiceSuccessView';
+import { EditorialListView, EditorialCollection } from './pages/EditorialPage';
+import { SupportView, InviteFriendView, AboutView, FavoritesView, SponsorInfoView } from './pages/SimplePages';
+import { CashbackInfoView } from './pages/CashbackInfoPage';
+import { EditProfileView } from './pages/EditProfilePage';
+import { ServiceTermsView } from './pages/services/ServiceTermsView';
+import { PatrocinadorMasterScreen } from './pages/PatrocinadorMasterScreen';
+import { BusinessRegistrationFlow } from './pages/store/modules/BusinessRegistrationFlow';
+import { StoreCashbackModule } from './pages/store/modules/StoreCashbackModule';
+import { StoreAdsModule } from './pages/store/modules/StoreAdsModule';
+import { StoreConnectModule } from './pages/store/modules/StoreConnectModule';
+import { StoreProfileEdit } from './pages/store/modules/StoreProfileEdit';
+import { StoreFinanceModule } from './pages/store/modules/StoreFinanceModule';
+import { StoreSupportModule } from './pages/store/modules/StoreSupportModule';
+import { MerchantQrScreen } from './pages/store/MerchantQrScreen';
+import { CashbackScanScreen } from './pages/CashbackScanScreen';
+import { CashbackPaymentScreen } from './pages/CashbackPaymentScreen';
+import { MerchantCashbackRequests } from './pages/store/modules/MerchantCashbackRequests';
+import { MerchantPayRoute } from './pages/MerchantPayRoute';
+import { CashbackPayFromQrScreen } from './pages/CashbackPayFromQrScreen';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -69,7 +69,7 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '2',
@@ -86,7 +86,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '3',
@@ -120,7 +120,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true, // Marked as verified
+    verified: true,
   },
 ];
 
@@ -133,7 +133,7 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<'cliente' | 'lojista' | null>(null);
 
   const [globalSearch, setGlobalSearch] = useState('');
-  const [stores] = useState<Store[]>(MOCK_STORES); // usa apenas os mocks
+  const [stores] = useState<Store[]>(MOCK_STORES);
 
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
@@ -149,16 +149,9 @@ const App: React.FC = () => {
   const [quoteCategoryName, setQuoteCategoryName] = useState('');
 
   const [selectedReward, setSelectedReward] = useState<any>(null);
-  
-  // State for Scanning Flow
   const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(null);
-  
-  // State for Deep Link Route
   const [deepLinkMerchantId, setDeepLinkMerchantId] = useState<string | null>(null);
-  // State for QR Code URL Route
   const [qrMerchantId, setQrMerchantId] = useState<string | null>(null);
-
-  // State to pass transaction details to CashbackView
   const [lastTransaction, setLastTransaction] = useState<any>(null);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -166,16 +159,12 @@ const App: React.FC = () => {
   // URL Parsing for Deep Links
   useEffect(() => {
     const path = window.location.pathname;
-    
-    // Match /merchant/:id/pay
     const matchMerchantPay = path.match(/\/merchant\/([^/]+)\/pay/);
     if (matchMerchantPay && matchMerchantPay[1]) {
       setDeepLinkMerchantId(matchMerchantPay[1]);
       setActiveTab('merchant_pay_route');
       return;
     }
-
-    // Match /cashback/loja/:id
     const matchCashbackQr = path.match(/\/cashback\/loja\/([^/]+)/);
     if (matchCashbackQr && matchCashbackQr[1]) {
       setQrMerchantId(matchCashbackQr[1]);
@@ -183,7 +172,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // AUTH
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -197,19 +185,14 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, [activeTab]);
 
-  // ROLE DO USUÁRIO
   useEffect(() => {
-    // em ambiente fake, mantém lógica básica
     if (!user) {
       setUserRole(null);
       return;
     }
-    // Simulate user role based on some logic or hardcoded for demo
-    // For now, defaulting to 'cliente' but can be toggled via business registration flow
     if (!userRole) setUserRole('cliente'); 
   }, [user]);
 
-  // SPLASH
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 5000);
     return () => clearTimeout(timer);
@@ -528,7 +511,7 @@ const App: React.FC = () => {
             {activeTab === 'cashback' && (
               <CashbackView 
                 onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction} // Pass new transaction to view
+                newTransaction={lastTransaction} 
               />
             )}
 
@@ -562,12 +545,10 @@ const App: React.FC = () => {
               <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
             )}
 
-            {/* Merchant QR Flow */}
             {activeTab === 'merchant_qr' && (
               <MerchantQrScreen onBack={() => setActiveTab('profile')} user={user} />
             )}
 
-            {/* QR Code Scanner (Customer) */}
             {activeTab === 'qrcode_scan' && (
               <CashbackScanScreen 
                 onBack={() => setActiveTab('home')} 
@@ -575,18 +556,16 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Payment Flow (Customer - Manual Entry) */}
             {activeTab === 'cashback_payment' && scannedData && (
               <CashbackPaymentScreen
                 user={user}
                 merchantId={scannedData.merchantId}
                 storeId={scannedData.storeId}
                 onBack={() => setActiveTab('home')}
-                onComplete={handlePaymentComplete} // Redirects to wallet with history
+                onComplete={handlePaymentComplete}
               />
             )}
 
-            {/* Merchant Payment Route (Legacy Deep Link) */}
             {activeTab === 'merchant_pay_route' && deepLinkMerchantId && (
               <MerchantPayRoute 
                 merchantId={deepLinkMerchantId}
@@ -597,7 +576,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* NEW QR Route Payment Screen */}
             {activeTab === 'cashback_pay_qr' && qrMerchantId && (
               <CashbackPayFromQrScreen 
                 merchantId={qrMerchantId}
@@ -608,10 +586,9 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Merchant Pending Requests */}
             {activeTab === 'merchant_requests' && (
               <MerchantCashbackRequests 
-                merchantId="merchant_123_uuid" // In real app, derived from user.uid
+                merchantId="merchant_123_uuid" 
                 onBack={() => setActiveTab('store_area')}
               />
             )}
@@ -681,7 +658,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Simple Pages Routing */}
             {activeTab === 'support' && <SupportView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'invite_friend' && <InviteFriendView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'about' && <AboutView onBack={() => setActiveTab('profile')} />}

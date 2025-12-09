@@ -14,13 +14,11 @@ import {
   CheckCircle2, 
   ArrowRight, 
   MoveRight,
-  Shield,
-  UserCheck,
-  Eye,
-  Phone,
+  Zap, 
+  Droplet, 
+  PaintRoller, 
   Crown
 } from 'lucide-react';
-import { MasterSponsorBanner } from './MasterSponsorBanner';
 
 interface ServicesViewProps {
   onSelectMacro: (id: string, name: string) => void;
@@ -81,12 +79,17 @@ const MACRO_SERVICES = [
 ];
 
 export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpenTerms, onNavigate }) => {
+  
+  const handleNavigateToMaster = () => {
+    onNavigate('patrocinador_master');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans animate-in fade-in duration-500 pb-32">
       
       <div className="px-5 pt-6 flex flex-col gap-6">
         
-        {/* Hero Banner Estilo Card Premium */}
+        {/* 1. Hero Banner Estilo Card Premium */}
         <div className="relative w-full rounded-[20px] bg-gradient-to-r from-[#1E5BFF] to-[#4D7CFF] p-7 shadow-lg shadow-blue-500/20 overflow-hidden group cursor-default transition-all duration-300 hover:shadow-blue-500/25">
           {/* Elementos Decorativos */}
           <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -102,7 +105,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
           </div>
         </div>
 
-        {/* Seção Como Funciona (Moved Up) */}
+        {/* 2. Seção Como Funciona */}
         <div className="bg-[#F8F8F8] dark:bg-gray-800/50 rounded-[20px] p-8 border border-gray-100 dark:border-gray-700/50">
           <h3 className="text-base font-bold text-gray-900 dark:text-white mb-8 text-center">
             Como funciona?
@@ -168,11 +171,11 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
           </div>
         </div>
 
-        {/* Seção Grid de Categorias */}
+        {/* 3. Seção Grid de Categorias */}
         <div>
           <div className="flex items-center justify-between mb-4 px-1">
             <h3 className="text-base font-bold text-gray-900 dark:text-white">
-              Escolha um serviço
+              O que você precisa?
             </h3>
             <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-300 bg-[#F8F8F8] dark:bg-gray-800 px-[10px] py-1.5 rounded-[12px]">
               {MACRO_SERVICES.length} categorias
@@ -186,23 +189,22 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
                 <button
                   key={item.id}
                   onClick={() => onSelectMacro(item.id, item.name)}
-                  className="bg-white dark:bg-gray-800 rounded-[24px] p-5 shadow-sm border border-gray-100 dark:border-gray-700/50 flex flex-col items-start gap-4 hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-100 dark:hover:border-gray-600 transition-all duration-300 active:scale-[0.98] group text-left h-full relative overflow-hidden"
+                  className="bg-white dark:bg-gray-800 rounded-[20px] px-5 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700/50 flex flex-col items-start gap-4 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] hover:border-blue-100 dark:hover:border-gray-600 transition-all duration-300 active:scale-[0.96] group text-left h-full relative overflow-hidden"
                 >
-                  {/* Icon Container with Hover Effect */}
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1E5BFF] group-hover:border-[#1E5BFF]">
-                    <Icon className={`w-7 h-7 ${item.color} group-hover:text-white transition-colors duration-300`} strokeWidth={2} />
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 border border-gray-100 dark:border-gray-700 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <Icon className={`w-6 h-6 ${item.color}`} strokeWidth={2} />
                   </div>
                   
-                  <div className="flex-1 w-full space-y-1">
-                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-base leading-tight group-hover:text-[#1E5BFF] transition-colors">
+                  <div className="flex-1 w-full space-y-1.5">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight group-hover:text-[#1E5BFF] transition-colors">
                       {item.name}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium">
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug line-clamp-2 font-medium">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="w-full pt-3 mt-auto border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between opacity-80 group-hover:opacity-100 transition-opacity">
+                  <div className="w-full pt-4 mt-auto border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity">
                     <span className="text-[10px] font-bold text-[#1E5BFF] uppercase tracking-wide">
                       Ver opções
                     </span>
@@ -216,63 +218,77 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onSelectMacro, onOpe
           </div>
         </div>
 
-        {/* --- BANNER GRANDE PATROCINADOR MASTER COM SERVIÇOS --- */}
-        <div className="w-full bg-gradient-to-br from-[#263246] via-[#1F2940] to-[#161C2E] rounded-[32px] p-6 sm:p-8 text-white shadow-2xl shadow-blue-900/10 relative overflow-hidden group border border-white/5 mt-6">
-          {/* Decor */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#1E5BFF]/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none"></div>
+        {/* 4. Patrocinador Master - Design Premium */}
+        <div className="w-full bg-gradient-to-br from-[#1E3AFF] to-[#4C8DFF] rounded-[24px] shadow-xl shadow-blue-500/20 p-5 relative overflow-hidden group">
           
-          <div className="relative z-10 flex flex-col h-full">
-            
-            {/* Header do Card */}
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-white/10 p-1.5 rounded-lg border border-white/10 backdrop-blur-sm">
-                        <Crown className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                    </div>
-                    <p className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-widest">Patrocinador Master</p>
-                </div>
-                <h2 className="text-2xl font-[900] font-display leading-tight text-white tracking-wide drop-shadow-md">
-                    Grupo Esquematiza
+          {/* Decorative Background Elements */}
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+
+          <div className="relative z-10">
+            {/* Top Label */}
+            <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md w-fit px-3 py-1 rounded-full border border-white/10 mb-4 shadow-sm">
+              <Crown className="w-3 h-3 text-yellow-300 fill-yellow-300" />
+              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Patrocinador Master</span>
+            </div>
+
+            {/* Brand Header */}
+            <div className="flex items-center gap-3.5 mb-6 cursor-pointer" onClick={handleNavigateToMaster}>
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg shrink-0 ring-4 ring-white/10">
+                <span className="text-xl font-black text-[#1E3AFF]">E</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-white font-bold text-lg leading-tight tracking-tight truncate">
+                  Grupo Esquematiza
                 </h2>
-                <p className="text-sm text-gray-300 font-medium leading-relaxed mt-1.5 max-w-[260px]">
-                    Segurança e facilities com excelência.
+                <p className="text-blue-100 text-xs font-medium mt-0.5 leading-snug text-opacity-90">
+                  Soluções profissionais para sua casa e empresa
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl flex items-center justify-center border border-white/10 backdrop-blur-md shadow-lg shrink-0">
-                 <Shield className="w-6 h-6 text-blue-400 drop-shadow-md" />
-              </div>
             </div>
 
-            {/* Grid de Serviços do Patrocinador (Refined) */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
-              {[
-                { name: "Vigilância", icon: Shield, color: "text-blue-400", bg: "bg-blue-500/10" },
-                { name: "Portaria", icon: UserCheck, color: "text-green-400", bg: "bg-green-500/10" },
-                { name: "Limpeza", icon: Sparkles, color: "text-yellow-400", bg: "bg-yellow-500/10" },
-                { name: "Monitoramento", icon: Eye, color: "text-purple-400", bg: "bg-purple-500/10" }
-              ].map((item, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => onNavigate('patrocinador_master')} 
-                    className="relative bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-3 rounded-2xl flex items-center gap-3 transition-all active:scale-95 group/btn text-left backdrop-blur-sm h-14"
-                  >
-                    <div className={`w-9 h-9 rounded-xl ${item.bg} flex items-center justify-center ${item.color} shrink-0 ring-1 ring-white/5`}>
-                        <item.icon className="w-4 h-4" />
-                    </div>
-                    <span className="text-xs font-bold text-gray-200 group-hover/btn:text-white tracking-wide">{item.name}</span>
-                  </button>
-              ))}
-            </div>
+            {/* Services Grid Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={handleNavigateToMaster}
+                className="flex items-center gap-2.5 bg-white hover:bg-gray-50 text-[#1E3AFF] px-4 py-3 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 group/btn text-left"
+              >
+                <div className="bg-blue-50 p-1 rounded-full shrink-0 group-hover/btn:bg-blue-100 transition-colors">
+                    <Zap className="w-4 h-4 text-[#1E3AFF]" strokeWidth={2.5} />
+                </div>
+                <span className="text-xs font-bold truncate tracking-wide">Eletricista</span>
+              </button>
 
-            {/* CTA Button */}
-            <button
-              onClick={() => onNavigate('patrocinador_master')}
-              className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-full text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 active:scale-[0.98] tracking-wide"
-            >
-              Conhecer o grupo
-            </button>
+              <button 
+                onClick={handleNavigateToMaster}
+                className="flex items-center gap-2.5 bg-white hover:bg-gray-50 text-[#1E3AFF] px-4 py-3 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 group/btn text-left"
+              >
+                <div className="bg-blue-50 p-1 rounded-full shrink-0 group-hover/btn:bg-blue-100 transition-colors">
+                    <Droplet className="w-4 h-4 text-[#1E3AFF]" strokeWidth={2.5} />
+                </div>
+                <span className="text-xs font-bold truncate tracking-wide">Encanador</span>
+              </button>
+
+              <button 
+                onClick={handleNavigateToMaster}
+                className="flex items-center gap-2.5 bg-white hover:bg-gray-50 text-[#1E3AFF] px-4 py-3 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 group/btn text-left"
+              >
+                <div className="bg-blue-50 p-1 rounded-full shrink-0 group-hover/btn:bg-blue-100 transition-colors">
+                    <PaintRoller className="w-4 h-4 text-[#1E3AFF]" strokeWidth={2.5} />
+                </div>
+                <span className="text-xs font-bold truncate tracking-wide">Pintura</span>
+              </button>
+
+              <button 
+                onClick={handleNavigateToMaster}
+                className="flex items-center gap-2.5 bg-white hover:bg-gray-50 text-[#1E3AFF] px-4 py-3 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 group/btn text-left"
+              >
+                <div className="bg-blue-50 p-1 rounded-full shrink-0 group-hover/btn:bg-blue-100 transition-colors">
+                    <Hammer className="w-4 h-4 text-[#1E3AFF]" strokeWidth={2.5} />
+                </div>
+                <span className="text-xs font-bold truncate tracking-wide">Reformas</span>
+              </button>
+            </div>
           </div>
         </div>
 

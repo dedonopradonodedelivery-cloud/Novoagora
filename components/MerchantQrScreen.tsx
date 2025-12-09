@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { X, Share2, Copy, MapPin, Store as StoreIcon } from 'lucide-react';
 import { User } from 'firebase/auth';
@@ -15,7 +16,7 @@ const STORE_DATA = {
   shortId: '#LOJA-1234'
 };
 
-const MerchantQrScreen: React.FC<MerchantQrScreenProps> = ({ onBack, user }) => {
+export const MerchantQrScreen: React.FC<MerchantQrScreenProps> = ({ onBack, user }) => {
   
   // Construct Payload
   const qrPayload = JSON.stringify({
@@ -111,5 +112,3 @@ const MerchantQrScreen: React.FC<MerchantQrScreenProps> = ({ onBack, user }) => 
     </div>
   );
 };
-
-export default MerchantQrScreen;
