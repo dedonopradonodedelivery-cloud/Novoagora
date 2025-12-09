@@ -232,8 +232,8 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
 
                                {/* Selo Cashback Ativo (Preto + Moeda) */}
                                {store.cashback && (
-                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center shrink-0">
-                                    <Coins className="w-2.5 h-2.5 text-[#FFD447] fill-[#FFD447]" strokeWidth={1} />
+                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center shrink-0" title="Cashback Ativo">
+                                    <Coins className="w-2.5 h-2.5 text-[#FFD447] fill-[#FFD447]" strokeWidth={1} aria-label="Cashback" />
                                  </div>
                                )}
                              </div>

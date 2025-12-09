@@ -150,15 +150,15 @@ const HorizontalStoreSection: React.FC<{
                     
                     {/* 1. Patrocinado (Azul Royal) */}
                     {isSponsored && (
-                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm">
-                            <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm" title="Patrocinado">
+                            <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
                         </div>
                     )}
 
                     {/* 2. Cashback (Preto + Amarelo) */}
                     {hasCashback && (
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm">
-                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" />
+                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm" title="Cashback">
+                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
                         </div>
                     )}
 
@@ -179,7 +179,7 @@ const HorizontalStoreSection: React.FC<{
                   </span>
                   {rating > 0 && (
                     <span className="flex items-center gap-0.5 text-[11px] text-[#1E5BFF] font-medium">
-                      <Star className="w-3 h-3" fill="currentColor" />
+                      <Star className="w-3 h-3 fill-current" />
                       {rating.toFixed(1)}
                     </span>
                   )}
@@ -408,7 +408,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
             {cashbackStores.length > 0 && (
               <HorizontalStoreSection
-                title="Lojas com cashback"
+                title="Com cashback"
                 subtitle="Ganhe parte do valor de volta nas suas compras"
                 stores={cashbackStores}
                 onStoreClick={onStoreClick}
