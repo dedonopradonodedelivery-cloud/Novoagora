@@ -44,14 +44,14 @@ const HORIZONTAL_SCROLL_CSS = `
 
 // Imagens para o carrossel automático
 const EXPLORE_BANNERS = [
-  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format=fit=crop', // Academia
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format=fit=crop', // Moda Feminina
-  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format=fit=crop', // Celular
-  'https://images.unsplash.com/photo-1599447421405-0c323d27bc8d?q=80&w=800&auto=format=fit=crop', // Yoga
-  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format=fit=crop', // Tech/Work
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format=fit=crop',
+  'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format=fit=crop',
+  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format=fit=crop',
+  'https://images.unsplash.com/photo-1599447421405-0c323d27bc8d?q=80&w=800&auto=format=fit=crop',
+  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format=fit=crop',
 ];
 
-// Dados dos Serviços 24h (movido da Home)
+// Dados dos Serviços 24h
 const SERVICES_24H = [
   { id: 'srv1', name: 'Chaveiro Expresso', category: 'Chaveiro', image: 'https://images.unsplash.com/photo-1585664811087-47f65be1bac6?q=80&w=400&auto=format=fit=crop' },
   { id: 'srv2', name: 'Farmácia Pacheco', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=400&auto=format=fit=crop' },
@@ -60,31 +60,32 @@ const SERVICES_24H = [
   { id: 'srv5', name: 'Desentupidora', category: 'Emergência', image: 'https://images.unsplash.com/photo-1584622050111-993a426fbf0a?q=80&w=400&auto=format=fit=crop' },
 ];
 
-// --- Lógica de Ordenação e Alternância (Interleaving) ---
+// --- Lógica de ordenação e alternância ---
 const interleaveStores = (stores: Store[]): Store[] => {
-  // 1. Separate into buckets based on priority
-  // Priority: Sponsored > Cashback > Verified > Others
-  // We use exclusive buckets for the interleaving loop to ensure we pick unique items
   const sponsored = stores.filter(s => s.isSponsored || s.adType === AdType.PREMIUM);
-  const cashback = stores.filter(s => (s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
-  const verified = stores.filter(s => s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
-  const others = stores.filter(s => !s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM));
+  const cashback = stores.filter(
+    s => (s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
+  );
+  const verified = stores.filter(
+    s => s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
+  );
+  const others = stores.filter(
+    s => !s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
+  );
 
   const result: Store[] = [];
   const maxLength = Math.max(sponsored.length, cashback.length, verified.length);
 
-  // 2. Interleave: Sponsored -> Cashback -> Verified
   for (let i = 0; i < maxLength; i++) {
     if (sponsored[i]) result.push(sponsored[i]);
     if (cashback[i]) result.push(cashback[i]);
     if (verified[i]) result.push(verified[i]);
   }
 
-  // 3. Append remaining "others"
   return [...result, ...others];
 };
 
-// --- Componente de seção horizontal reutilizável ---
+// --- Componente de seção horizontal ---
 const HorizontalStoreSection: React.FC<{
   title: string;
   subtitle?: string;
@@ -99,7 +100,9 @@ const HorizontalStoreSection: React.FC<{
         <div>
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
           {subtitle && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
@@ -144,30 +147,35 @@ const HorizontalStoreSection: React.FC<{
                   </div>
                 )}
 
-                {/* --- BADGES (PRIORITY ORDER, RIGHT ALIGNED) --- */}
+                {/* Badges */}
                 <div className="absolute top-2 right-2 flex gap-1.5 flex-row-reverse z-10">
-                    
-                    {/* 1. Patrocinado (Azul Royal) */}
-                    {isSponsored && (
-                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm" title="Patrocinado">
-                            <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
-                        </div>
-                    )}
+                  {isSponsored && (
+                    <div
+                      className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm"
+                      title="Patrocinado"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
+                    </div>
+                  )}
 
-                    {/* 2. Cashback (Preto + Amarelo) */}
-                    {hasCashback && (
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm" title="Cashback">
-                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
-                        </div>
-                    )}
+                  {hasCashback && (
+                    <div
+                      className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm"
+                      title="Cashback"
+                    >
+                      <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
+                    </div>
+                  )}
 
-                    {/* 3. Verificado (Azul Royal + Branco) */}
-                    {isVerified && (
-                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" aria-label="Verificado" />
-                    )}
+                  {isVerified && (
+                    <BadgeCheck
+                      className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm"
+                      aria-label="Verificado"
+                    />
+                  )}
                 </div>
-
               </div>
+
               <div className="px-3 py-2.5">
                 <p className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 leading-tight">
                   {name}
@@ -192,7 +200,7 @@ const HorizontalStoreSection: React.FC<{
   );
 };
 
-export const ExploreView: React.FC<ExploreViewProps> = ({
+const ExploreView: React.FC<ExploreViewProps> = ({
   onSelectCategory,
   onNavigate,
   onStoreClick,
@@ -205,15 +213,15 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
-  // Banner Auto-Rotation Logic
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBannerIndex((prev) => (prev + 1) % EXPLORE_BANNERS.length);
-    }, 4000);
+    const timer = setInterval(
+      () => setCurrentBannerIndex(prev => (prev + 1) % EXPLORE_BANNERS.length),
+      4000
+    );
     return () => clearInterval(timer);
   }, []);
 
-  // --- Base: filtrar por busca ---
+  // Busca
   const searchFilteredStores = useMemo(() => {
     if (!normalizedSearch) return stores;
 
@@ -233,7 +241,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     });
   }, [stores, normalizedSearch]);
 
-  // --- Filtro por estilo (chips) ---
+  // Estilo (chips)
   const styleFilteredStores = useMemo(() => {
     if (!activeStyle) return searchFilteredStores;
     const style = styleChips.find((s) => s.id === activeStyle);
@@ -253,7 +261,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     });
   }, [searchFilteredStores, activeStyle]);
 
-  // --- Quick filters (cashback, top rated) ---
+  // Quick filters
   const finalFilteredStores = useMemo(() => {
     if (quickFilter === 'cashback') {
       return styleFilteredStores.filter(
@@ -274,20 +282,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     return styleFilteredStores;
   }, [styleFilteredStores, quickFilter]);
 
-  // --- Seções de recomendação (USANDO INTERLEAVE) ---
+  // Seções
+  const nearYouStores = useMemo(
+    () => interleaveStores(finalFilteredStores).slice(0, 10),
+    [finalFilteredStores]
+  );
 
-  // 1. Lojas perto de você (simulando proximidade com interleave)
-  const nearYouStores = useMemo(() => {
-    return interleaveStores(finalFilteredStores).slice(0, 10);
-  }, [finalFilteredStores]);
+  const forYouStores = useMemo(
+    () => interleaveStores([...finalFilteredStores].reverse()).slice(0, 10),
+    [finalFilteredStores]
+  );
 
-  // 2. Pra você (interleave também para garantir visibilidade comercial)
-  const forYouStores = useMemo(() => {
-    // Basic recommendation logic (here just interleaving, normally would check user prefs)
-    return interleaveStores([...finalFilteredStores].reverse()).slice(0, 10);
-  }, [finalFilteredStores]);
-
-  // 3. Com cashback
   const cashbackStores = useMemo(
     () =>
       finalFilteredStores.filter(
@@ -296,11 +301,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     [finalFilteredStores]
   );
 
-  // 4. Tendências na Freguesia (interleave shuffled)
   const trendingStores = useMemo(() => {
-    const shuffled = [...finalFilteredStores].sort(
-      () => Math.random() - 0.5
-    );
+    const shuffled = [...finalFilteredStores].sort(() => Math.random() - 0.5);
     return interleaveStores(shuffled).slice(0, 10);
   }, [finalFilteredStores]);
 
@@ -308,7 +310,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   return (
     <>
-      {/* CSS para esconder barras de rolagem horizontais das seções */}
       <style>{HORIZONTAL_SCROLL_CSS}</style>
 
       <div className="px-4 pt-3 pb-6 space-y-5">
@@ -355,37 +356,36 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </button>
         </div>
 
-        {/* --- CARROSSEL DE IMAGENS AUTOMÁTICO --- */}
+        {/* Carrossel de imagens */}
         <div className="w-full">
-            <div className="w-full h-[150px] rounded-2xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-gray-700">
-                {EXPLORE_BANNERS.map((banner, index) => (
-                    <div 
-                        key={index} 
-                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out bg-gray-200 dark:bg-gray-800 ${
-                            index === currentBannerIndex ? 'opacity-100' : 'opacity-0'
-                        }`}
-                    >
-                        <img 
-                            src={banner} 
-                            alt={`Banner ${index + 1}`} 
-                            className="w-full h-full object-cover" 
-                        />
-                    </div>
-                ))}
-            </div>
-            {/* Indicadores (Dots) */}
-            <div className="flex justify-center gap-1.5 mt-3">
-                {EXPLORE_BANNERS.map((_, idx) => (
-                    <div 
-                        key={idx} 
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                            idx === currentBannerIndex 
-                            ? 'w-6 bg-[#1E5BFF]' 
-                            : 'w-1.5 bg-gray-300 dark:bg-gray-700'
-                        }`} 
-                    />
-                ))}
-            </div>
+          <div className="w-full h-[150px] rounded-2xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-gray-700">
+            {EXPLORE_BANNERS.map((banner, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out bg-gray-200 dark:bg-gray-800 ${
+                  index === currentBannerIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                <img
+                  src={banner}
+                  alt={`Banner ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-1.5 mt-3">
+            {EXPLORE_BANNERS.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === currentBannerIndex
+                    ? 'w-6 bg-[#1E5BFF]'
+                    : 'w-1.5 bg-gray-300 dark:bg-gray-700'
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Seções de recomendação */}
@@ -433,37 +433,52 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
-        {/* Serviços 24h (Moved from Home) */}
+        {/* Serviços 24h */}
         <section>
-            <div className="flex items-center justify-between mb-2">
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
-            </div>
-            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
-                {SERVICES_24H.map((service) => (
-                    <div key={service.id} className="min-w-[130px] w-[130px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
-                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                            <div className="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
-                                <Clock className="w-3 h-3" />
-                                24h
-                            </div>
-                        </div>
-                        <div className="p-2.5 flex flex-col flex-1 justify-between">
-                            <div>
-                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
-                            </div>
-                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-green-500" />
-                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+              Serviços 24h
+            </h2>
+          </div>
+          <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
+            {SERVICES_24H.map((service) => (
+              <div
+                key={service.id}
+                className="min-w-[130px] w-[130px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform"
+              >
+                <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
+                    <Clock className="w-3 h-3" />
+                    24h
+                  </div>
+                </div>
+                <div className="p-2.5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">
+                      {service.name}
+                    </h4>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+                      {service.category}
+                    </p>
+                  </div>
+                  <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-green-500" />
+                    <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">
+                      Ligar agora
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
-        {/* Descubra por estilo - no final da página */}
+        {/* Descubra por estilo */}
         <section>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
             Descubra por estilo
@@ -488,33 +503,49 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </section>
 
-        {/* Patrocinador Master Banner - New Dark Blue Style */}
-        <div 
+        {/* Patrocinador Master */}
+        <div
           onClick={() => onNavigate('patrocinador_master')}
           className="w-full bg-[#1F2A44] rounded-2xl p-4 shadow-sm border border-transparent relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all mt-4"
         >
           <div className="flex items-center gap-4 relative z-10">
-             {/* Icon - White container for contrast */}
-             <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
-                <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1E5BFF]" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" fill="currentColor"/>
-                  <path d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z" fill="white"/>
-                </svg>
-             </div>
+            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                className="w-6 h-6 text-[#1E5BFF]"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
 
-             {/* Text - 100% White */}
-             <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">Patrocinador Master</p>
-                <h3 className="text-white font-bold text-lg leading-tight truncate">Grupo Esquematiza</h3>
-                <p className="text-white text-xs mt-0.5 font-medium truncate">Transformando desafios em soluções seguras!</p>
-             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">
+                Patrocinador Master
+              </p>
+              <h3 className="text-white font-bold text-lg leading-tight truncate">
+                Grupo Esquematiza
+              </h3>
+              <p className="text-white text-xs mt-0.5 font-medium truncate">
+                Transformando desafios em soluções seguras!
+              </p>
+            </div>
 
-             {/* Arrow - White */}
-             <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
+            <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
           </div>
         </div>
-
       </div>
     </>
   );
 };
+
+export default ExploreView;
+export { ExploreView };
