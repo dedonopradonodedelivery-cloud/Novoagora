@@ -393,12 +393,14 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         {hasAnyStore ? (
           <>
             <HorizontalStoreSection
+              title="Lojas perto de você"
               subtitle="Sugestões na Freguesia e arredores"
               stores={nearYouStores}
               onStoreClick={onStoreClick}
             />
 
             <HorizontalStoreSection
+              title="Pra você"
               subtitle="Selecionadas pelo seu estilo e avaliações"
               stores={forYouStores}
               onStoreClick={onStoreClick}
@@ -406,6 +408,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
             {cashbackStores.length > 0 && (
               <HorizontalStoreSection
+                title="Lojas com cashback"
                 subtitle="Ganhe parte do valor de volta nas suas compras"
                 stores={cashbackStores}
                 onStoreClick={onStoreClick}
@@ -413,6 +416,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             )}
 
             <HorizontalStoreSection
+              title="Tendências na Freguesia"
               subtitle="Lugares que estão chamando atenção por aqui"
               stores={trendingStores}
               onStoreClick={onStoreClick}
