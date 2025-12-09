@@ -433,7 +433,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             </p>
           </div>
         )}
-        )}
 
         {/* Serviços 24h (Moved from Home) */}
         <section>
