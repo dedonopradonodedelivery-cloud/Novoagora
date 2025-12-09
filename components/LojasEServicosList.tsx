@@ -227,13 +227,13 @@ export const LojasEServicosList: React.FC<LojasEServicosListProps> = ({ onStoreC
                                
                                {/* Selo Verificado (Azul Royal) */}
                                {store.verified && (
-                                 <BadgeCheck className="w-4 h-4 text-white fill-[#1E5BFF] shrink-0" title="Loja Verificada" />
+                                 <BadgeCheck className="w-4 h-4 text-white fill-[#1E5BFF] shrink-0" aria-label="Loja Verificada" />
                                )}
 
                                {/* Selo Cashback Ativo (Preto + Moeda) */}
                                {store.cashback && (
-                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center shrink-0" title="Cashback Ativo">
-                                    <Coins className="w-2.5 h-2.5 text-[#FFD447] fill-[#FFD447]" strokeWidth={1} />
+                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center shrink-0">
+                                    <Coins className="w-2.5 h-2.5 text-[#FFD447] fill-[#FFD447]" strokeWidth={1} aria-label="Cashback" />
                                  </div>
                                )}
                              </div>

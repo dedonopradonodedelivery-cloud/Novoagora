@@ -150,21 +150,21 @@ const HorizontalStoreSection: React.FC<{
                     
                     {/* 1. Patrocinado (Azul Royal) */}
                     {isSponsored && (
-                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm" title="Patrocinado">
-                            <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm">
+                            <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
                         </div>
                     )}
 
                     {/* 2. Cashback (Preto + Amarelo) */}
                     {hasCashback && (
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm" title="Cashback">
-                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" />
+                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm">
+                            <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
                         </div>
                     )}
 
                     {/* 3. Verificado (Azul Royal + Branco) */}
                     {isVerified && (
-                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" title="Verificado" />
+                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" aria-label="Verificado" />
                     )}
                 </div>
 
@@ -179,7 +179,7 @@ const HorizontalStoreSection: React.FC<{
                   </span>
                   {rating > 0 && (
                     <span className="flex items-center gap-0.5 text-[11px] text-[#1E5BFF] font-medium">
-                      <Star className="w-3 h-3" fill="currentColor" />
+                      <Star className="w-3 h-3 fill-current" />
                       {rating.toFixed(1)}
                     </span>
                   )}
@@ -393,14 +393,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         {hasAnyStore ? (
           <>
             <HorizontalStoreSection
-              title="Lojas perto de você"
               subtitle="Sugestões na Freguesia e arredores"
               stores={nearYouStores}
               onStoreClick={onStoreClick}
             />
 
             <HorizontalStoreSection
-              title="Pra você"
               subtitle="Selecionadas pelo seu estilo e avaliações"
               stores={forYouStores}
               onStoreClick={onStoreClick}
@@ -408,7 +406,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
             {cashbackStores.length > 0 && (
               <HorizontalStoreSection
-                title="Com cashback"
                 subtitle="Ganhe parte do valor de volta nas suas compras"
                 stores={cashbackStores}
                 onStoreClick={onStoreClick}
@@ -416,7 +413,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             )}
 
             <HorizontalStoreSection
-              title="Tendências na Freguesia"
               subtitle="Lugares que estão chamando atenção por aqui"
               stores={trendingStores}
               onStoreClick={onStoreClick}
