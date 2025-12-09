@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
 import { Category, Store, AdType } from '../types';
 import {
@@ -432,6 +431,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               Ajuste a busca ou os filtros para ver novas opções.
             </p>
           </div>
+        )}
         )}
 
         {/* Serviços 24h (Moved from Home) */}
