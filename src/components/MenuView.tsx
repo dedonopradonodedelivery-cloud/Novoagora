@@ -187,7 +187,7 @@ export const MenuView: React.FC<MenuViewProps> = ({ user, userRole, onAuthClick,
         <MenuItem 
             icon={Coins} 
             label="Cashback" 
-            onClick={() => onNavigate('cashback')} 
+            onClick={() => onNavigate('user_cashback_flow')} 
             colorClass="bg-[#1E5BFF]" 
             subLabel="Acompanhe seu saldo e ganhos"
         />

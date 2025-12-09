@@ -1,407 +1,669 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Category, Store, AdType } from '../types';
+import React, { useEffect, useMemo, useState } from "react";
+import { Store } from "../types";
 import {
   MapPin,
-  Star,
-  Percent,
-  Sparkles,
-  Compass,
   Filter,
-  Crown,
-  ChevronLeft,
-  ChevronRight,
-  BadgeCheck,
-  Coins,
   Zap,
+  Star,
   Clock,
-  Phone
-} from 'lucide-react';
+  ChevronRight,
+  ChevronLeft,
+  Compass,
+  BadgeCheck,
+  Percent,
+  Coins,
+  Sparkles,
+  Phone,
+  Crown,
+} from "lucide-react";
+import { useUserLocation } from "../hooks/useUserLocation";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+import { featuredStores, quickFilters } from "../constants";
 
-interface ExploreViewProps {
-  onSelectCategory: (category: Category) => void;
-  onNavigate: (view: string) => void;
-  onStoreClick: (store: Store) => void;
+type ExploreViewProps = {
   stores: Store[];
-  searchTerm?: string;
-  onViewAllVerified?: () => void;
-}
-
-type QuickFilter = 'all' | 'cashback' | 'top_rated';
-
-const styleChips = [
-  { id: 'saudavel', label: 'Saudável', keywords: ['saudável', 'fitness', 'salada'] },
-  { id: 'barato', label: 'Barato & Bom', keywords: ['barato', 'promo', 'oferta'] },
-  { id: 'familia', label: 'Para a família', keywords: ['família', 'kids', 'pizza'] },
-  { id: 'gourmet', label: 'Gourmet', keywords: ['gourmet', 'premium'] },
-  { id: 'fitness', label: 'Vida fitness', keywords: ['academia', 'fitness'] },
-  { id: 'rapido', label: 'Serviços rápidos', keywords: ['rápido', 'express'] },
-];
-
-const HORIZONTAL_SCROLL_CSS = `
-.horizontal-scroll::-webkit-scrollbar { display: none; }
-.horizontal-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-`;
-
-// Imagens para o carrossel automático
-const EXPLORE_BANNERS = [
-  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format=fit=crop',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format=fit=crop',
-  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format=fit=crop',
-  'https://images.unsplash.com/photo-1599447421405-0c323d27bc8d?q=80&w=800&auto=format=fit=crop',
-  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format=fit=crop',
-];
-
-// Dados dos Serviços 24h
-const SERVICES_24H = [
-  { id: 'srv1', name: 'Chaveiro Expresso', category: 'Chaveiro', image: 'https://images.unsplash.com/photo-1585664811087-47f65be1bac6?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv2', name: 'Farmácia Pacheco', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv3', name: 'Vet 24h', category: 'Veterinário', image: 'https://images.unsplash.com/photo-1606425271394-c3ca9aa1fc06?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv4', name: 'Reboque Rápido', category: 'Auto Socorro', image: 'https://images.unsplash.com/photo-1562920616-0b63f03b22b7?q=80&w=400&auto=format=fit=crop' },
-  { id: 'srv5', name: 'Desentupidora', category: 'Emergência', image: 'https://images.unsplash.com/photo-1584622050111-993a426fbf0a?q=80&w=400&auto=format=fit=crop' },
-];
-
-// --- Lógica de ordenação e alternância ---
-const interleaveStores = (stores: Store[]): Store[] => {
-  const sponsored = stores.filter(s => s.isSponsored || s.adType === AdType.PREMIUM);
-  const cashback = stores.filter(
-    s => (s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
-  );
-  const verified = stores.filter(
-    s => s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
-  );
-  const others = stores.filter(
-    s => !s.verified && !(s.cashback && s.cashback > 0) && !(s.isSponsored || s.adType === AdType.PREMIUM)
-  );
-
-  const result: Store[] = [];
-  const maxLength = Math.max(sponsored.length, cashback.length, verified.length);
-
-  for (let i = 0; i < maxLength; i++) {
-    if (sponsored[i]) result.push(sponsored[i]);
-    if (cashback[i]) result.push(cashback[i]);
-    if (verified[i]) result.push(verified[i]);
-  }
-
-  return [...result, ...others];
+  searchQuery: string;
+  onStoreClick: (store: Store) => void;
+  onLocationClick: () => void;
+  onFilterClick: () => void;
+  onOpenPlans: () => void;
 };
 
-// --- Componente de seção horizontal ---
-const HorizontalStoreSection: React.FC<{
+const CategoryChip: React.FC<{
+  label: string;
+  active?: boolean;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+}> = ({ label, active, icon, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all whitespace-nowrap
+      ${
+        active
+          ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-transparent shadow-sm"
+          : "bg-white/80 dark:bg-gray-900/40 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/80"
+      }`}
+  >
+    {icon && <span className="w-3.5 h-3.5 flex items-center justify-center">{icon}</span>}
+    <span>{label}</span>
+  </button>
+);
+
+type HorizontalStoreSectionProps = {
   title: string;
   subtitle?: string;
   stores: Store[];
   onStoreClick: (store: Store) => void;
-}> = ({ title, subtitle, stores, onStoreClick }) => {
-  if (!stores || stores.length === 0) return null;
+};
+
+const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
+  title,
+  subtitle,
+  stores,
+  onStoreClick,
+}) => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScrollPosition = (container: HTMLDivElement | null) => {
+    if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    const maxScrollLeft = scrollWidth - clientWidth;
+
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < maxScrollLeft - 4);
+  };
+
+  useEffect(() => {
+    const container = document.querySelector(
+      `[data-section="${title}"]`
+    ) as HTMLDivElement | null;
+    if (!container) return;
+
+    checkScrollPosition(container);
+
+    const handleScroll = () => checkScrollPosition(container);
+    container.addEventListener("scroll", handleScroll);
+
+    const resizeObserver = new ResizeObserver(() =>
+      checkScrollPosition(container)
+    );
+    resizeObserver.observe(container);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [title, stores.length]);
+
+  const scroll = (direction: "left" | "right") => {
+    const container = document.querySelector(
+      `[data-section="${title}"]`
+    ) as HTMLDivElement | null;
+    if (!container) return;
+
+    const scrollAmount = container.clientWidth * 0.7;
+    const newScrollLeft =
+      direction === "left"
+        ? container.scrollLeft - scrollAmount
+        : container.scrollLeft + scrollAmount;
+
+    container.scrollTo({
+      left: newScrollLeft,
+      behavior: "smooth",
+    });
+  };
+
+  if (!stores.length) return null;
+
+  const WrapperComponent = isMobile ? "div" : "section";
 
   return (
-    <section className="mb-6">
-      <div className="flex items-baseline justify-between mb-2 px-1">
+    <WrapperComponent className="mb-6">
+      {/* Header com título e navegação */}
+      <div className="flex items-center justify-between mb-2 px-0.5">
         <div>
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h2>
+          </div>
           {subtitle && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
               {subtitle}
             </p>
           )}
         </div>
-      </div>
-      <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
-        {stores.map((store) => {
-          const image =
-            (store as any).image ||
-            (store as any).image_url ||
-            (store as any).logo ||
-            (store as any).banner ||
-            '';
-          const name = (store as any).name || (store as any).nome || '';
-          const rating =
-            (store as any).rating ||
-            (store as any).nota ||
-            (store as any).avaliacao ||
-            0;
-          const category =
-            (store as any).category || (store as any).categoria || '';
-          const distance = (store as any).distance || 'Freguesia • RJ';
 
-          const isSponsored = store.isSponsored || store.adType === AdType.PREMIUM;
-          const hasCashback = store.cashback && store.cashback > 0;
-          const isVerified = store.verified;
-
-          return (
+        {/* Scroll controls - Desktop only */}
+        {!isMobile && (
+          <div className="flex items-center gap-1">
             <button
-              key={store.id}
-              className="min-w-[190px] max-w-[210px] bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex-shrink-0 text-left overflow-hidden active:scale-[0.98] transition-transform group"
-              onClick={() => onStoreClick(store)}
+              onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
+              className={`w-7 h-7 rounded-full border flex items-center justify-center text-gray-400 dark:text-gray-500 bg-white/70 dark:bg-gray-900/60 backdrop-blur
+                ${
+                  canScrollLeft
+                    ? "hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 border-gray-200 dark:border-gray-700"
+                    : "opacity-40 cursor-default border-gray-100 dark:border-gray-800"
+                }`}
             >
-              <div className="h-28 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
-                {image ? (
-                  <img
-                    src={image}
-                    alt={name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    <MapPin className="w-6 h-6" />
-                  </div>
-                )}
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              disabled={!canScrollRight}
+              className={`w-7 h-7 rounded-full border flex items-center justify-center text-gray-400 dark:text-gray-500 bg-white/70 dark:bg-gray-900/60 backdrop-blur
+                ${
+                  canScrollRight
+                    ? "hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 border-gray-200 dark:border-gray-700"
+                    : "opacity-40 cursor-default border-gray-100 dark:border-gray-800"
+                }`}
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
 
-                {/* Badges */}
-                <div className="absolute top-2 right-2 flex gap-1.5 flex-row-reverse z-10">
-                  {isSponsored && (
-                    <div
-                      className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm"
-                      title="Patrocinado"
-                    >
-                      <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
-                    </div>
-                  )}
+      {/* Lista horizontal de lojas */}
+      <div
+        data-section={title}
+        className="horizontal-scroll flex gap-3 overflow-x-auto pb-1 hide-scrollbar -mx-0.5 px-0.5"
+      >
+        {stores.map((store) => (
+          <button
+            key={store.id}
+            onClick={() => onStoreClick(store)}
+            className="min-w-[250px] max-w-[260px] bg-white dark:bg-gray-900 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.45)] border border-gray-100 dark:border-gray-800 overflow-hidden group text-left hover:-translate-y-0.5 transition-all duration-200"
+          >
+            {/* Imagem / Capa */}
+            <div className="relative h-24 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+              <img
+                src={(store as any).coverImage || store.image || (store as any).imageUrl}
+                alt={store.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-                  {hasCashback && (
-                    <div
-                      className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm"
-                      title="Cashback"
-                    >
-                      <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
-                    </div>
-                  )}
-
-                  {isVerified && (
-                    <BadgeCheck
-                      className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm"
-                      aria-label="Verificado"
-                    />
+              {/* Badges - avaliações, distância, etc */}
+              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2">
+                {/* Avaliação */}
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
+                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                  <span className="text-[11px] font-semibold text-white">
+                    {store.rating?.toFixed(1) || "Novo"}
+                  </span>
+                  {store.reviewsCount !== undefined && (
+                    <span className="text-[10px] text-white/70">
+                      ({store.reviewsCount})
+                    </span>
                   )}
                 </div>
-              </div>
 
-              <div className="px-3 py-2.5">
-                <p className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 leading-tight">
-                  {name}
-                </p>
-                <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-[70%]">
-                    {category}
+                {/* Distância / tempo */}
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
+                  <MapPin className="w-3 h-3 text-white/90" />
+                  <span className="text-[10px] text-white/90">
+                    {(store as any).distanceText || store.distance || "Perto de você"}
                   </span>
-                  {rating > 0 && (
-                    <span className="flex items-center gap-0.5 text-[11px] text-[#1E5BFF] font-medium">
-                      <Star className="w-3 h-3 fill-current" />
-                      {rating.toFixed(1)}
+                </div>
+              </div>
+            </div>
+
+            {/* Conteúdo */}
+            <div className="p-3">
+              {/* Nome e categoria */}
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="min-w-0">
+                  <h3 className="text-[13px] font-semibold text-gray-900 dark:text-white truncate">
+                    {store.name}
+                  </h3>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                    {(store as any).categoryName ||
+                      store.category ||
+                      "Categoria em destaque"}
+                  </p>
+                </div>
+
+                {/* Selo Localizei ou Cashback */}
+                <div className="flex flex-col items-end gap-1">
+                  {(store as any).isLocalizeiPartner && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-[9px] font-semibold text-white shadow-sm">
+                      <BadgeCheck className="w-3 h-3" />
+                      Localizei
+                    </span>
+                  )}
+
+                  {(store as any).cashbackPercentage && (store as any).cashbackPercentage > 0 && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <Coins className="w-3 h-3" />
+                      {(store as any).cashbackPercentage}% volta
                     </span>
                   )}
                 </div>
               </div>
-            </button>
-          );
-        })}
+
+              {/* Tags rápidas / estilo */}
+              {(store as any).tags && (store as any).tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {(store as any).tags.slice(0, 3).map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-50 dark:bg-gray-800/80 text-[9px] text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1 text-orange-400" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Status / tempo / faixa de preço */}
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                      {(store as any).status || "Aberto agora"}
+                    </span>
+                  </div>
+                  {(store as any).eta && (
+                    <span className="text-[10px] text-gray-400">
+                      • {(store as any).eta} min
+                    </span>
+                  )}
+                </div>
+
+                {(store as any).priceLevel && (
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                    {Array.from({ length: (store as any).priceLevel })
+                      .map(() => "R$")
+                      .join("")}
+                  </span>
+                )}
+              </div>
+            </div>
+          </button>
+        ))}
       </div>
-    </section>
+    </WrapperComponent>
   );
 };
 
 const ExploreView: React.FC<ExploreViewProps> = ({
-  onSelectCategory,
-  onNavigate,
-  onStoreClick,
   stores,
-  searchTerm = '',
+  searchQuery,
+  onStoreClick,
+  onLocationClick,
+  onFilterClick,
+  onOpenPlans,
 }) => {
-  const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
-  const [activeStyle, setActiveStyle] = useState<string | null>(null);
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const { location, isLoading: isLoadingLocation } = useUserLocation();
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<"nearby" | "topRated" | "cashback">("nearby");
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
-  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const nearbyStores = useMemo(() => {
+    if (!stores.length) return [];
 
-  useEffect(() => {
-    const timer = setInterval(
-      () => setCurrentBannerIndex(prev => (prev + 1) % EXPLORE_BANNERS.length),
-      4000
-    );
-    return () => clearInterval(timer);
-  }, []);
+    let filtered = [...stores];
 
-  // Busca
-  const searchFilteredStores = useMemo(() => {
-    if (!normalizedSearch) return stores;
+    if (selectedFilter === "cashback") {
+      filtered = filtered.filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0);
+    } else if (selectedFilter === "open_now") {
+      filtered = filtered.filter((store) => (store as any).status === "Aberto agora");
+    }
 
-    return stores.filter((store) => {
-      const name = (store as any).name || (store as any).nome || '';
-      const subcategory = (store as any).subcategory || (store as any).subcategoria || '';
-      const category = (store as any).category || (store as any).categoria || '';
-      const neighborhood =
-        (store as any).neighborhood ||
-        (store as any).bairro ||
-        (store as any).distance ||
-        '';
-
-      const haystack =
-        `${name} ${subcategory} ${category} ${neighborhood}`.toLowerCase();
-      return haystack.includes(normalizedSearch);
-    });
-  }, [stores, normalizedSearch]);
-
-  // Estilo (chips)
-  const styleFilteredStores = useMemo(() => {
-    if (!activeStyle) return searchFilteredStores;
-    const style = styleChips.find((s) => s.id === activeStyle);
-    if (!style) return searchFilteredStores;
-
-    return searchFilteredStores.filter((store) => {
-      const text = (
-        (store as any).description ||
-        (store as any).descricao ||
-        (store as any).name ||
-        (store as any).nome ||
-        ''
-      )
-        .toString()
-        .toLowerCase();
-      return style.keywords.some((kw) => text.includes(kw.toLowerCase()));
-    });
-  }, [searchFilteredStores, activeStyle]);
-
-  // Quick filters
-  const finalFilteredStores = useMemo(() => {
-    if (quickFilter === 'cashback') {
-      return styleFilteredStores.filter(
-        (store) => (store as any).cashback && (store as any).cashback > 0
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (store) =>
+          store.name.toLowerCase().includes(query) ||
+          store.category?.toLowerCase().includes(query) ||
+          store.description?.toLowerCase().includes(query) ||
+          (store as any).tags?.some((tag: string) => tag.toLowerCase().includes(query))
       );
     }
 
-    if (quickFilter === 'top_rated') {
-      return [...styleFilteredStores].sort((a, b) => {
-        const ratingA =
-          (a as any).rating || (a as any).nota || (a as any).avaliacao || 0;
-        const ratingB =
-          (b as any).rating || (b as any).nota || (b as any).avaliacao || 0;
-        return ratingB - ratingA;
+    if (location) {
+      return filtered.sort((a, b) => {
+        const distanceA = (a as any).distance || Infinity;
+        const distanceB = (b as any).distance || Infinity;
+        // Basic numerical sort if distances are numbers, otherwise fallback
+        return typeof distanceA === 'number' && typeof distanceB === 'number' ? distanceA - distanceB : 0;
       });
     }
 
-    return styleFilteredStores;
-  }, [styleFilteredStores, quickFilter]);
-
-  // Seções
-  const nearYouStores = useMemo(
-    () => interleaveStores(finalFilteredStores).slice(0, 10),
-    [finalFilteredStores]
-  );
-
-  const forYouStores = useMemo(
-    () => interleaveStores([...finalFilteredStores].reverse()).slice(0, 10),
-    [finalFilteredStores]
-  );
+    return filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }, [stores, searchQuery, selectedFilter, location]);
 
   const cashbackStores = useMemo(
-    () =>
-      finalFilteredStores.filter(
-        (store) => (store as any).cashback && (store as any).cashback > 0
-      ),
-    [finalFilteredStores]
+    () => stores.filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0),
+    [stores]
   );
 
-  const trendingStores = useMemo(() => {
-    const shuffled = [...finalFilteredStores].sort(() => Math.random() - 0.5);
-    return interleaveStores(shuffled).slice(0, 10);
-  }, [finalFilteredStores]);
+  const topRatedStores = useMemo(
+    () => stores.filter((store) => (store.rating || 0) >= 4.5),
+    [stores]
+  );
 
-  const hasAnyStore = finalFilteredStores.length > 0;
+  const trendingStores = useMemo(
+    () => stores.filter((store) => (store as any).tags?.includes("Trending") || (store as any).tags?.includes("Popular")),
+    [stores]
+  );
+
+  const modernStores = useMemo(
+    () => stores.filter((store) => (store as any).tags?.includes("Moderno") || (store as any).tags?.includes("Conceito")),
+    [stores]
+  );
+
+  const classicStores = useMemo(
+    () => stores.filter((store) => (store as any).tags?.includes("Clássico") || (store as any).tags?.includes("Tradicional")),
+    [stores]
+  );
+
+  const familyStores = useMemo(
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).tags?.includes("Família") ||
+          (store as any).tags?.includes("Kids") ||
+          (store as any).tags?.includes("Para família")
+      ),
+    [stores]
+  );
+
+  const romanticStores = useMemo(
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).tags?.includes("Romântico") ||
+          (store as any).tags?.includes("Casal") ||
+          (store as any).tags?.includes("Encontro")
+      ),
+    [stores]
+  );
+
+  const hasAnyStore =
+    nearbyStores.length > 0 ||
+    cashbackStores.length > 0 ||
+    topRatedStores.length > 0 ||
+    trendingStores.length > 0;
+
+  const handleFilterClick = (filterId: string) => {
+    if (filterId === "cashback") {
+      setSelectedFilter(selectedFilter === "cashback" ? null : "cashback");
+      setSortOption("cashback");
+    } else if (filterId === "open_now") {
+      setSelectedFilter(selectedFilter === "open_now" ? null : "open_now");
+    } else if (filterId === "nearby") {
+      setSortOption("nearby");
+    } else if (filterId === "top_rated") {
+      setSortOption("topRated");
+    } else {
+      setSelectedFilter(null);
+    }
+  };
+
+  const sortedStores = useMemo(() => {
+    let list = [...stores];
+
+    if (sortOption === "cashback") {
+      list = list
+        .filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0)
+        .sort((a, b) => ((b as any).cashbackPercentage || 0) - ((a as any).cashbackPercentage || 0));
+    } else if (sortOption === "topRated") {
+      list = list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortOption === "nearby" && location) {
+      list = list.sort((a, b) => {
+        const distanceA = (a as any).distance || Infinity;
+        const distanceB = (b as any).distance || Infinity;
+        return typeof distanceA === 'number' && typeof distanceB === 'number' ? distanceA - distanceB : 0;
+      });
+    }
+
+    if (selectedStyle) {
+      list = list.filter((store) =>
+        (store as any).tags?.some((tag: string) => tag.toLowerCase().includes(selectedStyle.toLowerCase()))
+      );
+    }
+
+    return list;
+  }, [stores, sortOption, location, selectedStyle]);
+
+  const SERVICES_24H = [
+    {
+      id: "24h-1",
+      name: "Clínica 24h Freguesia",
+      category: "Saúde & Emergência",
+      image:
+        "https://images.pexels.com/photos/1250655/pexels-photo-1250655.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0001",
+    },
+    {
+      id: "24h-2",
+      name: "Pet Emergência Freguesia",
+      category: "Vet & Pet Care",
+      image:
+        "https://images.pexels.com/photos/19041061/pexels-photo-19041061/free-photo-of-mulher-menina-bonito-fofo.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0002",
+    },
+    {
+      id: "24h-3",
+      name: "Auto Socorro 24h",
+      category: "Guincho & Socorro",
+      image:
+        "https://images.pexels.com/photos/19053837/pexels-photo-19053837/free-photo-of-carro-veiculo-automovel-motor.jpg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0003",
+    },
+  ];
 
   return (
     <>
-      <style>{HORIZONTAL_SCROLL_CSS}</style>
+      {/* Header com localização */}
+      <div className="px-4 pt-3 pb-1 flex items-center justify-between gap-3">
+        <button
+          onClick={onLocationClick}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+        >
+          <MapPin className="w-3.5 h-3.5 text-orange-500" />
+          <span className="font-medium">
+            {isLoadingLocation
+              ? "Detectando localização..."
+              : location?.address?.neighborhood || "Freguesia e região"}
+          </span>
+        </button>
 
-      <div className="px-4 pt-3 pb-6 space-y-5">
-        {/* Filtros rápidos */}
-        <div className="horizontal-scroll flex gap-2 overflow-x-auto pb-1">
+        <button
+          onClick={onOpenPlans}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-xs font-semibold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition-all"
+        >
+          <Zap className="w-3.5 h-3.5" />
+          <span>Destaque seu negócio</span>
+        </button>
+      </div>
+
+      {/* Filtros rápidos */}
+      <div className="px-4 py-1">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
+            Explore ofertas, estilos e lugares com cashback
+          </span>
           <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
-              quickFilter === 'all'
-                ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
-            }`}
-            onClick={() => setQuickFilter('all')}
+            onClick={onFilterClick}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-[11px] text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-900/60 hover:bg-gray-50 dark:hover:bg-gray-800/80"
           >
-            <Filter className="w-3 h-3" />
-            Todos
-          </button>
-          <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
-              quickFilter === 'cashback'
-                ? 'bg-green-500 text-white border-green-500'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
-            }`}
-            onClick={() => setQuickFilter('cashback')}
-          >
-            <Percent className="w-3 h-3" />
-            Cashback
-          </button>
-          <button
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors ${
-              quickFilter === 'top_rated'
-                ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
-            }`}
-            onClick={() => setQuickFilter('top_rated')}
-          >
-            <Star className="w-3 h-3" />
-            Melhor avaliadas
-          </button>
-          <button
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700"
-            type="button"
-          >
-            ⏱ Abertos agora
+            <Filter className="w-3.5 h-3.5" />
+            Filtros
           </button>
         </div>
 
-        {/* Carrossel de imagens */}
-        <div className="w-full">
-          <div className="w-full h-[150px] rounded-2xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-gray-700">
-            {EXPLORE_BANNERS.map((banner, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 transition-opacity duration-700 ease-in-out bg-gray-200 dark:bg-gray-800 ${
-                  index === currentBannerIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <img
-                  src={banner}
-                  alt={`Banner ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+        {/* Chips de filtros rápidos */}
+        <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          {quickFilters.map((filter) => (
+            <CategoryChip
+              key={filter.id}
+              label={filter.label}
+              active={
+                (filter.id === "cashback" && selectedFilter === "cashback") ||
+                (filter.id === "open_now" && selectedFilter === "open_now") ||
+                (filter.id === "nearby" && sortOption === "nearby") ||
+                (filter.id === "top_rated" && sortOption === "topRated")
+              }
+              icon={
+                filter.icon === "zap" ? (
+                  <Zap className="w-3 h-3 text-yellow-400" />
+                ) : filter.icon === "star" ? (
+                  <Star className="w-3 h-3 text-yellow-400" />
+                ) : filter.icon === "clock" ? (
+                  <Clock className="w-3 h-3 text-emerald-500" />
+                ) : filter.icon === "percent" ? (
+                  <Percent className="w-3 h-3 text-emerald-500" />
+                ) : undefined
+              }
+              onClick={() => handleFilterClick(filter.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Conteúdo principal da Explore */}
+      <div className="px-4 pb-4 space-y-6">
+        {/* Banner principal / destaque premium */}
+        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-[1px] shadow-[0_16px_40px_rgba(15,23,42,0.45)]">
+          <div className="relative bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.14),transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.08),transparent_55%)] rounded-2xl px-4 py-3.5 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/30 border border-white/10 text-[9px] text-orange-200 mb-1.5">
+                <Zap className="w-3 h-3 text-orange-300" />
+                <span className="uppercase tracking-wider font-semibold">
+                  Destaque Localizei
+                </span>
+              </span>
+              <h2 className="text-sm font-semibold text-white leading-snug">
+                Transforme sua presença local em resultados reais
+              </h2>
+              <p className="text-[11px] text-slate-200/80 mt-1">
+                Banners, destaque nas buscas, cashback e muito mais em um só
+                lugar, com foco total na Freguesia.
+              </p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <button
+                  onClick={onOpenPlans}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-xs font-semibold text-slate-900 shadow-sm hover:bg-slate-100 transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                  Conhecer planos
+                </button>
+                <button className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-full border border-white/20 text-[11px] text-slate-100/90 hover:bg-white/10 transition-colors">
+                  <MapPin className="w-3 h-3" />
+                  Ver cases na Freguesia
+                </button>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-1.5 mt-3">
-            {EXPLORE_BANNERS.map((_, idx) => (
-              <div
-                key={idx}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  idx === currentBannerIndex
-                    ? 'w-6 bg-[#1E5BFF]'
-                    : 'w-1.5 bg-gray-300 dark:bg-gray-700'
-                }`}
-              />
-            ))}
+            </div>
+            <div className="hidden xs:flex">
+              <div className="w-[88px] h-[88px] rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-400 to-yellow-300 relative overflow-hidden shadow-[0_16px_40px_rgba(251,146,60,0.75)]">
+                <div className="absolute -inset-6 bg-[conic-gradient(from_210deg,_rgba(15,23,42,0.15),_rgba(15,23,42,0.9),_rgba(15,23,42,0.15))] opacity-70" />
+                <div className="relative h-full w-full flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-2xl bg-black/80 flex items-center justify-center shadow-lg border border-white/10">
+                    <MapPin className="w-5 h-5 text-orange-300" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Destaques de categoria / experiências */}
+        <section>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Achados pela Freguesia
+              </h2>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                Experiências selecionadas, novidades e lugares diferentes para
+                você descobrir.
+              </p>
+            </div>
+          </div>
+
+          {/* Cards de destaques adicionais */}
+          <div className="grid grid-cols-2 gap-2.5">
+            <button className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-500 p-[1px] shadow-lg">
+              <div className="relative bg-slate-950/95 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div>
+                    <p className="text-[10px] text-indigo-200/85 font-medium uppercase tracking-widest">
+                      Novo por aqui
+                    </p>
+                    <h3 className="text-xs font-semibold text-white mt-0.5">
+                      Lugares que acabaram de chegar
+                    </h3>
+                  </div>
+                  <div className="w-8 h-8 rounded-xl bg-black/40 flex items-center justify-center shadow-inner">
+                    <Sparkles className="w-4 h-4 text-cyan-300" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-300 mt-1.5 leading-snug">
+                  Descubra as novidades e estreias na Freguesia antes de todo
+                  mundo.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-200/80">
+                    Atualizado toda semana
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-cyan-200/80" />
+                </div>
+              </div>
+            </button>
+
+            <button className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[1px] shadow-lg">
+              <div className="relative bg-slate-950/95 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div>
+                    <p className="text-[10px] text-emerald-200/85 font-medium uppercase tracking-widest">
+                      Freguesia com Cashback
+                    </p>
+                    <h3 className="text-xs font-semibold text-white mt-0.5">
+                      Lugares que devolvem parte da sua compra
+                    </h3>
+                  </div>
+                  <div className="w-8 h-8 rounded-xl bg-black/40 flex items-center justify-center shadow-inner">
+                    <Coins className="w-4 h-4 text-emerald-300" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-300 mt-1.5 leading-snug">
+                  Ganhe créditos no Localizei para comprar em outros locais da
+                  região.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-200/80">
+                    Cashback automático
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-emerald-200/80" />
+                </div>
+              </div>
+            </button>
+          </div>
+        </section>
 
         {/* Seções de recomendação */}
         {hasAnyStore ? (
-          <>
+          <React.Fragment>
             <HorizontalStoreSection
               title="Lojas perto de você"
               subtitle="Sugestões na Freguesia e arredores"
-              stores={nearYouStores}
+              stores={nearbyStores}
               onStoreClick={onStoreClick}
             />
 
             <HorizontalStoreSection
               title="Pra você"
               subtitle="Selecionadas pelo seu estilo e avaliações"
-              stores={forYouStores}
+              stores={sortedStores}
               onStoreClick={onStoreClick}
             />
 
@@ -420,7 +682,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               stores={trendingStores}
               onStoreClick={onStoreClick}
             />
-          </>
+          </React.Fragment>
         ) : (
           <div className="pt-8 pb-4 flex flex-col items-center text-center text-gray-500 dark:text-gray-400">
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
@@ -433,113 +695,233 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
-        {/* Serviços 24h */}
+        {/* Serviços 24h (Moved from Home) */}
         <section>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-              Serviços 24h
-            </h2>
-          </div>
-          <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
-            {SERVICES_24H.map((service) => (
-              <div
-                key={service.id}
-                className="min-w-[130px] w-[130px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform"
-              >
-                <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
-                  <img
-                    src={service.image}
-                    alt={service.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute top-2 right-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
-                    <Clock className="w-3 h-3" />
-                    24h
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
+            </div>
+            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
+                {SERVICES_24H.map((service) => (
+                    <div key={service.id} className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
+                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
+                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
+                                <Clock className="w-3 h-3" />
+                                24h
+                            </div>
+                        </div>
+                        <div className="p-2.5 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
+                            </div>
+                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-green-500" />
+                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        {/* Descubra por estilo - no final da página */}
+        <section>
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            Descubra seu estilo na Freguesia
+          </h2>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              onClick={() => setSelectedStyle("Romântico")}
+              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
+                selectedStyle === "Romântico"
+                  ? "bg-gradient-to-br from-pink-500 via-rose-500 to-red-500"
+                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
+              }`}
+            >
+              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div>
+                    <p className="text-[10px] text-pink-500 dark:text-pink-300 font-semibold uppercase tracking-widest">
+                      Casal & Encontros
+                    </p>
+                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
+                      Romântico na Freguesia
+                    </h3>
+                  </div>
+                  <div className="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-pink-500 dark:text-pink-300" />
                   </div>
                 </div>
-                <div className="p-2.5 flex flex-col flex-1 justify-between">
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
+                  Lugares para um jantar especial ou um encontro diferente por
+                  aqui.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-gray-400">
+                    Restaurantes, bares, rooftops
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-pink-500 dark:text-pink-300" />
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedStyle("Família")}
+              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
+                selectedStyle === "Família"
+                  ? "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500"
+                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
+              }`}
+            >
+              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
                   <div>
-                    <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">
-                      {service.name}
-                    </h4>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
-                      {service.category}
+                    <p className="text-[10px] text-emerald-500 dark:text-emerald-300 font-semibold uppercase tracking-widest">
+                      Família & Kids
                     </p>
+                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
+                      Para ir com a família
+                    </h3>
                   </div>
-                  <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
-                    <Phone className="w-3 h-3 text-green-500" />
-                    <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">
-                      Ligar agora
-                    </span>
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-300" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
+                  Lugares com espaço, conforto e opções para todas as idades.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-gray-400">
+                    Restaurantes, lazer e mais
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-300" />
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedStyle("Moderno")}
+              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
+                selectedStyle === "Moderno"
+                  ? "bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500"
+                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
+              }`}
+            >
+              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div>
+                    <p className="text-[10px] text-violet-500 dark:text-violet-300 font-semibold uppercase tracking-widest">
+                      Conceito & Moderno
+                    </p>
+                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
+                      Lugares com vibe diferente
+                    </h3>
+                  </div>
+                  <div className="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-violet-500 dark:text-violet-300" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
+                  Cafés, bares, studios e espaços com estética forte.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-gray-400">
+                    Cafés, studios, rooftops
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-violet-500 dark:text-violet-300" />
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedStyle("Clássico")}
+              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
+                selectedStyle === "Clássico"
+                  ? "bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500"
+                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
+              }`}
+            >
+              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
+                <div className="flex items-center justify-between gap-1.5">
+                  <div>
+                    <p className="text-[10px] text-amber-500 dark:text-amber-300 font-semibold uppercase tracking-widest">
+                      Tradição & Clássicos
+                    </p>
+                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
+                      Os queridinhos de sempre
+                    </h3>
+                  </div>
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-300" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
+                  Lugares clássicos, com história e sempre cheios.
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-gray-400">
+                    Restaurantes, bares, lanchonetes
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
+                </div>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        {/* Sponsor Banner - Highlighted */}
+        <div className="mt-4">
+          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-[1px] shadow-[0_16px_40px_rgba(15,23,42,0.55)]">
+            <div className="relative bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.14),transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.08),transparent_55%)] rounded-2xl px-4 py-3.5 flex items-center gap-3">
+              {/* Left Content */}
+              <div className="flex-1 min-w-0">
+                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 border border-white/15 text-[9px] text-orange-100 mb-1.5">
+                  <Zap className="w-3 h-3 text-orange-300" />
+                  <span className="uppercase tracking-wider font-semibold">
+                    Powered by Localizei
+                  </span>
+                </div>
+
+                <h2 className="text-sm font-semibold text-white leading-snug">
+                  Seja o patrocinador master da Freguesia
+                </h2>
+                <p className="text-[11px] text-slate-200/85 mt-1">
+                  Sua marca em destaque em todas as experiências do Localizei,
+                  com presença constante no app.
+                </p>
+
+                {/* CTA Buttons */}
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    onClick={onOpenPlans}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-xs font-semibold text-slate-900 shadow-sm hover:bg-slate-100 transition-colors"
+                  >
+                    <Crown className="w-3.5 h-3.5 text-yellow-500" />
+                    Ver proposta exclusiva
+                  </button>
+                  <button className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-full border border-white/20 text-[11px] text-slate-100/90 hover:bg-white/10 transition-colors">
+                    <MapPin className="w-3 h-3" />
+                    Entender visibilidade
+                  </button>
+                </div>
+              </div>
+
+              {/* Right - Illustration / Logo placeholder */}
+              <div className="hidden xs:flex">
+                <div className="w-[84px] h-[84px] rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-400 to-yellow-300 relative overflow-hidden shadow-[0_16px_40px_rgba(251,146,60,0.75)]">
+                  <div className="absolute -inset-10 bg-[conic-gradient(from_210deg,_rgba(15,23,42,0.15),_rgba(15,23,42,0.9),_rgba(15,23,42,0.15))] opacity-90" />
+                  <div className="relative h-full w-full flex items-center justify-center p-2">
+                    <div className="h-full w-full rounded-xl border border-white/25 bg-black/55 flex items-center justify-center">
+                      <span className="text-[10px] font-semibold text-white/90 text-center leading-tight px-2">
+                        Espaço reservado para o patrocinador master da região
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Descubra por estilo */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-            Descubra por estilo
-          </h2>
-          <div className="flex flex-wrap gap-1.5">
-            {styleChips.map((chip) => (
-              <button
-                key={chip.id}
-                type="button"
-                onClick={() =>
-                  setActiveStyle((prev) => (prev === chip.id ? null : chip.id))
-                }
-                className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
-                  activeStyle === chip.id
-                    ? 'bg-[#1E5BFF] text-white border-[#1E5BFF]'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Patrocinador Master */}
-        <div
-          onClick={() => onNavigate('patrocinador_master')}
-          className="w-full bg-[#1F2A44] rounded-2xl p-4 shadow-sm border border-transparent relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all mt-4"
-        >
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
-              <svg
-                viewBox="0 0 24 24"
-                className="w-6 h-6 text-[#1E5BFF]"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M8 8H16V10H10V11H15V13H10V14H16V16H8V8Z"
-                  fill="white"
-                />
-              </svg>
             </div>
-
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">
-                Patrocinador Master
-              </p>
-              <h3 className="text-white font-bold text-lg leading-tight truncate">
-                Grupo Esquematiza
-              </h3>
-              <p className="text-white text-xs mt-0.5 font-medium truncate">
-                Transformando desafios em soluções seguras!
-              </p>
-            </div>
-
-            <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
           </div>
         </div>
       </div>
@@ -548,4 +930,3 @@ const ExploreView: React.FC<ExploreViewProps> = ({
 };
 
 export default ExploreView;
-export { ExploreView };

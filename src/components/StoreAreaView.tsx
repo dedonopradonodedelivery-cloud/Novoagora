@@ -10,17 +10,16 @@ import {
   TrendingUp, 
   Wallet, 
   Megaphone, 
-  Zap, 
   ChevronRight,
   Settings,
   HelpCircle,
   CreditCard,
   LayoutDashboard,
   Calendar,
-  Filter,
-  Bell
+  Bell,
+  QrCode
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 
 interface StoreAreaViewProps {
   onBack: () => void;
@@ -122,7 +121,7 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
     
     const merchantId = 'merchant_123_uuid'; // Mock ID needs to match whatever we use in app state
 
-    // Initial count
+    // 1. Initial count fetch
     const fetchCount = async () => {
         const { count } = await supabase
             .from('cashback_transactions')
@@ -133,11 +132,20 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
     };
     fetchCount();
 
-    // Subscribe
-    const sub = supabase.channel('pending_count')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'cashback_transactions', filter: `merchant_id=eq.${merchantId}` }, () => {
-            fetchCount();
-        })
+    // 2. Subscribe to Realtime updates for Badge Counter
+    const sub = supabase.channel('store_area_badge')
+        .on(
+            'postgres_changes', 
+            { 
+                event: '*', 
+                schema: 'public', 
+                table: 'cashback_transactions', 
+                filter: `merchant_id=eq.${merchantId}` 
+            }, 
+            () => {
+                fetchCount(); // Re-fetch count on any change (insert/update)
+            }
+        )
         .subscribe();
 
     return () => { supabase.removeChannel(sub); };
@@ -197,7 +205,7 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
         {pendingRequestsCount > 0 && (
             <button 
                 onClick={() => onNavigate && onNavigate('merchant_requests')}
-                className="w-full bg-red-500 text-white p-4 rounded-2xl shadow-lg shadow-red-500/30 flex items-center justify-between animate-pulse"
+                className="w-full bg-red-500 text-white p-4 rounded-2xl shadow-lg shadow-red-500/30 flex items-center justify-between animate-pulse active:scale-95 transition-transform"
             >
                 <div className="flex items-center gap-3">
                     <Bell className="w-6 h-6 fill-white" />
@@ -211,6 +219,23 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
                 </div>
             </button>
         )}
+
+        {/* --- NEW BUTTON: PAINEL DE TRANSAÇÕES --- */}
+        <button
+            onClick={() => onNavigate && onNavigate('merchant_panel')}
+            className="w-full bg-gradient-to-r from-[#1E5BFF] to-[#1749CC] text-white p-5 rounded-3xl shadow-lg shadow-blue-500/20 flex items-center justify-between active:scale-[0.98] transition-transform"
+        >
+            <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/10">
+                    <QrCode className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-left">
+                    <h3 className="font-bold text-lg leading-none mb-1">Terminal de Caixa</h3>
+                    <p className="text-xs text-blue-100">Gerar QR, PIN e validar compras</p>
+                </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-white/70" />
+        </button>
 
         {/* --- VISÃO GERAL & FILTROS --- */}
         <div>
@@ -285,17 +310,6 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
                 Ações
             </h3>
             <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
-                <MenuLink 
-                    icon={Bell} 
-                    label="Solicitações de Cashback" 
-                    onClick={() => onNavigate && onNavigate('merchant_requests')}
-                    badge={pendingRequestsCount}
-                />
-                <MenuLink 
-                    icon={LayoutDashboard} 
-                    label="Home do Painel" 
-                    onClick={() => onNavigate && onNavigate('store_area')}
-                />
                 <MenuLink 
                     icon={Settings} 
                     label="Minha Loja (Perfil Público)" 
