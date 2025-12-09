@@ -44,7 +44,11 @@ const CategoryChip: React.FC<{
           : "bg-white/80 dark:bg-gray-900/40 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/80"
       }`}
   >
-    {icon && <span className="w-3.5 h-3.5 flex items-center justify-center">{icon}</span>}
+    {icon && (
+      <span className="w-3.5 h-3.5 flex items-center justify-center">
+        {icon}
+      </span>
+    )}
     <span>{label}</span>
   </button>
 );
@@ -182,7 +186,13 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
             {/* Imagem / Capa */}
             <div className="relative h-24 bg-gray-100 dark:bg-gray-800 overflow-hidden">
               <img
-                src={(store as any).coverImage || store.image || (store as any).imageUrl}
+                src={
+                  (store as any).coverImage ||
+                  (store as any).imageUrl ||
+                  (store as any).image ||
+                  (store as any).logo ||
+                  ""
+                }
                 alt={store.name}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
@@ -194,11 +204,13 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
                   <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                   <span className="text-[11px] font-semibold text-white">
-                    {store.rating?.toFixed(1) || "Novo"}
+                    {store.rating && store.rating > 0
+                      ? store.rating.toFixed(1)
+                      : "Novo"}
                   </span>
-                  {store.reviewsCount !== undefined && (
+                  {typeof (store as any).reviewsCount === "number" && (
                     <span className="text-[10px] text-white/70">
-                      ({store.reviewsCount})
+                      ({(store as any).reviewsCount})
                     </span>
                   )}
                 </div>
@@ -207,7 +219,9 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
                   <MapPin className="w-3 h-3 text-white/90" />
                   <span className="text-[10px] text-white/90">
-                    {(store as any).distanceText || store.distance || "Perto de você"}
+                    {(store as any).distanceText ||
+                      (store as any).distance ||
+                      "Perto de você"}
                   </span>
                 </div>
               </div>
@@ -237,12 +251,13 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                     </span>
                   )}
 
-                  {(store as any).cashbackPercentage && (store as any).cashbackPercentage > 0 && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
-                      <Coins className="w-3 h-3" />
-                      {(store as any).cashbackPercentage}% volta
-                    </span>
-                  )}
+                  {(store as any).cashbackPercentage &&
+                    (store as any).cashbackPercentage > 0 && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <Coins className="w-3 h-3" />
+                        {(store as any).cashbackPercentage}% volta
+                      </span>
+                    )}
                 </div>
               </div>
 
@@ -293,7 +308,8 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
   );
 };
 
-const ExploreView: React.FC<ExploreViewProps> = ({
+// 🔹 Export named + default para não quebrar App.tsx
+export const ExploreView: React.FC<ExploreViewProps> = ({
   stores,
   searchQuery,
   onStoreClick,
@@ -303,8 +319,23 @@ const ExploreView: React.FC<ExploreViewProps> = ({
 }) => {
   const { location, isLoading: isLoadingLocation } = useUserLocation();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [sortOption, setSortOption] = useState<"nearby" | "topRated" | "cashback">("nearby");
+  const [sortOption, setSortOption] = useState<
+    "nearby" | "topRated" | "cashback"
+  >("nearby");
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+
+  // Label de localização sem quebrar o tipo
+  const locationLabel = useMemo(() => {
+    if (isLoadingLocation) {
+      return "Detectando localização...";
+    }
+    const locAny = location as any;
+    return (
+      locAny?.address?.neighborhood ||
+      locAny?.neighborhood ||
+      "Freguesia e região"
+    );
+  }, [location, isLoadingLocation]);
 
   const nearbyStores = useMemo(() => {
     if (!stores.length) return [];
@@ -312,28 +343,37 @@ const ExploreView: React.FC<ExploreViewProps> = ({
     let filtered = [...stores];
 
     if (selectedFilter === "cashback") {
-      filtered = filtered.filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0);
+      filtered = filtered.filter(
+        (store) =>
+          (store as any).cashbackPercentage &&
+          (store as any).cashbackPercentage > 0
+      );
     } else if (selectedFilter === "open_now") {
-      filtered = filtered.filter((store) => (store as any).status === "Aberto agora");
+      filtered = filtered.filter(
+        (store) => (store as any).status === "Aberto agora"
+      );
     }
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (store) =>
+      filtered = filtered.filter((store) => {
+        const tagsArray = (store as any).tags as string[] | undefined;
+        return (
           store.name.toLowerCase().includes(query) ||
           store.category?.toLowerCase().includes(query) ||
           store.description?.toLowerCase().includes(query) ||
-          (store as any).tags?.some((tag: string) => tag.toLowerCase().includes(query))
-      );
+          tagsArray?.some((tag) => tag.toLowerCase().includes(query))
+        );
+      });
     }
 
     if (location) {
       return filtered.sort((a, b) => {
-        const distanceA = (a as any).distance || Infinity;
-        const distanceB = (b as any).distance || Infinity;
-        // Basic numerical sort if distances are numbers, otherwise fallback
-        return typeof distanceA === 'number' && typeof distanceB === 'number' ? distanceA - distanceB : 0;
+        const distanceA = (a as any).distance ?? Infinity;
+        const distanceB = (b as any).distance ?? Infinity;
+        return typeof distanceA === "number" && typeof distanceB === "number"
+          ? distanceA - distanceB
+          : 0;
       });
     }
 
@@ -341,7 +381,12 @@ const ExploreView: React.FC<ExploreViewProps> = ({
   }, [stores, searchQuery, selectedFilter, location]);
 
   const cashbackStores = useMemo(
-    () => stores.filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0),
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).cashbackPercentage &&
+          (store as any).cashbackPercentage > 0
+      ),
     [stores]
   );
 
@@ -351,17 +396,32 @@ const ExploreView: React.FC<ExploreViewProps> = ({
   );
 
   const trendingStores = useMemo(
-    () => stores.filter((store) => (store as any).tags?.includes("Trending") || (store as any).tags?.includes("Popular")),
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).tags?.includes("Trending") ||
+          (store as any).tags?.includes("Popular")
+      ),
     [stores]
   );
 
   const modernStores = useMemo(
-    () => stores.filter((store) => (store as any).tags?.includes("Moderno") || (store as any).tags?.includes("Conceito")),
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).tags?.includes("Moderno") ||
+          (store as any).tags?.includes("Conceito")
+      ),
     [stores]
   );
 
   const classicStores = useMemo(
-    () => stores.filter((store) => (store as any).tags?.includes("Clássico") || (store as any).tags?.includes("Tradicional")),
+    () =>
+      stores.filter(
+        (store) =>
+          (store as any).tags?.includes("Clássico") ||
+          (store as any).tags?.includes("Tradicional")
+      ),
     [stores]
   );
 
@@ -413,21 +473,33 @@ const ExploreView: React.FC<ExploreViewProps> = ({
 
     if (sortOption === "cashback") {
       list = list
-        .filter((store) => (store as any).cashbackPercentage && (store as any).cashbackPercentage > 0)
-        .sort((a, b) => ((b as any).cashbackPercentage || 0) - ((a as any).cashbackPercentage || 0));
+        .filter(
+          (store) =>
+            (store as any).cashbackPercentage &&
+            (store as any).cashbackPercentage > 0
+        )
+        .sort(
+          (a, b) =>
+            ((b as any).cashbackPercentage || 0) -
+            ((a as any).cashbackPercentage || 0)
+        );
     } else if (sortOption === "topRated") {
       list = list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     } else if (sortOption === "nearby" && location) {
       list = list.sort((a, b) => {
-        const distanceA = (a as any).distance || Infinity;
-        const distanceB = (b as any).distance || Infinity;
-        return typeof distanceA === 'number' && typeof distanceB === 'number' ? distanceA - distanceB : 0;
+        const distanceA = (a as any).distance ?? Infinity;
+        const distanceB = (b as any).distance ?? Infinity;
+        return typeof distanceA === "number" && typeof distanceB === "number"
+          ? distanceA - distanceB
+          : 0;
       });
     }
 
     if (selectedStyle) {
       list = list.filter((store) =>
-        (store as any).tags?.some((tag: string) => tag.toLowerCase().includes(selectedStyle.toLowerCase()))
+        (store as any).tags?.some((tag: string) =>
+          tag.toLowerCase().includes(selectedStyle.toLowerCase())
+        )
       );
     }
 
@@ -470,11 +542,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
         >
           <MapPin className="w-3.5 h-3.5 text-orange-500" />
-          <span className="font-medium">
-            {isLoadingLocation
-              ? "Detectando localização..."
-              : location?.address?.neighborhood || "Freguesia e região"}
-          </span>
+          <span className="font-medium">{locationLabel}</span>
         </button>
 
         <button
@@ -576,7 +644,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </div>
 
-        {/* Destaques de categoria / experiências */}
+        {/* Seção: Achados pela Freguesia */}
         <section>
           <div className="flex items-center justify-between mb-2">
             <div>
@@ -590,8 +658,8 @@ const ExploreView: React.FC<ExploreViewProps> = ({
             </div>
           </div>
 
-          {/* Cards de destaques adicionais */}
           <div className="grid grid-cols-2 gap-2.5">
+            {/* Card 1 */}
             <button className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-500 p-[1px] shadow-lg">
               <div className="relative bg-slate-950/95 rounded-2xl px-3 py-2.5 flex flex-col h-full">
                 <div className="flex items-center justify-between gap-1.5">
@@ -620,6 +688,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               </div>
             </button>
 
+            {/* Card 2 */}
             <button className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[1px] shadow-lg">
               <div className="relative bg-slate-950/95 rounded-2xl px-3 py-2.5 flex flex-col h-full">
                 <div className="flex items-center justify-between gap-1.5">
@@ -652,7 +721,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
 
         {/* Seções de recomendação */}
         {hasAnyStore ? (
-          <React.Fragment>
+          <>
             <HorizontalStoreSection
               title="Lojas perto de você"
               subtitle="Sugestões na Freguesia e arredores"
@@ -682,7 +751,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               stores={trendingStores}
               onStoreClick={onStoreClick}
             />
-          </React.Fragment>
+          </>
         ) : (
           <div className="pt-8 pb-4 flex flex-col items-center text-center text-gray-500 dark:text-gray-400">
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
@@ -695,43 +764,59 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
-        {/* Serviços 24h (Moved from Home) */}
+        {/* Serviços 24h */}
         <section>
-            <div className="flex items-center justify-between mb-2">
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
-            </div>
-            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
-                {SERVICES_24H.map((service) => (
-                    <div key={service.id} className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
-                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
-                                <Clock className="w-3 h-3" />
-                                24h
-                            </div>
-                        </div>
-                        <div className="p-2.5 flex flex-col flex-1 justify-between">
-                            <div>
-                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
-                            </div>
-                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-green-500" />
-                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+              Serviços 24h
+            </h2>
+          </div>
+          <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
+            {SERVICES_24H.map((service) => (
+              <div
+                key={service.id}
+                className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform"
+              >
+                <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
+                    <Clock className="w-3 h-3" />
+                    24h
+                  </div>
+                </div>
+                <div className="p-2.5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">
+                      {service.name}
+                    </h4>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+                      {service.category}
+                    </p>
+                  </div>
+                  <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-green-500" />
+                    <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">
+                      Ligar agora
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
-        {/* Descubra por estilo - no final da página */}
+        {/* Descubra por estilo */}
         <section>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
             Descubra seu estilo na Freguesia
           </h2>
 
           <div className="grid grid-cols-2 gap-2.5">
+            {/* Romântico */}
             <button
               onClick={() => setSelectedStyle("Romântico")}
               className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
@@ -767,6 +852,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               </div>
             </button>
 
+            {/* Família */}
             <button
               onClick={() => setSelectedStyle("Família")}
               className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
@@ -801,6 +887,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               </div>
             </button>
 
+            {/* Moderno */}
             <button
               onClick={() => setSelectedStyle("Moderno")}
               className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
@@ -835,6 +922,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({
               </div>
             </button>
 
+            {/* Clássico */}
             <button
               onClick={() => setSelectedStyle("Clássico")}
               className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
@@ -871,11 +959,10 @@ const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </section>
 
-        {/* Sponsor Banner - Highlighted */}
+        {/* Sponsor Banner */}
         <div className="mt-4">
           <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-[1px] shadow-[0_16px_40px_rgba(15,23,42,0.55)]">
             <div className="relative bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.14),transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.08),transparent_55%)] rounded-2xl px-4 py-3.5 flex items-center gap-3">
-              {/* Left Content */}
               <div className="flex-1 min-w-0">
                 <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 border border-white/15 text-[9px] text-orange-100 mb-1.5">
                   <Zap className="w-3 h-3 text-orange-300" />
@@ -892,7 +979,6 @@ const ExploreView: React.FC<ExploreViewProps> = ({
                   com presença constante no app.
                 </p>
 
-                {/* CTA Buttons */}
                 <div className="flex items-center gap-2 mt-2">
                   <button
                     onClick={onOpenPlans}
@@ -908,7 +994,6 @@ const ExploreView: React.FC<ExploreViewProps> = ({
                 </div>
               </div>
 
-              {/* Right - Illustration / Logo placeholder */}
               <div className="hidden xs:flex">
                 <div className="w-[84px] h-[84px] rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-400 to-yellow-300 relative overflow-hidden shadow-[0_16px_40px_rgba(251,146,60,0.75)]">
                   <div className="absolute -inset-10 bg-[conic-gradient(from_210deg,_rgba(15,23,42,0.15),_rgba(15,23,42,0.9),_rgba(15,23,42,0.15))] opacity-90" />
@@ -929,4 +1014,5 @@ const ExploreView: React.FC<ExploreViewProps> = ({
   );
 };
 
+// default export também, pra qualquer import antigo que use `import ExploreView from ...`
 export default ExploreView;
