@@ -164,7 +164,7 @@ const HorizontalStoreSection: React.FC<{
 
                     {/* 3. Verificado (Azul Royal + Branco) */}
                     {isVerified && (
-                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" title="Verificado" />
+                        <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF] drop-shadow-sm" aria-label="Verificado" />
                     )}
                 </div>
 

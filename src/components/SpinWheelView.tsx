@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { Gift, RefreshCw, ThumbsDown, History, Wallet, Volume2, VolumeX, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Gift, RefreshCw, ThumbsDown, X, Loader2, History, Wallet, Volume2, VolumeX, Lock, ArrowRight, PartyPopper, CheckCircle } from 'lucide-react';
 import { useCountdown } from '../hooks/useCountdown';
 
 // --- Tipos e Constantes ---
@@ -40,6 +41,7 @@ const SEGMENT_COUNT = PRIZES.length;
 const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
 const SPIN_DURATION_MS = 5000;
 
+// Use remote URLs for sounds to work in all environments
 const SOUND_URLS = {
   spin: "https://assets.mixkit.co/sfx/preview/mixkit-game-wheel-spinning-2012.mp3",
   win: "https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3",
@@ -48,6 +50,7 @@ const SOUND_URLS = {
 
 type SpinStatus = 'loading' | 'ready' | 'cooldown' | 'no_user' | 'error';
 
+// --- Componente ---
 export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, onWin, onRequireLogin, onViewHistory }) => {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -62,12 +65,14 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
 
   const timeUntilNextSpin = useCountdown(lastSpinDate);
 
+  // --- Efeitos ---
   useEffect(() => {
     Object.entries(SOUND_URLS).forEach(([key, url]) => {
       const audio = new Audio(url);
       audio.preload = 'auto';
       audioRefs.current[key] = audio;
     });
+    // Ensure spin sound loops properly
     if (audioRefs.current.spin) {
         audioRefs.current.spin.loop = true;
         audioRefs.current.spin.volume = 0.4;
@@ -133,6 +138,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     checkSpinAbility();
   }, [userId]);
 
+  // --- Funções ---
   const saveSpinResult = async (result: Prize) => {
     if (!userId || !supabase) return false;
     try {
@@ -165,11 +171,16 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     playSound('spin');
 
     const winningSegmentIndex = Math.floor(Math.random() * SEGMENT_COUNT);
+    // Add extra rotations to ensure good spin effect
     const baseRotation = 360 * 5; 
-    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5); 
+    // Calculate angle to land on the chosen segment at the top (270deg in SVG or -90)
+    // Current SVG starts at 0 (3 o'clock). 
+    // To land segment i at top, we need to rotate so that the segment aligns with -90deg.
+    const randomOffset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5); // Add some randomness within segment
     const segmentCenter = winningSegmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const finalAngle = 270 - segmentCenter + randomOffset; 
     
+    // Ensure positive rotation
     const targetRotation = rotation + baseRotation + (360 - (rotation % 360)) + finalAngle;
 
     setRotation(targetRotation);
@@ -182,11 +193,14 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       setSpinResult(result);
 
       if (result.prize_type === 'gire_de_novo') {
+        // Don't save "Spin Again" to DB as a used turn, just reset state
         setTimeout(() => {
           setIsSpinning(false);
           setSpinResult(null);
+          // Keep status 'ready'
         }, 2000);
       } else {
+        // Save result and set cooldown
         const saved = await saveSpinResult(result);
         if (saved) {
           setLastSpinDate(new Date());
@@ -199,7 +213,9 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
   };
 
   const handleCloseResult = () => {
+    // Navigate to extract/wallet
     onViewHistory();
+    // Reset internal state
     setSpinResult(null);
   };
 
@@ -263,6 +279,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
     const startAngle = index * angle;
     const endAngle = startAngle + angle;
     
+    // Convert degrees to radians
     const startRad = (Math.PI / 180) * startAngle;
     const endRad = (Math.PI / 180) * endAngle;
 
@@ -281,10 +298,12 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
   const getTextPosition = (index: number) => {
     const midAngle = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const rad = midAngle * (Math.PI / 180);
-    const radius = 70;
+    const radius = 70; // Text distance from center
     const x = 100 + radius * Math.cos(rad);
     const y = 100 + radius * Math.sin(rad);
     
+    // Rotate text to point outwards from center
+    // SVG rotation is clockwise. 
     return { x, y, rotation: midAngle }; 
   };
 
@@ -306,6 +325,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
       </div>
       
       <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center mb-5">
+        {/* Pointer (North) */}
         <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-20" style={{ filter: 'drop-shadow(0 4px 5px rgba(0,0,0,0.25))' }}>
           <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#1E5BFF]"></div>
         </div>
@@ -323,6 +343,8 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
               return (
                 <g key={i}>
                   <path d={getPath(i)} fill={prize.color} stroke="#E0E0E0" strokeWidth="0.5" />
+                  
+                  {/* Text Label */}
                   <text 
                     x={x} 
                     y={y} 
@@ -332,7 +354,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
                     fontFamily="sans-serif"
                     textAnchor="middle" 
                     dominantBaseline="middle"
-                    transform={`rotate(${rotation + 90}, ${x}, ${y})`}
+                    transform={`rotate(${rotation + 90}, ${x}, ${y})`} // +90 to make text perpendicular to radius (tangential) or simple rotation
                   >
                     <tspan x={x} dy="-3">{prize.line1}</tspan>
                     <tspan x={x} dy="8">{prize.line2}</tspan>
@@ -346,9 +368,12 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
 
       {renderSpinButton()}
 
+      {/* RESULT MODAL */}
       {spinResult && spinResult.prize_type !== 'gire_de_novo' && (
         <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-30 flex items-center justify-center rounded-t-3xl animate-in fade-in duration-300">
            <div className="text-center p-6 flex flex-col items-center max-w-xs w-full">
+               
+               {/* Icon */}
                <div className={`mb-6 p-6 rounded-full shadow-lg animate-bounce-short ${
                    spinResult.prize_type === 'nao_foi_dessa_vez' 
                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-400' 
@@ -362,15 +387,23 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
                         <Gift size={48} strokeWidth={1.5} />
                     )}
                </div>
+
+               {/* Title */}
                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 leading-tight">
                    {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Poxa, não foi dessa vez!' : 'Você ganhou!'}
                </h3>
+
+               {/* Prize Name */}
                {spinResult.prize_type !== 'nao_foi_dessa_vez' && (
                    <p className="text-xl font-bold text-[#1E5BFF] mb-2">{spinResult.prize_label}</p>
                )}
+
+               {/* Description */}
                <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
                    {spinResult.description}
                </p>
+               
+               {/* Action Button */}
                <button 
                  onClick={handleCloseResult}
                  className="w-full bg-[#1E5BFF] hover:bg-[#1749CC] text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
@@ -378,10 +411,12 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
                  {spinResult.prize_type === 'nao_foi_dessa_vez' ? 'Tentar amanhã' : 'Ver na Carteira'}
                  <ArrowRight className="w-5 h-5" />
                </button>
+
            </div>
         </div>
       )}
       
+      {/* Spin Again Overlay */}
       {spinResult && spinResult.prize_type === 'gire_de_novo' && (
         <div className="absolute inset-0 bg-black/60 z-30 flex items-center justify-center rounded-t-3xl">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl flex flex-col items-center animate-in zoom-in duration-300">
@@ -391,6 +426,7 @@ export const SpinWheelView: React.FC<SpinWheelViewProps> = ({ userId, userRole, 
             </div>
         </div>
       )}
+
     </div>
   );
 };
