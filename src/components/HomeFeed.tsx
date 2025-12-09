@@ -1,3 +1,4 @@
+
 // ... keep imports ...
 import React, { useState, useEffect, useRef } from 'react';
 import { CATEGORIES } from '../constants';
