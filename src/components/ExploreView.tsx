@@ -150,14 +150,14 @@ const HorizontalStoreSection: React.FC<{
                     
                     {/* 1. Patrocinado (Azul Royal) */}
                     {isSponsored && (
-                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm" title="Patrocinado">
+                        <div className="w-6 h-6 bg-[#1E5BFF] rounded-full flex items-center justify-center shadow-sm">
                             <Zap className="w-3.5 h-3.5 text-white fill-white" aria-label="Patrocinado" />
                         </div>
                     )}
 
                     {/* 2. Cashback (Preto + Amarelo) */}
                     {hasCashback && (
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm" title="Cashback">
+                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center shadow-sm">
                             <Coins className="w-3.5 h-3.5 text-[#FFD447] fill-[#FFD447]" aria-label="Cashback" />
                         </div>
                     )}
@@ -432,6 +432,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               Ajuste a busca ou os filtros para ver novas opções.
             </p>
           </div>
+        )}
         )}
 
         {/* Serviços 24h (Moved from Home) */}

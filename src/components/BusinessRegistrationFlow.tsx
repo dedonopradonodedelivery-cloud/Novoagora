@@ -274,7 +274,7 @@ export const BusinessRegistrationFlow: React.FC<BusinessRegistrationFlowProps> =
             {otp.map((digit, idx) => (
                 <input
                     key={idx}
-                    ref={(el) => {
+                    ref={(el: HTMLInputElement | null) => {
                         otpRefs.current[idx] = el;
                     }}
                     type="tel"
