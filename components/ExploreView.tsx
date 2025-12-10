@@ -343,7 +343,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onLocationClick,
   onFilterClick,
   onOpenPlans,
-  onViewAllVerified,
 }) => {
   const { location, isLoading: isLoadingLocation } = useUserLocation();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
@@ -450,6 +449,33 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
     return list;
   }, [stores, sortOption, location, selectedStyle]);
+
+  const SERVICES_24H = [
+    {
+      id: "24h-1",
+      name: "Clínica 24h Freguesia",
+      category: "Saúde & Emergência",
+      image:
+        "https://images.pexels.com/photos/1250655/pexels-photo-1250655.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0001",
+    },
+    {
+      id: "24h-2",
+      name: "Pet Emergência Freguesia",
+      category: "Vet & Pet Care",
+      image:
+        "https://images.pexels.com/photos/19041061/pexels-photo-19041061/free-photo-of-mulher-menina-bonito-fofo.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0002",
+    },
+    {
+      id: "24h-3",
+      name: "Auto Socorro 24h",
+      category: "Guincho & Socorro",
+      image:
+        "https://images.pexels.com/photos/19053837/pexels-photo-19053837/free-photo-of-carro-veiculo-automovel-motor.jpg?auto=compress&cs=tinysrgb&w=1200",
+      phone: "(21) 99999-0003",
+    },
+  ];
 
   // --- STORY LOGIC ---
   const activeStory = activeStoryIndex !== null ? EXPLORE_STORIES[activeStoryIndex] : null;
@@ -751,6 +777,36 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
+        {/* Serviços 24h (Moved from Home) */}
+        <section>
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
+            </div>
+            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
+                {SERVICES_24H.map((service) => (
+                    <div key={service.id} className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
+                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
+                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
+                                <Clock className="w-3 h-3" />
+                                24h
+                            </div>
+                        </div>
+                        <div className="p-2.5 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
+                            </div>
+                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-green-500" />
+                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
         {/* Descubra por estilo - no final da página */}
         <section>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
@@ -913,7 +969,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <h2 className="text-sm font-semibold text-white leading-snug">
                   Seja o patrocinador master da Freguesia
                 </h2>
-                <p className="text-[11px] text-slate-200/85 mt-1">
+                <p className="text-xs text-slate-200/85 mt-1">
                   Sua marca em destaque em todas as experiências do Localizei,
                   com presença constante no app.
                 </p>

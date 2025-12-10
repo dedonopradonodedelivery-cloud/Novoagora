@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
@@ -46,6 +45,8 @@ import { CashbackPaymentScreen } from './components/CashbackPaymentScreen';
 import { MerchantCashbackRequests } from './components/MerchantCashbackRequests';
 import { MerchantPayRoute } from './components/MerchantPayRoute';
 import { CashbackPayFromQrScreen } from './components/CashbackPayFromQrScreen';
+import { MerchantPanel } from './components/MerchantPanel';
+import { UserCashbackFlow } from './components/UserCashbackFlow';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -366,7 +367,9 @@ const App: React.FC = () => {
     'cashback_payment',
     'merchant_requests',
     'merchant_pay_route',
-    'cashback_pay_qr'
+    'cashback_pay_qr',
+    'merchant_panel',
+    'user_cashback_flow'
   ].includes(activeTab);
 
   return (
@@ -405,12 +408,13 @@ const App: React.FC = () => {
 
             {activeTab === 'explore' && (
               <ExploreView
-                onSelectCategory={handleSelectCategory}
-                onNavigate={setActiveTab}
-                onStoreClick={handleSelectStore}
-                onViewAllVerified={() => setActiveTab('verified_stores')}
                 stores={stores}
-                searchTerm={globalSearch}
+                searchQuery={globalSearch}
+                onStoreClick={handleSelectStore}
+                onLocationClick={() => {}}
+                onFilterClick={() => {}}
+                onOpenPlans={() => setActiveTab('become_sponsor')}
+                onViewAllVerified={() => setActiveTab('verified_stores')}
               />
             )}
 
@@ -563,9 +567,14 @@ const App: React.FC = () => {
               <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
             )}
 
-            {/* Merchant QR Flow */}
+            {/* Merchant QR Flow (Legacy) */}
             {activeTab === 'merchant_qr' && (
               <MerchantQrScreen onBack={() => setActiveTab('profile')} user={user} />
+            )}
+
+            {/* NEW MERCHANT PANEL (Consolidated) */}
+            {activeTab === 'merchant_panel' && (
+              <MerchantPanel onBack={() => setActiveTab('store_area')} />
             )}
 
             {/* QR Code Scanner (Customer) */}
@@ -574,6 +583,11 @@ const App: React.FC = () => {
                 onBack={() => setActiveTab('home')} 
                 onScanSuccess={handleScanSuccess} 
               />
+            )}
+
+            {/* NEW USER CASHBACK FLOW */}
+            {activeTab === 'user_cashback_flow' && (
+              <UserCashbackFlow onBack={() => setActiveTab('profile')} />
             )}
 
             {/* Payment Flow (Customer - Manual Entry) */}
