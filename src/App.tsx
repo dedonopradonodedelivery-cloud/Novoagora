@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
@@ -409,12 +408,13 @@ const App: React.FC = () => {
 
             {activeTab === 'explore' && (
               <ExploreView
-                onSelectCategory={handleSelectCategory}
-                onNavigate={setActiveTab}
-                onStoreClick={handleSelectStore}
-                onViewAllVerified={() => setActiveTab('verified_stores')}
                 stores={stores}
-                searchTerm={globalSearch}
+                searchQuery={globalSearch}
+                onStoreClick={handleSelectStore}
+                onLocationClick={() => {}}
+                onFilterClick={() => {}}
+                onOpenPlans={() => setActiveTab('become_sponsor')}
+                onViewAllVerified={() => setActiveTab('verified_stores')}
               />
             )}
 

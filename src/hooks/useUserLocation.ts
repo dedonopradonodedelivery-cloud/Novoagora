@@ -1,52 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from 'react';
 
-type Coords = {
-  latitude: number;
-  longitude: number;
-};
-
-type LocationData = {
-  coords: Coords | null;
-};
-
-type UseUserLocationResult = {
-  location: LocationData | null;
-  isLoading: boolean;
-  error: string | null;
-};
-
-export const useUserLocation = (): UseUserLocationResult => {
-  const [location, setLocation] = useState<LocationData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useUserLocation = () => {
+  const [location, setLocation] = useState<{
+    address?: { neighborhood?: string; city?: string };
+    latitude?: number;
+    longitude?: number;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("geolocation" in navigator)) {
-      setError("Geolocalização não é suportada neste dispositivo.");
-      setIsLoading(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
+    // Mock implementation for demo purposes
+    setIsLoading(true);
+    // Simulating a delay for location retrieval
+    const timer = setTimeout(() => {
         setLocation({
-          coords: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          },
+            address: { neighborhood: 'Freguesia', city: 'Rio de Janeiro' },
+            latitude: -22.9329,
+            longitude: -43.3456
         });
         setIsLoading(false);
-      },
-      (err) => {
-        setError(err.message || "Não foi possível obter a localização.");
-        setIsLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 5 * 60 * 1000,
-      }
-    );
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return { location, isLoading, error };
