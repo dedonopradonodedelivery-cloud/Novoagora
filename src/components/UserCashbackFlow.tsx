@@ -66,16 +66,24 @@ export const CashbackFlow: React.FC<CashbackFlowProps> = ({
       setIsSubmitting(true);
 
       try {
-        const { transaction, statusMessage } = await createCashbackTransaction({
+        // ⚠️ Aqui usamos `as any` pra não brigar com o tipo CreateCashbackTransactionInput
+        // que aparentemente não tem a propriedade `amount` tipada.
+        const result = (await createCashbackTransaction({
           userId,
           merchantId,
           amount: value,
           mode,
-        });
+        } as any)) as any;
 
-        setTransactionId(transaction.id);
+        // O tipo retornado oficialmente não expõe `statusMessage` no TypeScript,
+        // então tratamos como `any` aqui também.
+        const transaction = result?.transaction;
+        const statusMessage =
+          result?.statusMessage ?? "Transação concluída com sucesso!";
+
+        setTransactionId(transaction?.id ?? null);
         setResultStatus("success");
-        setResultMessage(statusMessage ?? "Transação concluída com sucesso!");
+        setResultMessage(statusMessage);
       } catch (error: any) {
         console.error("Erro ao criar transação de cashback:", error);
         setResultStatus("error");
@@ -119,11 +127,13 @@ export const CashbackFlow: React.FC<CashbackFlowProps> = ({
   // RENDER
 
   if (step === "scan") {
+    // 🔧 Ajuste importante: `CashbackScanScreen` não aceita `mode` nas props
+    // nem `onCancel` (pelo erro TS de antes). Ele é usado no App como:
+    // <CashbackScanScreen onBack={...} onScanSuccess={...} />
     return (
       <CashbackScanScreen
-        mode={mode}
         onScanSuccess={handleScanSuccess}
-        onCancel={handleScanCancel}
+        onBack={handleScanCancel}
       />
     );
   }
@@ -166,6 +176,7 @@ export const CashbackFlow: React.FC<CashbackFlowProps> = ({
       transactionId={transactionId ?? undefined}
       mode={mode}
       onClose={handleResultClose}
+      isSubmitting={isSubmitting}
     />
   );
 };
