@@ -20,10 +20,10 @@ const PayWithCashback = PayWithCashbackScreen as React.ComponentType<any>;
 export default function CashbackFlow(props: CashbackFlowProps) {
   // Estados internos
   const [step, setStep] = useState<FlowStep>("scan");
-  const [storeName, setStoreName] = useState<string>(
+  const [storeName] = useState<string>(
     props.initialStoreName ?? "Loja Parceira"
   );
-  const [cashbackPercent, setCashbackPercent] = useState<number>(
+  const [cashbackPercent] = useState<number>(
     props.initialCashbackPercent ?? 5
   );
 
@@ -33,15 +33,11 @@ export default function CashbackFlow(props: CashbackFlowProps) {
 
   // --- Handlers ---
 
-  // Chamado quando o QR Scanner detecta um código válido
   const handleScanSuccess = (data: { merchantId: string; storeId: string }) => {
     console.log("QR Validado:", data);
-    // TODO: Aqui buscaríamos os dados reais da loja (nome, % cashback) no backend usando storeId
-    // Por enquanto, usamos os valores iniciais ou mocks
     setStep("pay");
   };
 
-  // Chamado quando o usuário clica em "Confirmar Pagamento" na tela de formulário
   const handlePaymentSimulated = (args: {
     purchaseAmount: number;
     cashbackUsed: number;
@@ -50,8 +46,6 @@ export default function CashbackFlow(props: CashbackFlowProps) {
     setCashbackUsed(args.cashbackUsed);
     setStep("waiting");
 
-    // Simulação de tempo de resposta do lojista/backend
-    // TODO: Substituir por subscrição real ao status da transação no Supabase
     setTimeout(() => {
       setResultStatus("approved"); // ou "rejected" para testar erro
       setStep("result");
@@ -65,17 +59,17 @@ export default function CashbackFlow(props: CashbackFlowProps) {
     setStep("scan");
   };
 
-  // --- Renders ---
+  // --- Classes de layout ---
 
-  // Wrapper para controlar o background: Dark no Scan, Light nos outros
-  const isScanStep = step === "scan";
+  const containerClassName =
+    step === "scan"
+      ? "min-h-screen flex flex-col bg-black text-white"
+      : "min-h-screen flex flex-col bg-gray-50 text-gray-900";
+
+  // --- Render ---
 
   return (
-    <div
-      className={`min-h-screen flex flex-col ${
-        isScanStep ? "bg-black text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
+    <div className={containerClassName}>
       <div className="w-full max-w-md mx-auto flex-1 flex flex-col relative">
         {/* STEP 1: SCANNER */}
         {step === "scan" && (
@@ -109,9 +103,9 @@ export default function CashbackFlow(props: CashbackFlowProps) {
           />
         )}
 
-        {/* STEP 3: AGUARDANDO LOJISTA (INTERMEDIÁRIO GLOBAL) */}
+        {/* STEP 3: AGUARDANDO LOJISTA */}
         {step === "waiting" && (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="flex-1 flex flex-col items-center justify-center p-6">
             <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mb-6 relative">
               <div className="absolute inset-0 rounded-full border-4 border-yellow-200 animate-ping opacity-75" />
               <Clock className="w-10 h-10 text-yellow-600" />
@@ -131,4 +125,47 @@ export default function CashbackFlow(props: CashbackFlowProps) {
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between text
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Valor da Compra</span>
+                  <span className="font-medium text-gray-900">
+                    {purchaseAmount.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                </div>
+
+                {cashbackUsed > 0 && (
+                  <div className="flex justify-between text-sm text-green-600 font-bold">
+                    <span>Saldo Utilizado</span>
+                    <span>
+                      -{" "}
+                      {cashbackUsed.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: RESULTADO FINAL */}
+        {step === "result" && (
+          <PaymentResultScreen
+            status={resultStatus}
+            storeName={storeName}
+            purchaseAmount={purchaseAmount}
+            cashbackUsed={cashbackUsed}
+            onBackToHome={handleResetFlow}
+            onViewDetails={() =>
+              window.alert("Detalhes da transação (simulação)")
+            }
+          />
+        )}
+      </div>
+    </div>
+  );
+}
