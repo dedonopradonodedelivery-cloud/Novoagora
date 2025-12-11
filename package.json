@@ -17,8 +17,6 @@
     "firebase": "^12.6.0",
     "@supabase/supabase-js": "^2.84.0",
     "jsqr": "^1.4.0",
-
-    /* 🔥 ADICIONADO — NECESSÁRIO PARA MerchantQrScreen.tsx */
     "qrcode": "^1.5.3"
   },
   "devDependencies": {
