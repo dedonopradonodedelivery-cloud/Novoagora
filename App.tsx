@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Header } from './components/Header';
@@ -51,6 +52,7 @@ import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Category, Store, AdType } from './types';
+import { getStoreLogo } from './utils/mockLogos';
 
 // =============================
 // MOCK DE LOJAS PARA AMBIENTE SEM SUPABASE
@@ -61,7 +63,7 @@ const MOCK_STORES: Store[] = [
     name: 'Burger Freguesia',
     category: 'Alimentação',
     description: 'Hambúrgueres artesanais com sabor de bairro.',
-    image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80',
+    logoUrl: getStoreLogo(1),
     rating: 4.8,
     reviewsCount: 124,
     distance: 'Freguesia • RJ',
@@ -71,14 +73,14 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '2',
     name: 'Padaria do Vale',
     category: 'Alimentação',
     description: 'Pães fresquinhos e café da manhã completo.',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+    logoUrl: getStoreLogo(2),
     rating: 4.6,
     reviewsCount: 87,
     distance: 'Freguesia • RJ',
@@ -88,14 +90,14 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '3',
     name: 'Studio Vida Fitness',
     category: 'Saúde & Bem-estar',
     description: 'Treinos funcionais e personal trainer.',
-    image: 'https://images.unsplash.com/photo-1554344058-8d1d1dbc5960?auto=format&fit=crop&w=800&q=80',
+    logoUrl: getStoreLogo(3),
     rating: 4.9,
     reviewsCount: 54,
     distance: 'Freguesia • RJ',
@@ -112,7 +114,7 @@ const MOCK_STORES: Store[] = [
     name: 'Pet Club Freguesia',
     category: 'Pets',
     description: 'Banho, tosa e boutique pet.',
-    image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=800&q=80',
+    logoUrl: getStoreLogo(4),
     rating: 4.7,
     reviewsCount: 98,
     distance: 'Freguesia • RJ',
@@ -122,7 +124,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true, // Marked as verified
+    verified: true,
   },
 ];
 
@@ -135,7 +137,9 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<'cliente' | 'lojista' | null>(null);
 
   const [globalSearch, setGlobalSearch] = useState('');
-  const [stores] = useState<Store[]>(MOCK_STORES); // usa apenas os mocks
+  const [serviceSearch, setServiceSearch] = useState(''); // Estado isolado para busca de serviços
+  
+  const [stores] = useState<Store[]>(MOCK_STORES); 
 
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
@@ -152,24 +156,33 @@ const App: React.FC = () => {
 
   const [selectedReward, setSelectedReward] = useState<any>(null);
   
-  // State for Scanning Flow
   const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(null);
-  
-  // State for Deep Link Route
   const [deepLinkMerchantId, setDeepLinkMerchantId] = useState<string | null>(null);
-  // State for QR Code URL Route
   const [qrMerchantId, setQrMerchantId] = useState<string | null>(null);
-
-  // State to pass transaction details to CashbackView
   const [lastTransaction, setLastTransaction] = useState<any>(null);
+
+  // New state to track where user came from when visiting Sponsor page
+  const [sponsorOrigin, setSponsorOrigin] = useState<string | null>(null);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  // URL Parsing for Deep Links
+  // Lógica para determinar qual estado de busca e placeholder usar no Header
+  const isServiceTab = activeTab === 'services';
+  const currentSearchTerm = isServiceTab ? serviceSearch : globalSearch;
+  const handleSearchChange = (val: string) => {
+    if (isServiceTab) {
+      setServiceSearch(val);
+    } else {
+      setGlobalSearch(val);
+    }
+  };
+  const searchPlaceholder = isServiceTab 
+    ? "Buscar serviços, categorias ou especialidades..." 
+    : "Buscar lojas, produtos, serviços...";
+
   useEffect(() => {
     const path = window.location.pathname;
     
-    // Match /merchant/:id/pay
     const matchMerchantPay = path.match(/\/merchant\/([^/]+)\/pay/);
     if (matchMerchantPay && matchMerchantPay[1]) {
       setDeepLinkMerchantId(matchMerchantPay[1]);
@@ -177,7 +190,6 @@ const App: React.FC = () => {
       return;
     }
 
-    // Match /cashback/loja/:id
     const matchCashbackQr = path.match(/\/cashback\/loja\/([^/]+)/);
     if (matchCashbackQr && matchCashbackQr[1]) {
       setQrMerchantId(matchCashbackQr[1]);
@@ -185,7 +197,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // AUTH
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -199,19 +210,14 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, [activeTab]);
 
-  // ROLE DO USUÁRIO
   useEffect(() => {
-    // em ambiente fake, mantém lógica básica
     if (!user) {
       setUserRole(null);
       return;
     }
-    // Simulate user role based on some logic or hardcoded for demo
-    // For now, defaulting to 'cliente' but can be toggled via business registration flow
     if (!userRole) setUserRole('cliente'); 
   }, [user]);
 
-  // SPLASH
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 5000);
     return () => clearTimeout(timer);
@@ -313,15 +319,13 @@ const App: React.FC = () => {
     {
       id: 'sub-ad-1',
       title: 'Desconto especial em Pizzas',
-      image:
-        'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=800&auto=format=fit-crop',
+      image: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=800&auto=format=fit-crop',
       merchantName: 'Pizza Place',
     },
     {
       id: 'sub-ad-2',
       title: 'Seu almoço executivo aqui',
-      image:
-        'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=800&auto=format=fit-crop',
+      image: 'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=800&auto=format=fit-crop',
       merchantName: 'Sabor & Cia',
     },
   ];
@@ -382,18 +386,23 @@ const App: React.FC = () => {
               toggleTheme={toggleTheme}
               onAuthClick={() => setIsAuthOpen(true)}
               user={user}
-              searchTerm={globalSearch}
-              onSearchChange={setGlobalSearch}
+              searchTerm={currentSearchTerm}
+              onSearchChange={handleSearchChange}
               onNavigate={setActiveTab}
               activeTab={activeTab}
               userRole={userRole}
+              onOpenMerchantQr={() => setActiveTab('merchant_qr')}
+              customPlaceholder={searchPlaceholder}
             />
           )}
 
           <main className="animate-in fade-in duration-500">
             {activeTab === 'home' && (
               <HomeFeed
-                onNavigate={setActiveTab}
+                onNavigate={(view) => {
+                    if (view === 'patrocinador_master') setSponsorOrigin('home');
+                    setActiveTab(view);
+                }}
                 onSelectCategory={handleSelectCategory}
                 onSelectCollection={handleSelectCollection}
                 onStoreClick={handleSelectStore}
@@ -415,6 +424,10 @@ const App: React.FC = () => {
                 onFilterClick={() => {}}
                 onOpenPlans={() => setActiveTab('become_sponsor')}
                 onViewAllVerified={() => setActiveTab('verified_stores')}
+                onViewMasterSponsor={() => {
+                    setSponsorOrigin('explore');
+                    setActiveTab('patrocinador_master');
+                }}
               />
             )}
 
@@ -441,7 +454,11 @@ const App: React.FC = () => {
               <ServicesView 
                 onSelectMacro={handleSelectServiceMacro} 
                 onOpenTerms={() => setActiveTab('service_terms')}
-                onNavigate={setActiveTab}
+                onNavigate={(view) => {
+                    if (view === 'patrocinador_master') setSponsorOrigin('services');
+                    setActiveTab(view);
+                }}
+                searchTerm={serviceSearch}
               />
             )}
 
@@ -533,7 +550,7 @@ const App: React.FC = () => {
             {activeTab === 'cashback' && (
               <CashbackView 
                 onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction} // Pass new transaction to view
+                newTransaction={lastTransaction} 
               />
             )}
 
@@ -559,7 +576,10 @@ const App: React.FC = () => {
                 user={user}
                 userRole={userRole}
                 onAuthClick={() => setIsAuthOpen(true)}
-                onNavigate={setActiveTab}
+                onNavigate={(view) => {
+                    if (view === 'patrocinador_master') setSponsorOrigin('profile');
+                    setActiveTab(view);
+                }}
               />
             )}
 
@@ -567,17 +587,14 @@ const App: React.FC = () => {
               <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
             )}
 
-            {/* Merchant QR Flow (Legacy) */}
             {activeTab === 'merchant_qr' && (
               <MerchantQrScreen onBack={() => setActiveTab('profile')} user={user} />
             )}
 
-            {/* NEW MERCHANT PANEL (Consolidated) */}
             {activeTab === 'merchant_panel' && (
               <MerchantPanel onBack={() => setActiveTab('store_area')} />
             )}
 
-            {/* QR Code Scanner (Customer) */}
             {activeTab === 'qrcode_scan' && (
               <CashbackScanScreen 
                 onBack={() => setActiveTab('home')} 
@@ -585,23 +602,20 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* NEW USER CASHBACK FLOW */}
             {activeTab === 'user_cashback_flow' && (
               <UserCashbackFlow onBack={() => setActiveTab('profile')} />
             )}
 
-            {/* Payment Flow (Customer - Manual Entry) */}
             {activeTab === 'cashback_payment' && scannedData && (
               <CashbackPaymentScreen
                 user={user}
                 merchantId={scannedData.merchantId}
                 storeId={scannedData.storeId}
                 onBack={() => setActiveTab('home')}
-                onComplete={handlePaymentComplete} // Redirects to wallet with history
+                onComplete={handlePaymentComplete} 
               />
             )}
 
-            {/* Merchant Payment Route (Legacy Deep Link) */}
             {activeTab === 'merchant_pay_route' && deepLinkMerchantId && (
               <MerchantPayRoute 
                 merchantId={deepLinkMerchantId}
@@ -612,7 +626,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* NEW QR Route Payment Screen */}
             {activeTab === 'cashback_pay_qr' && qrMerchantId && (
               <CashbackPayFromQrScreen 
                 merchantId={qrMerchantId}
@@ -623,10 +636,9 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Merchant Pending Requests */}
             {activeTab === 'merchant_requests' && (
               <MerchantCashbackRequests 
-                merchantId="merchant_123_uuid" // In real app, derived from user.uid
+                merchantId="merchant_123_uuid" 
                 onBack={() => setActiveTab('store_area')}
               />
             )}
@@ -696,7 +708,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Simple Pages Routing */}
             {activeTab === 'support' && <SupportView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'invite_friend' && <InviteFriendView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'about' && <AboutView onBack={() => setActiveTab('profile')} />}
@@ -705,7 +716,14 @@ const App: React.FC = () => {
             {activeTab === 'edit_profile' && user && <EditProfileView user={user} onBack={() => setActiveTab('profile')} />}
             
             {activeTab === 'patrocinador_master' && (
-                <PatrocinadorMasterScreen onBack={() => setActiveTab('profile')} />
+                <PatrocinadorMasterScreen onBack={() => {
+                    if (sponsorOrigin) {
+                        setActiveTab(sponsorOrigin);
+                        setSponsorOrigin(null);
+                    } else {
+                        setActiveTab('profile'); // Default fallback
+                    }
+                }} />
             )}
 
           </main>

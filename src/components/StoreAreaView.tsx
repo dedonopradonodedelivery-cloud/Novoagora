@@ -19,7 +19,7 @@ import {
   Bell,
   QrCode
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 
 interface StoreAreaViewProps {
   onBack: () => void;
@@ -121,7 +121,7 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
     
     const merchantId = 'merchant_123_uuid'; // Mock ID needs to match whatever we use in app state
 
-    // Initial count
+    // 1. Initial count fetch
     const fetchCount = async () => {
         const { count } = await supabase
             .from('cashback_transactions')
@@ -132,11 +132,20 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
     };
     fetchCount();
 
-    // Subscribe
-    const sub = supabase.channel('pending_count')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'cashback_transactions', filter: `merchant_id=eq.${merchantId}` }, () => {
-            fetchCount();
-        })
+    // 2. Subscribe to Realtime updates for Badge Counter
+    const sub = supabase.channel('store_area_badge')
+        .on(
+            'postgres_changes', 
+            { 
+                event: '*', 
+                schema: 'public', 
+                table: 'cashback_transactions', 
+                filter: `merchant_id=eq.${merchantId}` 
+            }, 
+            () => {
+                fetchCount(); // Re-fetch count on any change (insert/update)
+            }
+        )
         .subscribe();
 
     return () => { supabase.removeChannel(sub); };
@@ -195,8 +204,8 @@ export const StoreAreaView: React.FC<StoreAreaViewProps> = ({ onBack, onNavigate
         {/* --- ALERT BLOCK FOR PENDING REQUESTS --- */}
         {pendingRequestsCount > 0 && (
             <button 
-                onClick={() => onNavigate && onNavigate('merchant_panel')}
-                className="w-full bg-red-500 text-white p-4 rounded-2xl shadow-lg shadow-red-500/30 flex items-center justify-between animate-pulse"
+                onClick={() => onNavigate && onNavigate('merchant_requests')}
+                className="w-full bg-red-500 text-white p-4 rounded-2xl shadow-lg shadow-red-500/30 flex items-center justify-between animate-pulse active:scale-95 transition-transform"
             >
                 <div className="flex items-center gap-3">
                     <Bell className="w-6 h-6 fill-white" />

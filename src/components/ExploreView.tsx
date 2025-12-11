@@ -17,7 +17,9 @@ import {
   Crown,
   X,
   Volume2,
-  VolumeX
+  VolumeX,
+  Heart,
+  Users
 } from "lucide-react";
 import { useUserLocation } from "../hooks/useUserLocation";
 import { useMediaQuery } from "../hooks/useMediaQuery";
@@ -46,28 +48,28 @@ const EXPLORE_STORIES = [
     id: 's2', 
     merchantName: 'Fit Studio', 
     logo: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=200&auto=format=fit=crop', 
-    videoUrl: 'https://videos.pexels.com/video-files/4434246/4434246-sd_540_960_25fps.mp4', // Gym video placeholder
+    videoUrl: 'https://videos.pexels.com/video-files/4434246/4434246-sd_540_960_25fps.mp4', 
     isLive: false 
   },
   { 
     id: 's3', 
     merchantName: 'Burger King', 
     logo: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format=fit=crop', 
-    videoUrl: 'https://videos.pexels.com/video-files/852395/852395-sd_540_960_30fps.mp4', // Burger video
+    videoUrl: 'https://videos.pexels.com/video-files/852395/852395-sd_540_960_30fps.mp4', 
     isLive: true 
   },
   { 
     id: 's4', 
     merchantName: 'Moda Freguesia', 
     logo: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=200&auto=format=fit=crop', 
-    videoUrl: 'https://videos.pexels.com/video-files/6333333/6333333-sd_540_960_30fps.mp4', // Fashion video
+    videoUrl: 'https://videos.pexels.com/video-files/6333333/6333333-sd_540_960_30fps.mp4', 
     isLive: false 
   },
   { 
     id: 's5', 
     merchantName: 'Pet Shop Bob', 
     logo: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=200&auto=format=fit=crop', 
-    videoUrl: 'https://videos.pexels.com/video-files/4625753/4625753-sd_540_960_25fps.mp4', // Dog video
+    videoUrl: 'https://videos.pexels.com/video-files/4625753/4625753-sd_540_960_25fps.mp4', 
     isLive: false 
   },
 ];
@@ -80,7 +82,7 @@ const CategoryChip: React.FC<{
 }> = ({ label, active, icon, onClick }) => (
   <button
     onClick={onClick}
-    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all whitespace-nowrap
+    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all whitespace-nowrap flex-shrink-0
       ${
         active
           ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-transparent shadow-sm"
@@ -161,11 +163,8 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
 
   if (!stores.length) return null;
 
-  const WrapperComponent = isMobile ? "div" : "section";
-
   return (
-    <WrapperComponent className="mb-6">
-      {/* Header com título e navegação */}
+    <section className="mb-6">
       <div className="flex items-center justify-between mb-2 px-0.5">
         <div>
           <div className="flex items-center gap-1.5">
@@ -180,7 +179,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
           )}
         </div>
 
-        {/* Scroll controls - Desktop only */}
         {!isMobile && (
           <div className="flex items-center gap-1">
             <button
@@ -211,10 +209,9 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
         )}
       </div>
 
-      {/* Lista horizontal de lojas */}
       <div
         data-section={title}
-        className="horizontal-scroll flex gap-3 overflow-x-auto pb-1 hide-scrollbar -mx-0.5 px-0.5"
+        className="horizontal-scroll flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-0.5 px-0.5"
       >
         {stores.map((store) => (
           <button
@@ -222,7 +219,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
             onClick={() => onStoreClick(store)}
             className="min-w-[250px] max-w-[260px] bg-white dark:bg-gray-900 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.45)] border border-gray-100 dark:border-gray-800 overflow-hidden group text-left hover:-translate-y-0.5 transition-all duration-200"
           >
-            {/* Imagem / Capa */}
             <div className="relative h-24 bg-gray-100 dark:bg-gray-800 overflow-hidden">
               <img
                 src={(store as any).coverImage || store.image || (store as any).imageUrl}
@@ -231,9 +227,7 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-              {/* Badges - avaliações, distância, etc */}
               <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2">
-                {/* Avaliação */}
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
                   <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                   <span className="text-[11px] font-semibold text-white">
@@ -246,7 +240,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                   )}
                 </div>
 
-                {/* Distância / tempo */}
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm">
                   <MapPin className="w-3 h-3 text-white/90" />
                   <span className="text-[10px] text-white/90">
@@ -256,9 +249,7 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
               </div>
             </div>
 
-            {/* Conteúdo */}
             <div className="p-3">
-              {/* Nome e categoria */}
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div className="min-w-0">
                   <h3 className="text-[13px] font-semibold text-gray-900 dark:text-white truncate">
@@ -271,7 +262,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                   </p>
                 </div>
 
-                {/* Selo Localizei ou Cashback */}
                 <div className="flex flex-col items-end gap-1">
                   {(store as any).isLocalizeiPartner && (
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-[9px] font-semibold text-white shadow-sm">
@@ -289,7 +279,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                 </div>
               </div>
 
-              {/* Tags rápidas / estilo */}
               {(store as any).tags && (store as any).tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
                   {(store as any).tags.slice(0, 3).map((tag: string) => (
@@ -304,7 +293,6 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
                 </div>
               )}
 
-              {/* Status / tempo / faixa de preço */}
               <div className="flex items-center justify-between mt-1">
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
@@ -332,7 +320,7 @@ const HorizontalStoreSection: React.FC<HorizontalStoreSectionProps> = ({
           </button>
         ))}
       </div>
-    </WrapperComponent>
+    </section>
   );
 };
 
@@ -343,13 +331,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onLocationClick,
   onFilterClick,
   onOpenPlans,
+  onViewAllVerified,
 }) => {
   const { location, isLoading: isLoadingLocation } = useUserLocation();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [sortOption, setSortOption] = useState<"nearby" | "topRated" | "cashback">("nearby");
+  const [sortOption, setSortOption] = useState<"nearby" | "topRated" | "cashback" | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   
-  // Stories State
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [storyProgress, setStoryProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
@@ -450,41 +438,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     return list;
   }, [stores, sortOption, location, selectedStyle]);
 
-  const SERVICES_24H = [
-    {
-      id: "24h-1",
-      name: "Clínica 24h Freguesia",
-      category: "Saúde & Emergência",
-      image:
-        "https://images.pexels.com/photos/1250655/pexels-photo-1250655.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      phone: "(21) 99999-0001",
-    },
-    {
-      id: "24h-2",
-      name: "Pet Emergência Freguesia",
-      category: "Vet & Pet Care",
-      image:
-        "https://images.pexels.com/photos/19041061/pexels-photo-19041061/free-photo-of-mulher-menina-bonito-fofo.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      phone: "(21) 99999-0002",
-    },
-    {
-      id: "24h-3",
-      name: "Auto Socorro 24h",
-      category: "Guincho & Socorro",
-      image:
-        "https://images.pexels.com/photos/19053837/pexels-photo-19053837/free-photo-of-carro-veiculo-automovel-motor.jpg?auto=compress&cs=tinysrgb&w=1200",
-      phone: "(21) 99999-0003",
-    },
-  ];
-
-  // --- STORY LOGIC ---
   const activeStory = activeStoryIndex !== null ? EXPLORE_STORIES[activeStoryIndex] : null;
 
   useEffect(() => {
     let interval: any;
     if (activeStoryIndex !== null) {
       setStoryProgress(0);
-      const duration = 15000; // 15 seconds max per story
+      const duration = 15000; 
       const step = 50; 
       
       interval = setInterval(() => {
@@ -504,7 +464,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     if (activeStoryIndex !== null && activeStoryIndex < EXPLORE_STORIES.length - 1) {
       setActiveStoryIndex(activeStoryIndex + 1);
     } else {
-      setActiveStoryIndex(null); // Close
+      setActiveStoryIndex(null); 
     }
   };
 
@@ -518,46 +478,20 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   return (
     <>
-      {/* Header com localização */}
-      <div className="px-4 pt-3 pb-1 flex items-center justify-between gap-3">
-        <button
-          onClick={onLocationClick}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-        >
-          <MapPin className="w-3.5 h-3.5 text-orange-500" />
-          <span className="font-medium">
-            {isLoadingLocation
-              ? "Detectando localização..."
-              : location?.address?.neighborhood || "Freguesia e região"}
-          </span>
-        </button>
-
-        <button
-          onClick={onOpenPlans}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-xs font-semibold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 transition-all"
-        >
-          <Zap className="w-3.5 h-3.5" />
-          <span>Destaque seu negócio</span>
-        </button>
-      </div>
-
-      {/* Filtros rápidos */}
-      <div className="px-4 py-1">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
-            Explore ofertas, estilos e lugares com cashback
-          </span>
+      <div className="px-4 py-1 pt-4">
+        {/* Filtros em Linha Única */}
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar items-center">
+          
+          {/* Botão Filtros como Primeiro Item */}
           <button
             onClick={onFilterClick}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-[11px] text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-900/60 hover:bg-gray-50 dark:hover:bg-gray-800/80"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all whitespace-nowrap flex-shrink-0 shadow-sm"
           >
             <Filter className="w-3.5 h-3.5" />
             Filtros
           </button>
-        </div>
 
-        {/* Chips de filtros rápidos */}
-        <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          {/* Chips de Filtros Rápidos */}
           {quickFilters.map((filter) => (
             <CategoryChip
               key={filter.id}
@@ -585,60 +519,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         </div>
       </div>
 
-      {/* Conteúdo principal da Explore */}
       <div className="px-4 pb-4 space-y-6">
-        {/* Banner principal / destaque premium */}
-        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-[1px] shadow-[0_16px_40px_rgba(15,23,42,0.45)]">
-          <div className="relative bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.14),transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.08),transparent_55%)] rounded-2xl px-4 py-3.5 flex items-center gap-3">
-            <div className="flex-1 min-w-0">
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/30 border border-white/10 text-[9px] text-orange-200 mb-1.5">
-                <Zap className="w-3 h-3 text-orange-300" />
-                <span className="uppercase tracking-wider font-semibold">
-                  Destaque Localizei
-                </span>
-              </span>
-              <h2 className="text-sm font-semibold text-white leading-snug">
-                Transforme sua presença local em resultados reais
-              </h2>
-              <p className="text-[11px] text-slate-200/80 mt-1">
-                Banners, destaque nas buscas, cashback e muito mais em um só
-                lugar, com foco total na Freguesia.
-              </p>
-              <div className="flex items-center gap-1.5 mt-2">
-                <button
-                  onClick={onOpenPlans}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-xs font-semibold text-slate-900 shadow-sm hover:bg-slate-100 transition-colors"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                  Conhecer planos
-                </button>
-                <button className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-full border border-white/20 text-[11px] text-slate-100/90 hover:bg-white/10 transition-colors">
-                  <MapPin className="w-3 h-3" />
-                  Ver cases na Freguesia
-                </button>
-              </div>
-            </div>
-            <div className="hidden xs:flex">
-              <div className="w-[88px] h-[88px] rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-400 to-yellow-300 relative overflow-hidden shadow-[0_16px_40px_rgba(251,146,60,0.75)]">
-                <div className="absolute -inset-6 bg-[conic-gradient(from_210deg,_rgba(15,23,42,0.15),_rgba(15,23,42,0.9),_rgba(15,23,42,0.15))] opacity-70" />
-                <div className="relative h-full w-full flex items-center justify-center">
-                  <div className="h-11 w-11 rounded-2xl bg-black/80 flex items-center justify-center shadow-lg border border-white/10">
-                    <MapPin className="w-5 h-5 text-orange-300" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
+        {/* Banner "Destaque Localizei" removido daqui - Confirmed Removal */}
 
-        {/* --- STORIES BLOCK --- */}
         <section className="mt-2">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
               Stories da Freguesia
             </h2>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar -mx-4 px-4">
+          <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
             {EXPLORE_STORIES.map((story, index) => (
               <button
                 key={story.id}
@@ -658,7 +549,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </section>
 
-        {/* Destaques de categoria / experiências */}
         <section>
           <div className="flex items-center justify-between mb-2">
             <div>
@@ -672,7 +562,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             </div>
           </div>
 
-          {/* Cards de destaques adicionais */}
           <div className="grid grid-cols-2 gap-2.5">
             <button className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-500 p-[1px] shadow-lg">
               <div className="relative bg-slate-950/95 rounded-2xl px-3 py-2.5 flex flex-col h-full">
@@ -732,7 +621,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         </section>
 
-        {/* Seções de recomendação */}
         {hasAnyStore ? (
           <React.Fragment>
             <HorizontalStoreSection
@@ -777,187 +665,45 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
         )}
 
-        {/* Serviços 24h (Moved from Home) */}
-        <section>
-            <div className="flex items-center justify-between mb-2">
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Serviços 24h</h2>
-            </div>
-            <div className="horizontal-scroll flex gap-3 overflow-x-auto pb-1">
-                {SERVICES_24H.map((service) => (
-                    <div key={service.id} className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                        <div className="h-20 w-full relative bg-gray-200 dark:bg-gray-700">
-                            <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm flex items-center gap-1 animate-pulse">
-                                <Clock className="w-3 h-3" />
-                                24h
-                            </div>
-                        </div>
-                        <div className="p-2.5 flex flex-col flex-1 justify-between">
-                            <div>
-                                <h4 className="font-bold text-gray-800 dark:text-white text-xs line-clamp-1">{service.name}</h4>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{service.category}</p>
-                            </div>
-                            <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-green-500" />
-                                <span className="text-[9px] font-medium text-gray-600 dark:text-gray-300">Ligar agora</span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
+        {/* SECTION REPLACED: STYLE FILTER CHIPS */}
+        <section className="mt-6 mb-2">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Descubra seu estilo na Freguesia
+            </h2>
+          </div>
 
-        {/* Descubra por estilo - no final da página */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-            Descubra seu estilo na Freguesia
-          </h2>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              onClick={() => setSelectedStyle("Romântico")}
-              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
-                selectedStyle === "Romântico"
-                  ? "bg-gradient-to-br from-pink-500 via-rose-500 to-red-500"
-                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
-              }`}
-            >
-              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div>
-                    <p className="text-[10px] text-pink-500 dark:text-pink-300 font-semibold uppercase tracking-widest">
-                      Casal & Encontros
-                    </p>
-                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
-                      Romântico na Freguesia
-                    </h3>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-pink-500 dark:text-pink-300" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
-                  Lugares para um jantar especial ou um encontro diferente por
-                  aqui.
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">
-                    Restaurantes, bares, rooftops
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-pink-500 dark:text-pink-300" />
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setSelectedStyle("Família")}
-              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
-                selectedStyle === "Família"
-                  ? "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500"
-                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
-              }`}
-            >
-              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div>
-                    <p className="text-[10px] text-emerald-500 dark:text-emerald-300 font-semibold uppercase tracking-widest">
-                      Família & Kids
-                    </p>
-                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
-                      Para ir com a família
-                    </h3>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-300" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
-                  Lugares com espaço, conforto e opções para todas as idades.
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">
-                    Restaurantes, lazer e mais
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-300" />
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setSelectedStyle("Moderno")}
-              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
-                selectedStyle === "Moderno"
-                  ? "bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500"
-                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
-              }`}
-            >
-              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div>
-                    <p className="text-[10px] text-violet-500 dark:text-violet-300 font-semibold uppercase tracking-widest">
-                      Conceito & Moderno
-                    </p>
-                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
-                      Lugares com vibe diferente
-                    </h3>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-violet-500 dark:text-violet-300" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
-                  Cafés, bares, studios e espaços com estética forte.
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">
-                    Cafés, studios, rooftops
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-violet-500 dark:text-violet-300" />
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setSelectedStyle("Clássico")}
-              className={`group relative overflow-hidden rounded-2xl p-[1px] shadow-md transition-transform active:scale-95 ${
-                selectedStyle === "Clássico"
-                  ? "bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500"
-                  : "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
-              }`}
-            >
-              <div className="relative bg-white dark:bg-slate-950 rounded-2xl px-3 py-2.5 flex flex-col h-full">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div>
-                    <p className="text-[10px] text-amber-500 dark:text-amber-300 font-semibold uppercase tracking-widest">
-                      Tradição & Clássicos
-                    </p>
-                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white mt-0.5">
-                      Os queridinhos de sempre
-                    </h3>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-300" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-snug">
-                  Lugares clássicos, com história e sempre cheios.
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">
-                    Restaurantes, bares, lanchonetes
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
-                </div>
-              </div>
-            </button>
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
+            <CategoryChip
+              label="Romântico"
+              active={selectedStyle === "Romântico"}
+              icon={<Heart className={`w-3 h-3 ${selectedStyle === "Romântico" ? "text-white" : "text-pink-500"}`} />}
+              onClick={() => setSelectedStyle(selectedStyle === "Romântico" ? null : "Romântico")}
+            />
+            <CategoryChip
+              label="Família"
+              active={selectedStyle === "Família"}
+              icon={<Users className={`w-3 h-3 ${selectedStyle === "Família" ? "text-white" : "text-emerald-500"}`} />}
+              onClick={() => setSelectedStyle(selectedStyle === "Família" ? null : "Família")}
+            />
+            <CategoryChip
+              label="Moderno"
+              active={selectedStyle === "Moderno"}
+              icon={<Zap className={`w-3 h-3 ${selectedStyle === "Moderno" ? "text-white" : "text-violet-500"}`} />}
+              onClick={() => setSelectedStyle(selectedStyle === "Moderno" ? null : "Moderno")}
+            />
+            <CategoryChip
+              label="Clássico"
+              active={selectedStyle === "Clássico"}
+              icon={<Star className={`w-3 h-3 ${selectedStyle === "Clássico" ? "text-white" : "text-amber-500"}`} />}
+              onClick={() => setSelectedStyle(selectedStyle === "Clássico" ? null : "Clássico")}
+            />
           </div>
         </section>
 
-        {/* Sponsor Banner - Highlighted */}
         <div className="mt-4">
           <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-[1px] shadow-[0_16px_40px_rgba(15,23,42,0.55)]">
             <div className="relative bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.14),transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.08),transparent_55%)] rounded-2xl px-4 py-3.5 flex items-center gap-3">
-              {/* Left Content */}
               <div className="flex-1 min-w-0">
                 <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 border border-white/15 text-[9px] text-orange-100 mb-1.5">
                   <Zap className="w-3 h-3 text-orange-300" />
@@ -974,7 +720,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   com presença constante no app.
                 </p>
 
-                {/* CTA Buttons */}
                 <div className="flex items-center gap-2 mt-2">
                   <button
                     onClick={onOpenPlans}
@@ -990,7 +735,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 </div>
               </div>
 
-              {/* Right - Illustration / Logo placeholder */}
               <div className="hidden xs:flex">
                 <div className="w-[84px] h-[84px] rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-400 to-yellow-300 relative overflow-hidden shadow-[0_16px_40px_rgba(251,146,60,0.75)]">
                   <div className="absolute -inset-10 bg-[conic-gradient(from_210deg,_rgba(15,23,42,0.15),_rgba(15,23,42,0.9),_rgba(15,23,42,0.15))] opacity-90" />
@@ -1008,10 +752,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         </div>
       </div>
 
-      {/* STORY VIEWER OVERLAY */}
       {activeStory && (
         <div className="fixed inset-0 z-[100] bg-black animate-in fade-in zoom-in-95 duration-200 flex flex-col">
-          {/* Progress Bar */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pt-3">
              {EXPLORE_STORIES.map((s, i) => (
                  <div key={s.id} className="h-1 flex-1 bg-white/30 rounded-full overflow-hidden">
@@ -1025,11 +767,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
              ))}
           </div>
 
-          {/* Header Controls */}
           <div className="absolute top-6 left-0 right-0 z-20 px-4 py-2 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
               <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-white/50">
-                      <img src={activeStory.logo} alt="" className="w-full h-full object-cover" />
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-white/50 bg-gray-50">
+                      <img src={activeStory.logo} alt="" className="w-full h-full object-contain" />
                   </div>
                   <div className="text-white drop-shadow-md">
                       <p className="font-bold text-sm leading-tight">{activeStory.merchantName}</p>
@@ -1049,7 +790,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               </div>
           </div>
 
-          {/* Main Video Content */}
           <div className="flex-1 relative bg-gray-900 flex items-center justify-center">
              <video 
                 ref={videoRef}
@@ -1061,15 +801,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 playsInline
              />
              
-             {/* Gradient Overlay Bottom */}
              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
 
-             {/* Tap Zones */}
              <div className="absolute inset-y-0 left-0 w-1/3 z-10" onClick={handlePrevStory}></div>
              <div className="absolute inset-y-0 right-0 w-1/3 z-10" onClick={handleNextStory}></div>
           </div>
 
-          {/* Footer CTA */}
           <div className="absolute bottom-6 left-0 right-0 px-6 z-20 flex justify-center">
              <button className="bg-white text-black font-bold py-3 px-6 rounded-full shadow-lg active:scale-95 transition-transform flex items-center gap-2">
                Ver Oferta <ChevronRight className="w-4 h-4" />

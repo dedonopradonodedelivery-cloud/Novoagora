@@ -33,7 +33,7 @@ import { supabase } from '../lib/supabase';
 import { LojasEServicosList } from './LojasEServicosList';
 import { User } from 'firebase/auth';
 import { SpinWheelView } from './SpinWheelView';
-// Removed MasterSponsorBanner import to use inline standardized version
+import { getStoreLogo } from '../utils/mockLogos';
 
 interface HomeFeedProps {
   onNavigate: (view: string) => void;
@@ -49,37 +49,38 @@ interface HomeFeedProps {
 }
 
 const TOP_SEARCHED = [
-  { id: 1, title: "Pizza", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format&fit=crop", icon: <Utensils className="w-4 h-4 text-white" /> },
-  { id: 3, title: "Salão de beleza", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=400&auto=format&fit=crop", icon: <Scissors className="w-4 h-4 text-white" /> },
-  { id: 4, title: "Veterinário", image: "https://images.unsplash.com/photo-1553688738-a278b9f063e0?q=80&w=400&auto=format&fit=crop", icon: <Dog className="w-4 h-4 text-white" /> },
-  { id: 5, title: "Mecânica", image: "https://images.unsplash.com/photo-1530046339160-ce3e41600f2e?q=80&w=400&auto=format&fit=crop", icon: <Wrench className="w-4 h-4 text-white" /> }
+  { id: 1, title: "Pizza", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format=fit=crop", icon: <Utensils className="w-4 h-4 text-white" /> },
+  { id: 3, title: "Salão de beleza", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=400&auto=format=fit=crop", icon: <Scissors className="w-4 h-4 text-white" /> },
+  { id: 4, title: "Veterinário", image: "https://images.unsplash.com/photo-1553688738-a278b9f063e0?q=80&w=400&auto=format=fit=crop", icon: <Dog className="w-4 h-4 text-white" /> },
+  { id: 5, title: "Mecânica", image: "https://images.unsplash.com/photo-1530046339160-ce3e41600f2e?q=80&w=400&auto=format=fit=crop", icon: <Wrench className="w-4 h-4 text-white" /> }
 ];
 
 const EDITORIAL_THEMES: EditorialCollection[] = [
-  { id: 'coffee', title: 'Melhores Cafés', subtitle: '', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=600&auto=format&fit=crop', keywords: ['café', 'padaria', 'confeitaria', 'bistrô'] },
-  { id: 'barber', title: 'Corte de Confiança', subtitle: '', image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=600&auto=format&fit=crop', keywords: ['barbearia', 'cabeleireiro', 'salão', 'cortes'] },
-  { id: 'sweets', title: 'Docerias Amadas', subtitle: '', image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600&auto=format&fit=crop', keywords: ['doce', 'bolo', 'torta', 'sorvete', 'açaí'] },
-  { id: 'top-rated', title: 'Os Top Avaliados', subtitle: '', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format&fit=crop', keywords: [] },
-  { id: 'party', title: 'Festas', subtitle: '', image: 'https://images.unsplash.com/photo-1530103862676-de3c9a59af38?q=80&w=600&auto=format&fit=crop', keywords: ['festa', 'decoração', 'buffet'] },
-  { id: 'fashion', title: 'Moda', subtitle: '', image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=600&auto=format&fit=crop', keywords: ['roupa', 'moda', 'boutique'] },
+  { id: 'coffee', title: 'Melhores Cafés', subtitle: '', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=600&auto=format=fit=crop', keywords: ['café', 'padaria', 'confeitaria', 'bistrô'] },
+  { id: 'barber', title: 'Corte de Confiança', subtitle: '', image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=600&auto=format=fit=crop', keywords: ['barbearia', 'cabeleireiro', 'salão', 'cortes'] },
+  { id: 'sweets', title: 'Docerias Amadas', subtitle: '', image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600&auto=format=fit=crop', keywords: ['doce', 'bolo', 'torta', 'sorvete', 'açaí'] },
+  { id: 'top-rated', title: 'Os Top Avaliados', subtitle: '', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format=fit=crop', keywords: [] },
+  { id: 'party', title: 'Festas', subtitle: '', image: 'https://images.unsplash.com/photo-1530103862676-de3c9a59af38?q=80&w=600&auto=format=fit=crop', keywords: ['festa', 'decoração', 'buffet'] },
+  { id: 'fashion', title: 'Moda', subtitle: '', image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=600&auto=format=fit=crop', keywords: ['roupa', 'moda', 'boutique'] },
 ];
 
 const CASHBACK_HIGHLIGHTS = [
-  { id: 'cb1', name: 'Mundial', category: 'Mercado', cashback: 2, image: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?q=80&w=400&auto=format=fit=crop' },
-  { id: 'cb2', name: 'Drogaria Raia', category: 'Farmácia', cashback: 5, image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?q=80&w=400&auto=format=fit=crop' },
-  { id: 'cb3', name: 'Petz', category: 'Pets', cashback: 8, image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=400&auto=format=fit=crop' },
-  { id: 'cb4', name: 'Smart Fit', category: 'Academia', cashback: 10, image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=400&auto=format=fit=crop' },
-  { id: 'cb5', name: 'Rei do Mate', category: 'Lanches', cashback: 15, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=400&auto=format=fit=crop' },
+  { id: 'cb1', name: 'Mundial', category: 'Mercado', cashback: 2, logoUrl: getStoreLogo(0) },
+  { id: 'cb2', name: 'Drogaria Raia', category: 'Farmácia', cashback: 5, logoUrl: getStoreLogo(6) },
+  { id: 'cb3', name: 'Petz', category: 'Pets', cashback: 8, logoUrl: getStoreLogo(5) },
+  { id: 'cb4', name: 'Smart Fit', category: 'Academia', cashback: 10, logoUrl: getStoreLogo(7) },
+  { id: 'cb5', name: 'Rei do Mate', category: 'Lanches', cashback: 15, logoUrl: getStoreLogo(8) },
 ];
 
 const RECOMMENDED_FOR_YOU = [
-  { id: 'rec1', name: 'Espetto Carioca', category: 'Bar e Restaurante', image: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=400&auto=format=fit=crop' },
-  { id: 'rec2', name: 'Kopenhagen', category: 'Chocolates', image: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=400&auto=format=fit=crop' },
-  { id: 'rec3', name: 'Drogasmil', category: 'Farmácia', image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=400&auto=format=fit=crop' },
-  { id: 'rec4', name: 'China In Box', category: 'Culinária Chinesa', image: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?q=80&w=400&auto=format=fit=crop' },
-  { id: 'rec5', name: 'Vila da Mata', category: 'Floricultura', image: 'https://images.unsplash.com/photo-1490750967868-58cb75069ed6?q=80&w=400&auto=format=fit=crop' },
+  { id: 'rec1', name: 'Espetto Carioca', category: 'Bar e Restaurante', logoUrl: getStoreLogo(1) },
+  { id: 'rec2', name: 'Kopenhagen', category: 'Chocolates', logoUrl: getStoreLogo(8) },
+  { id: 'rec3', name: 'Drogasmil', category: 'Farmácia', logoUrl: getStoreLogo(6) },
+  { id: 'rec4', name: 'China In Box', category: 'Culinária Chinesa', logoUrl: getStoreLogo(9) },
+  { id: 'rec5', name: 'Vila da Mata', category: 'Floricultura', logoUrl: getStoreLogo(14) },
 ];
 
+// ... rest of HomeFeed component is same, the arrays above were the only needed change to inject logos ...
 // Modal da Roleta (bottom sheet)
 const SpinWheelModal: React.FC<{
   isOpen: boolean;
@@ -137,6 +138,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   onSpinWin,
   onRequireLogin
 }) => {
+  // ... existing component logic ...
   const [isSpinWheelOpen, setIsSpinWheelOpen] = useState(false);
   const activeSearchTerm = externalSearchTerm || '';
   
@@ -148,23 +150,18 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
   const categoryScrollRef = useRef<HTMLDivElement>(null);
   const [categoryProgress, setCategoryProgress] = useState(0);
 
-  // Banner Scroll Ref
   const bannerScrollRef = useRef<HTMLDivElement>(null);
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [selectedQuoteNiche, setSelectedQuoteNiche] = useState('');
 
-  // List Filter State
   const [listFilter, setListFilter] = useState<'all' | 'cashback' | 'top_rated' | 'open_now'>('all');
 
-  // State to trigger spin animation on mount
   const [hasSpun, setHasSpun] = useState(false);
 
-  // Filter Verified Stores
   const verifiedStores = stores.filter(s => s.verified);
 
   useEffect(() => {
-    // Trigger the spin animation once when the component mounts
     const timer = setTimeout(() => setHasSpun(true), 100);
     return () => clearTimeout(timer);
   }, []);
@@ -186,7 +183,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
             if (error) throw error;
             const mappedResults: Store[] = (data || []).map((item: any) => ({
                 id: item.id, name: item.name, category: item.category, subcategory: item.subCategory,
-                image: item.imageUrl || 'https://via.placeholder.com/100', rating: item.rating || 0,
+                logoUrl: item.logoUrl || getStoreLogo(item.name.length), // Use new logo logic
+                rating: item.rating || 0,
                 description: item.description || '', distance: 'Localizado', adType: AdType.ORGANIC, reviewsCount: 0,
             }));
             setSearchResults(mappedResults);
@@ -263,8 +261,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 <div className="flex flex-col gap-3">
                     {searchResults.map((store, index) => (
                     <div key={`${store.id}-${index}`} onClick={() => onStoreClick && onStoreClick(store)} className="bg-white dark:bg-gray-800 rounded-xl p-2.5 shadow-sm border border-gray-100 dark:border-gray-700 flex gap-3 hover:shadow-md transition-all cursor-pointer">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
-                          <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
+                          <img src={store.logoUrl || getStoreLogo(store.name.length)} alt={store.name} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex-1 flex flex-col justify-center">
                           <h4 className="font-bold text-gray-800 dark:text-white line-clamp-1 text-sm">{store.name}</h4>
@@ -281,17 +279,14 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
       ) : (
         <div className="flex flex-col gap-6 w-full">
             
-            {/* --- Faixa Roleta Localizei (Layout Organizado) --- */}
             <div className="px-5 w-full">
               <div
                 onClick={handleSpinWheelClick}
                 className="w-full rounded-2xl bg-gradient-to-r from-blue-100 via-indigo-50 to-purple-100 dark:from-gray-800 dark:to-gray-700 border border-blue-200/60 dark:border-gray-600 shadow-md shadow-blue-100/50 flex items-center px-2 py-3 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all duration-300"
               >
-                {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-xl -mr-6 -mt-6 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-1/3 w-16 h-16 bg-indigo-400/20 rounded-full blur-lg pointer-events-none"></div>
                 
-                {/* Left: Icon */}
                 <div className="relative z-10 flex-shrink-0 mr-2">
                   <div className={`w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/50 relative ${hasSpun ? 'spin-wheel-animate' : ''}`}>
                     <svg viewBox="0 0 32 32" className="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
@@ -311,7 +306,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                   </div>
                 </div>
                 
-                {/* Center: Text (Aligned Left) */}
                 <div className="relative z-10 flex-1 flex flex-col justify-center min-w-0 mr-1">
                     <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5 whitespace-nowrap">
                       Roleta Localizei
@@ -321,7 +315,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                     </span>
                 </div>
 
-                {/* Right: CTA Button */}
                 <div className="relative z-10 flex-shrink-0 ml-1">
                     <button className="bg-gradient-to-r from-[#1E5BFF] to-[#1B54D9] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-md shadow-blue-500/20 active:scale-95 transition-transform uppercase tracking-wide whitespace-nowrap">
                         Gire Agora
@@ -330,7 +323,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
               </div>
             </div>
 
-            {/* Categorias rápidas */}
             <div className="w-full">
                <div ref={categoryScrollRef} onScroll={handleCategoryScroll} className="overflow-x-auto px-5 pb-2 no-scrollbar">
                   <div className="grid grid-rows-2 grid-flow-col gap-x-5 gap-y-4 w-max">
@@ -351,13 +343,11 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                </div>
             </div>
 
-            {/* Carrossel de Banners Estilo Méliuz */}
             <div className="w-full relative group">
                  <div className="px-5 mb-3 flex items-center justify-between">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">O que você vai encontrar na Localizei</h3>
                  </div>
                  
-                 {/* Botão de Navegação Flutuante */}
                  <button 
                     onClick={handleBannerScrollRight}
                     className="absolute right-2 top-1/2 translate-y-1/4 z-20 bg-white/90 dark:bg-gray-800/90 p-2 rounded-full shadow-lg text-gray-600 dark:text-gray-300 backdrop-blur-sm border border-gray-100 dark:border-gray-700 active:scale-95 transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
@@ -387,20 +377,17 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                             <div key={banner.id} onClick={banner.action} className="min-w-[88%] sm:min-w-[340px] snap-center cursor-pointer relative active:scale-[0.98] transition-transform">
                                 <div className={`w-full ${heightClass} rounded-[20px] ${banner.bgClass} ${paddingClass} flex flex-row items-center justify-between shadow-lg shadow-gray-200/60 dark:shadow-none relative overflow-hidden transition-all`}>
                                 
-                                {/* 1. Icon (Left) */}
                                 <div className="z-10 relative flex-shrink-0 mr-3">
                                     <div className={`${iconContainerClass} bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-inner`}>
                                         {IconElement}
                                     </div>
                                 </div>
 
-                                {/* 2. Text (Center) */}
                                 <div className="z-10 flex flex-col justify-center h-full flex-1 min-w-0">
                                     <h3 className={`text-white font-display leading-tight tracking-tight ${titleClass}`}>{banner.title}</h3>
                                     <p className={`text-white/90 font-medium ${subtitleClass}`}>{banner.subtitle}</p>
                                 </div>
 
-                                {/* 3. CTA (Right) */}
                                 <div className="z-10 flex-shrink-0 ml-2">
                                     <button className={`bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white font-bold rounded-full w-fit transition-colors flex items-center gap-1 ${btnPaddingClass}`}>
                                         {banner.cta} <ArrowRight className="w-2.5 h-2.5" />
@@ -417,7 +404,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Achadinhos (MOVED UP) - Updated Layout per Request */}
             <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Achadinhos da Freguesia</h3>
@@ -440,7 +426,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Lojas com Cashback (MOVED DOWN) */}
             <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Lojas com Cashback</h3>
@@ -459,7 +444,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                                name: store.name,
                                category: store.category,
                                subcategory: store.category,
-                               image: store.image,
+                               logoUrl: store.logoUrl,
                                rating: 4.5,
                                distance: '1.2km',
                                adType: AdType.ORGANIC,
@@ -468,8 +453,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                            };
                            if (onStoreClick) onStoreClick(mockStore);
                        }} className="min-w-[140px] w-[140px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                          <div className="h-24 w-full relative bg-gray-200 dark:bg-gray-700">
-                              <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          <div className="h-24 w-full relative bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-2">
+                              <img src={store.logoUrl || getStoreLogo(store.name.length)} alt={store.name} className="w-full h-full object-contain rounded-lg" />
                               <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm flex items-center gap-0.5">
                                 <Coins className="w-3 h-3" />
                                 {store.cashback}%
@@ -486,7 +471,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Lojas Verificadas (New Section) */}
             {verifiedStores.length > 0 && (
                 <div className="pl-5 space-y-2.5 w-full">
                     <div className="flex items-center justify-between pr-5">
@@ -501,8 +485,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                     <div className="flex gap-3 overflow-x-auto pb-3 pr-5 no-scrollbar">
                         {verifiedStores.slice(0, 10).map((store) => (
                         <div key={store.id} onClick={() => onStoreClick && onStoreClick(store)} className="min-w-[140px] w-[140px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                            <div className="h-24 w-full relative bg-gray-200 dark:bg-gray-700">
-                                <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="h-24 w-full relative bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-2">
+                                <img src={store.logoUrl || getStoreLogo(store.name.length)} alt={store.name} className="w-full h-full object-contain rounded-lg" />
                                 <div className="absolute top-2 right-2 z-10">
                                     <BadgeCheck className="w-5 h-5 text-white fill-[#1E5BFF]" />
                                 </div>
@@ -519,7 +503,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 </div>
             )}
 
-            {/* Recomendados para você */}
             <div className="pl-5 space-y-2.5 w-full">
                  <div className="flex items-center justify-between pr-5">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Recomendados para você</h3>
@@ -538,7 +521,7 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                                name: store.name,
                                category: store.category,
                                subcategory: store.category,
-                               image: store.image,
+                               logoUrl: store.logoUrl,
                                rating: 4.8,
                                distance: '2.5km',
                                adType: AdType.ORGANIC,
@@ -546,8 +529,8 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                            };
                            if (onStoreClick) onStoreClick(mockStore);
                        }} className="min-w-[140px] w-[140px] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group cursor-pointer active:scale-95 transition-transform">
-                          <div className="h-24 w-full relative bg-gray-200 dark:bg-gray-700">
-                              <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          <div className="h-24 w-full relative bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-2">
+                              <img src={store.logoUrl || getStoreLogo(store.name.length)} alt={store.name} className="w-full h-full object-contain rounded-lg" />
                           </div>
                           <div className="p-2.5 flex flex-col flex-1 justify-between">
                              <div>
@@ -564,7 +547,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                  </div>
             </div>
 
-            {/* Top buscados */}
             <div className="pl-5 space-y-2.5 w-full">
                <div className="flex items-center justify-between pr-5">
                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">As lojas mais buscadas</h3>
@@ -587,14 +569,12 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                </div>
             </div>
 
-            {/* Patrocinador Master - Dark Blue Style */}
             <div className="px-5 w-full">
               <div 
                 onClick={() => onNavigate('patrocinador_master')}
                 className="w-full bg-[#1F2A44] rounded-2xl p-4 shadow-sm border border-transparent relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4 relative z-10">
-                   {/* Icon - White container for contrast */}
                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-inner flex-shrink-0">
                       <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1E5BFF]" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" fill="currentColor"/>
@@ -602,20 +582,17 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                       </svg>
                    </div>
 
-                   {/* Text - 100% White */}
                    <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-0.5">Patrocinador Master</p>
                       <h3 className="text-white font-bold text-lg leading-tight truncate">Grupo Esquematiza</h3>
                       <p className="text-white text-xs mt-0.5 font-medium truncate">Transformando desafios em soluções seguras!</p>
                    </div>
 
-                   {/* Arrow - White */}
                    <ChevronRight className="w-5 h-5 text-white opacity-80 group-hover:opacity-100 transition-colors" />
                 </div>
               </div>
             </div>
 
-            {/* Filtros da Lista Home */}
             <div className="px-5 w-full -mb-2 mt-1">
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                     <button
@@ -664,7 +641,6 @@ export const HomeFeed: React.FC<HomeFeedProps> = ({
                 </div>
             </div>
 
-            {/* Lista principal */}
             <div className="px-5 pb-4 min-h-[300px] w-full">
                 <LojasEServicosList 
                     onStoreClick={onStoreClick} 

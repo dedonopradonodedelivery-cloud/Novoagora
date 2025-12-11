@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Wallet, Store, ArrowRight, Loader2, CheckCircle2, XCircle, CornerRightDown, Lock, BellRing, Smartphone, Send, Clock } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 import { User } from 'firebase/auth';
 import { PayWithCashback } from './PayWithCashback';
 
@@ -65,6 +65,7 @@ export const CashbackPaymentScreen: React.FC<CashbackPaymentScreenProps> = ({
   useEffect(() => {
     if (!transactionId || !supabase) return;
 
+    // Escuta MUDANÇAS (UPDATE) especificamente na transação criada
     const channel = supabase
       .channel(`tx_${transactionId}`)
       .on(
@@ -77,6 +78,8 @@ export const CashbackPaymentScreen: React.FC<CashbackPaymentScreenProps> = ({
         },
         (payload) => {
           const newStatus = payload.new.status;
+          console.log("Realtime Update Received:", newStatus);
+          
           if (newStatus === 'approved') {
             triggerSuccessFlow();
           } else if (newStatus === 'rejected') {
@@ -146,7 +149,7 @@ export const CashbackPaymentScreen: React.FC<CashbackPaymentScreenProps> = ({
       if (supabase) {
           const transactionPayload = {
             merchant_id: merchantId,
-            store_id: storeId,
+            store_id: storeId, // Assumindo mesmo ID para simplificação do mock
             customer_id: user.uid,
             total_amount_cents: Math.round(numericTotal * 100),
             cashback_used_cents: Math.round(numericCashbackUsed * 100),
@@ -165,15 +168,22 @@ export const CashbackPaymentScreen: React.FC<CashbackPaymentScreenProps> = ({
 
           if (data) {
               setTransactionId(data.id);
+              // Wait for realtime update now...
           }
       } 
       
-      // Simulate "Sending Notification" delay then go to Waiting
       setStep('sending_push');
       setTimeout(() => {
           setStep('waiting');
           setIsLoading(false);
-      }, 2000);
+          
+          if (!supabase) {
+              // Fallback se sem supabase: simula aprovação após 3s
+              setTimeout(() => {
+                  triggerSuccessFlow();
+              }, 3000);
+          }
+      }, 1500);
 
     } catch (err: any) {
       console.error(err);
@@ -278,19 +288,16 @@ export const CashbackPaymentScreen: React.FC<CashbackPaymentScreenProps> = ({
             </div>
         </div>
         
-        {/* DEV ONLY: Simulate Approval Button */}
-        {step === 'waiting' && (
+        {/* DEV ONLY: Simulate Approval Button (Only if no Supabase to avoid confusion) */}
+        {!supabase && step === 'waiting' && (
             <div className="w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-forwards opacity-0" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
                 <button 
                     onClick={triggerSuccessFlow}
                     className="w-full bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-400 py-3 rounded-2xl font-bold text-sm hover:bg-yellow-100 dark:hover:bg-yellow-900/20 transition-colors flex items-center justify-center gap-2 border border-yellow-200 dark:border-yellow-800"
                 >
                     <Lock className="w-3 h-3" />
-                    Simular Aprovação (Demo)
+                    Simular Aprovação (Mode Offline)
                 </button>
-                <p className="text-[10px] text-gray-400 text-center mt-2">
-                    (Use este botão para testar sem o app do lojista)
-                </p>
             </div>
         )}
       </div>

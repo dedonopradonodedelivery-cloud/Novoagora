@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ChevronLeft, Search, Star, BadgeCheck, ChevronRight, X, AlertCircle, Check } from 'lucide-react';
 import { Category, Store, AdType } from '../types';
@@ -11,31 +10,26 @@ interface CategoryViewProps {
   stores: Store[];
 }
 
-// Vibrant gradients for the subcategory cards
 const CARD_GRADIENTS = [
-  "bg-gradient-to-br from-[#1E5BFF] to-[#4D7CFF]", // Blue Theme
-  "bg-gradient-to-br from-red-500 to-rose-600",     // Red
-  "bg-gradient-to-br from-purple-500 to-indigo-600", // Purple
-  "bg-gradient-to-br from-emerald-500 to-teal-600",  // Green
-  "bg-gradient-to-br from-blue-500 to-cyan-600",     // Blue
-  "bg-gradient-to-br from-pink-500 to-fuchsia-600",  // Pink
+  "bg-gradient-to-br from-[#1E5BFF] to-[#4D7CFF]", 
+  "bg-gradient-to-br from-red-500 to-rose-600",     
+  "bg-gradient-to-br from-purple-500 to-indigo-600", 
+  "bg-gradient-to-br from-emerald-500 to-teal-600",  
+  "bg-gradient-to-br from-blue-500 to-cyan-600",     
+  "bg-gradient-to-br from-pink-500 to-fuchsia-600",  
 ];
 
-// Fallback high-quality images
 const FALLBACK_ADS = [
-  'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?q=80&w=800&auto=format&fit=crop', // Office/Medical
-  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop', // Hospital
-  'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop', // Lab
-  'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop', // Dental
-  'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop', // Research
+  'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop', 
 ];
 
-// Helper to generate fake stores
 const generateSubcategoryStores = (subName: string, categoryName: string): Store[] => {
   return Array.from({ length: 20 }).map((_, i) => {
-    // 1. Sponsored (First 5)
     const isSponsored = i < 5;
-    // 2. Cashback (Next 5 - indices 5 to 9)
     const hasCashback = !isSponsored && i < 10;
     
     let name = '';
@@ -44,7 +38,6 @@ const generateSubcategoryStores = (subName: string, categoryName: string): Store
     
     const lowerSub = subName.toLowerCase();
     
-    // Custom names based on subcategory
     if (lowerSub.includes('clínica') || lowerSub.includes('médic')) {
         const prefixes = ['Clínica Médica', 'Centro Médico', 'Consultório', 'Instituto de Saúde'];
         name = `${prefixes[i % prefixes.length]} ${suffix}`;
@@ -79,7 +72,6 @@ const generateSubcategoryStores = (subName: string, categoryName: string): Store
         const prefixes = ['Studio Beauty', 'Salão', 'Espaço da Beleza', 'Coiffure'];
         name = `${prefixes[i % prefixes.length]} ${suffix}`;
     } else {
-        // Fallback generic
         name = `${subName} ${suffix}`;
     }
     
@@ -90,7 +82,7 @@ const generateSubcategoryStores = (subName: string, categoryName: string): Store
       name: name,
       category: categoryName,
       subcategory: subName,
-      image: `https://picsum.photos/400/300?random=${i + 5000 + name.length}`, 
+      logoUrl: '/assets/default-logo.png', 
       rating: Number((4.0 + Math.random()).toFixed(1)),
       reviewsCount: Math.floor(Math.random() * 200) + 15,
       description: `Especialistas em ${subName} na Freguesia. Agende sua visita.`,
@@ -107,14 +99,12 @@ const generateSubcategoryStores = (subName: string, categoryName: string): Store
 
 const sortStoresByHierarchy = (list: Store[]) => {
   return list.sort((a, b) => {
-    // 1. Sponsored / Premium
     const aSponsored = a.isSponsored || a.adType === AdType.PREMIUM;
     const bSponsored = b.isSponsored || b.adType === AdType.PREMIUM;
 
     if (aSponsored && !bSponsored) return -1;
     if (!aSponsored && bSponsored) return 1;
 
-    // 2. Cashback
     const aCashback = !!a.cashback;
     const bCashback = !!b.cashback;
 
@@ -136,7 +126,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
 
   const subcategories = SUBCATEGORIES[category.name] || SUBCATEGORIES['default'];
 
-  // Banner logic
   const bannerImages = useMemo(() => {
     return FALLBACK_ADS.sort(() => Math.random() - 0.5).slice(0, 5); 
   }, []);
@@ -148,28 +137,22 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
     return () => clearInterval(interval);
   }, [bannerImages.length]);
 
-  // Generate stores for display
   const displayStores = useMemo(() => {
     let baseList: Store[] = [];
 
-    // KEY LOGIC: If a subcategory is selected, generate 20 fake stores for IT.
     if (selectedSubcategory) {
       baseList = generateSubcategoryStores(selectedSubcategory, category.name);
     } else {
-      // Default view: Real stores + fallback if empty
       baseList = stores.filter((store) => {
         const storeCat = store.category.toLowerCase();
         const currentCat = category.name.toLowerCase();
         return storeCat === currentCat || storeCat.includes(currentCat);
       });
-      // Fallback if no real stores found
       if (baseList.length === 0) {
-          // Generate generic stores for the category if real list is empty
          baseList = generateSubcategoryStores(category.name, category.name);
       }
     }
 
-    // Search Filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       baseList = baseList.filter(s => 
@@ -179,7 +162,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
       );
     }
 
-    // Sort: Sponsored -> Cashback -> Normal
     return sortStoresByHierarchy(baseList);
 
   }, [selectedSubcategory, category.name, stores, searchQuery]);
@@ -197,7 +179,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
     const isSelected = selectedSubcategory === subName;
     setSelectedSubcategory(isSelected ? null : subName);
     
-    // Smooth scroll to list after selection
     if (!isSelected) {
         setTimeout(() => {
             listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -207,7 +188,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24 animate-in slide-in-from-right duration-300">
-      {/* Header */}
       <div className="sticky top-0 z-30 bg-gray-50 dark:bg-gray-900 px-5 py-4 flex items-center justify-between shadow-sm dark:shadow-none border-b border-gray-100 dark:border-gray-800 h-[72px]">
         <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
           <ChevronLeft className="w-6 h-6 text-gray-800 dark:text-white" />
@@ -238,10 +218,8 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
 
       <div className="p-5 space-y-8">
         
-        {/* Banner + Subcategories (Only if NOT searching) */}
         {!isSearchOpen && (
             <>
-                {/* Banner Carousel */}
                 <div className="w-full aspect-[2/1] rounded-3xl overflow-hidden relative shadow-md bg-gray-200 dark:bg-gray-800 animate-in fade-in duration-500">
                 {bannerImages.map((img, index) => (
                     <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentBanner ? 'opacity-100' : 'opacity-0'}`}>
@@ -254,7 +232,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                 ))}
                 </div>
 
-                {/* Subcategories Grid */}
                 <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-lg px-1">Subcategorias</h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -296,7 +273,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
             </>
         )}
 
-        {/* Store List */}
         <div ref={listRef} className={isSearchOpen ? "mt-2" : "scroll-mt-24"}>
             <div className="flex items-center justify-between mb-4 px-1">
                 <h3 className="font-bold text-gray-900 dark:text-white text-lg">
@@ -320,12 +296,11 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                                 onClick={() => onStoreClick(store)}
                                 className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 flex gap-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors h-[88px]"
                             >
-                                {/* Imagem */}
-                                <div className="w-[88px] h-[72px] flex-shrink-0 relative rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                <div className="w-[88px] h-[72px] flex-shrink-0 relative rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-700">
                                     <img 
-                                        src={store.image} 
+                                        src={store.logoUrl || "/assets/default-logo.png"} 
                                         alt={store.name} 
-                                        className="w-full h-full object-cover" 
+                                        className="w-full h-full object-contain" 
                                     />
                                     {store.cashback && (
                                        <div className="absolute bottom-1 left-1 bg-[#2ECC71] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shadow-sm z-10 leading-none">
@@ -334,7 +309,6 @@ export const CategoryView: React.FC<CategoryViewProps> = ({ category, onBack, on
                                     )}
                                 </div>
             
-                                {/* Conteúdo */}
                                 <div className="flex-1 flex flex-col justify-center min-w-0 py-0.5">
                                     <div className="flex justify-between items-start gap-2">
                                          <div className="flex items-center gap-1.5 min-w-0">

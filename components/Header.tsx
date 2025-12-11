@@ -1,136 +1,135 @@
 
 import React, { useState, useEffect } from 'react';
-import { User } from 'firebase/auth';
-import { 
-  MapPin, 
-  User as UserIcon, 
-  Search,
-  Sun,
-  Moon,
-  QrCode
-} from 'lucide-react';
+import { Search, Sun, Moon, User as UserIcon, QrCode, ScanLine, MapPin, ChevronDown, Bell } from 'lucide-react';
 
 interface HeaderProps {
   isDarkMode: boolean;
   toggleTheme: () => void;
   onAuthClick: () => void;
-  user: User | null;
-  searchTerm?: string;
-  onSearchChange?: (term: string) => void;
-  onNavigate?: (view: string) => void;
-  activeTab?: string;
-  userRole?: 'cliente' | 'lojista' | null;
+  user: any;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onNavigate: (tab: string) => void;
+  activeTab: string;
+  userRole: "cliente" | "lojista" | null;
+  onOpenMerchantQr?: () => void;
+  customPlaceholder?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
+export const Header: React.FC<HeaderProps> = ({
   isDarkMode,
   toggleTheme,
-  onAuthClick, 
-  user, 
-  searchTerm = '', 
+  onAuthClick,
+  user,
+  searchTerm,
   onSearchChange,
   onNavigate,
-  activeTab,
-  userRole
+  userRole,
+  onOpenMerchantQr,
+  customPlaceholder
 }) => {
-  const [locationText, setLocationText] = useState<string>('Localização não ativa');
+  const [locationText, setLocationText] = useState<string>('Freguesia, Rio de Janeiro');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    // Basic geolocation mock or real implementation
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocationText('Freguesia, RJ');
-        },
+        () => setLocationText('Freguesia, Rio de Janeiro'),
         (error) => {
-          console.log('Geolocalização não permitida ou erro:', error);
-          setLocationText('Freguesia, RJ'); // Default fallback
+          console.log('Geo error, using default:', error);
+          setLocationText('Freguesia, Rio de Janeiro');
         }
       );
-    } else {
-      setLocationText('Freguesia, RJ');
     }
+
+    const handleScroll = () => {
+      // Threshold set to approx height of the top bar (64px) to trigger sticky state visual changes
+      setIsScrolled(window.scrollY > 60);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const showQrButton = !!user && !!userRole && !!onNavigate;
+  const renderQrButton = () => {
+    if (!user || !userRole) return null;
 
-  const handleQrClick = () => {
-    if (!onNavigate || !userRole) return;
+    if (userRole === 'cliente') {
+      return (
+        <button
+          onClick={() => onNavigate('qrcode_scan')}
+          className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-[#1E5BFF] dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all active:scale-90 shadow-sm"
+          title="Ler QR Code"
+        >
+          <ScanLine className="w-5 h-5" />
+        </button>
+      );
+    }
 
     if (userRole === 'lojista') {
-      // Lojista: mostra o QR individual da loja
-      onNavigate('merchant_qr');
-    } else if (userRole === 'cliente') {
-      // Cliente: abre o scanner para ler o QR do lojista
-      onNavigate('qrcode_scan');
+      return (
+        <button
+          onClick={() => onOpenMerchantQr ? onOpenMerchantQr() : onNavigate('merchant_qr')}
+          className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-all active:scale-90 shadow-sm"
+          title="Meu QR Code"
+        >
+          <QrCode className="w-5 h-5" />
+        </button>
+      );
     }
+
+    return null;
   };
 
-  // Placeholder fixo atualizado
-  const placeholderText = "Busque por lojas, serviços ou produtos";
-
   return (
-    <header className="contents">
-      
+    <>
       {/* 
-        1. TOP SECTION (Scrolls away) 
-        Contains Logo, Location, User Profile.
-        Background matches the sticky part to look like one block.
-        Padding top adjusted for safe-area (iPhone Notch).
+        CONTAINER 1: Top Row (Location & Icons) 
+        This part is NOT sticky and will scroll away.
       */}
-      <div 
-        className="bg-gradient-to-r from-[#2D6DF6] to-[#1B54D9] px-4 pb-2 relative z-40"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 6px)' }}
-      >
-        <div className="flex justify-between items-start">
+      <div className="w-full bg-white dark:bg-gray-900 pt-4 pb-2 px-5 transition-colors duration-300">
+        <div className="flex items-center justify-between max-w-md mx-auto">
           
-          {/* Logo Localizei Freguesia + Localização (Esquerda) */}
-          <div className="flex items-center gap-3">
-             <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10 shadow-sm flex-shrink-0">
-                <MapPin className="w-5 h-5 text-white fill-white/20" />
-             </div>
-             <div className="flex flex-col justify-center">
-                <h1 className="text-white font-bold text-base font-display leading-tight tracking-tight">
-                  Localizei Freguesia
-                </h1>
-                <span className="text-white/80 text-xs font-medium tracking-wide flex items-center gap-1">
-                  {locationText}
-                </span>
-             </div>
+          {/* Location Selector */}
+          <div className="flex flex-col cursor-pointer group">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-0.5 mb-0.5">
+              Localização atual
+            </span>
+            <div className="flex items-center gap-1.5 text-gray-900 dark:text-white transition-colors group-hover:text-[#1E5BFF]">
+              <MapPin className="w-4 h-4 text-[#1E5BFF]" />
+              <span className="font-bold text-sm truncate max-w-[160px] leading-tight">
+                {locationText}
+              </span>
+              <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-[#1E5BFF] transition-colors mt-0.5" />
+            </div>
           </div>
 
-          {/* Ícones de Ação (Direita) */}
-          <div className="flex items-center gap-2">
-            
-            {/* Botão QR Code */}
-            {showQrButton && (
-              <button 
-                onClick={handleQrClick}
-                className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm"
-                aria-label={userRole === 'lojista' ? 'Mostrar QR Code da loja' : 'Ler QR Code do lojista'}
-              >
-                <QrCode className="w-5 h-5" />
-              </button>
-            )}
+          {/* Right Actions */}
+          <div className="flex items-center gap-2.5">
+            {renderQrButton()}
 
-            {/* Botão Tema */}
             <button 
               onClick={toggleTheme}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm"
-              aria-label="Alternar Tema"
+              className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-90"
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
-            {/* Botão Perfil */}
             <button 
               onClick={onAuthClick}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-0.5 rounded-lg transition-all active:scale-95 border border-white/10 shadow-sm overflow-hidden w-9 h-9 flex items-center justify-center"
-              aria-label="Perfil"
+              className="relative p-0.5 rounded-full border-2 border-gray-100 dark:border-gray-700 hover:border-[#1E5BFF] dark:hover:border-[#1E5BFF] transition-colors active:scale-95"
             >
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="Perfil" className="w-full h-full object-cover rounded-[6px]" />
-              ) : (
-                <UserIcon className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center">
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt="Perfil" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+              {/* Notification Dot Mock */}
+              {!user && (
+                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white dark:border-gray-900 rounded-full"></span>
               )}
             </button>
           </div>
@@ -138,26 +137,33 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 
-        2. STICKY SEARCH BAR (Sticks to top)
-        Contains the search input.
-        Inherits the rounded bottom and shadow.
-        -mt-px ensures no gap between the gradients.
+        CONTAINER 2: Search Bar
+        This part IS sticky and will stay at top:0 when scrolling.
       */}
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-[#2D6DF6] to-[#1B54D9] px-4 pb-6 pt-2 rounded-b-[28px] shadow-lg -mt-px">
-        <div className="relative w-full">
-           <input
-             type="text"
-             value={searchTerm}
-             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-             placeholder={placeholderText}
-             className="block w-full h-12 pl-5 pr-12 rounded-full bg-white text-[#333333] placeholder-[#8A8A8A] shadow-[0_2px_6px_rgba(0,0,0,0.08)] border-none focus:outline-none text-[15px] font-normal transition-all"
-           />
-           <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-             <Search className="h-5 w-5 text-[#666666]" />
-           </div>
+      <div 
+        className={`
+          sticky top-0 z-40 w-full px-5 transition-all duration-300
+          ${isScrolled 
+            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm pt-2 pb-3' 
+            : 'bg-white dark:bg-gray-900 pt-0 pb-4'
+          }
+        `}
+      >
+        <div className="max-w-md mx-auto">
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#1E5BFF] transition-colors" />
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={customPlaceholder || "Buscar lojas, produtos, serviços..."}
+              className="block w-full pl-11 pr-4 py-3.5 bg-gray-100 dark:bg-gray-800 border-none rounded-2xl text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E5BFF]/50 transition-all shadow-sm focus:bg-white dark:focus:bg-gray-800"
+            />
+          </div>
         </div>
       </div>
-
-    </header>
+    </>
   );
 };

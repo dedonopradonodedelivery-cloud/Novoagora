@@ -19,7 +19,11 @@ export interface Store {
   name: string;
   category: string;
   subcategory: string;
-  image: string;
+  
+  // Imagem principal agora é logoUrl
+  logoUrl?: string; 
+  image?: string; // Mantido apenas para compatibilidade legada se necessário, mas a UI priorizará logoUrl
+
   rating: number;
   distance: string; // Legacy distance string
   adType: AdType;

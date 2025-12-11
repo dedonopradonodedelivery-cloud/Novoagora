@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Store } from '../types';
 import { ChevronLeft, Search, SlidersHorizontal, Coins, ShoppingCart } from 'lucide-react';
@@ -17,11 +16,11 @@ const MarketplaceProductCard: React.FC<{ item: Store }> = ({ item }) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
-            <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-gray-700 relative">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-gray-700 relative flex items-center justify-center p-2">
                 <img 
-                    src={item.image} 
+                    src={item.logoUrl || "/assets/default-logo.png"} 
                     alt={item.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
                 {hasDiscount && (
                     <div className="absolute top-2 left-2 bg-[#1E5BFF] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
@@ -70,12 +69,10 @@ const MarketplaceProductCard: React.FC<{ item: Store }> = ({ item }) => {
 };
 
 export const MarketplaceView: React.FC<MarketplaceViewProps> = ({ onBack, stores }) => {
-  // Filter marketplace items from real data
   const marketplaceItems = stores.filter(store => store.isMarketplace);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in slide-in-from-right duration-300">
-      {/* Header */}
       <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 py-4 flex items-center gap-4 shadow-sm">
         <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
           <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-white" />
@@ -89,7 +86,6 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({ onBack, stores
         </button>
       </div>
 
-      {/* Filters Row */}
       <div className="px-5 py-4 flex gap-2 overflow-x-auto no-scrollbar">
         <button className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-full text-xs font-bold shadow-md shadow-primary-500/20">
           <SlidersHorizontal className="w-3 h-3" />
@@ -106,7 +102,6 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({ onBack, stores
         </button>
       </div>
 
-      {/* Grid Content */}
       <div className="px-5 grid grid-cols-2 gap-4">
         {marketplaceItems.length > 0 ? marketplaceItems.map((item) => (
           <MarketplaceProductCard key={item.id} item={item} />
