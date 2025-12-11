@@ -71,7 +71,7 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '2',
@@ -88,7 +88,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true, // Marked as verified
+    verified: true,
   },
   {
     id: '3',
@@ -122,7 +122,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true, // Marked as verified
+    verified: true,
   },
 ];
 
@@ -135,7 +135,7 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<'cliente' | 'lojista' | null>(null);
 
   const [globalSearch, setGlobalSearch] = useState('');
-  const [stores] = useState<Store[]>(MOCK_STORES); // usa apenas os mocks
+  const [stores] = useState<Store[]>(MOCK_STORES);
 
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
@@ -152,15 +152,9 @@ const App: React.FC = () => {
 
   const [selectedReward, setSelectedReward] = useState<any>(null);
   
-  // State for Scanning Flow
   const [scannedData, setScannedData] = useState<{ merchantId: string; storeId: string } | null>(null);
-  
-  // State for Deep Link Route
   const [deepLinkMerchantId, setDeepLinkMerchantId] = useState<string | null>(null);
-  // State for QR Code URL Route
   const [qrMerchantId, setQrMerchantId] = useState<string | null>(null);
-
-  // State to pass transaction details to CashbackView
   const [lastTransaction, setLastTransaction] = useState<any>(null);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -169,7 +163,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const path = window.location.pathname;
     
-    // Match /merchant/:id/pay
     const matchMerchantPay = path.match(/\/merchant\/([^/]+)\/pay/);
     if (matchMerchantPay && matchMerchantPay[1]) {
       setDeepLinkMerchantId(matchMerchantPay[1]);
@@ -177,7 +170,6 @@ const App: React.FC = () => {
       return;
     }
 
-    // Match /cashback/loja/:id
     const matchCashbackQr = path.match(/\/cashback\/loja\/([^/]+)/);
     if (matchCashbackQr && matchCashbackQr[1]) {
       setQrMerchantId(matchCashbackQr[1]);
@@ -199,16 +191,23 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, [activeTab]);
 
-  // ROLE DO USUÁRIO
+  // ROLE DO USUÁRIO — HACK TEMPORÁRIO PARA TESTAR LOJISTA
   useEffect(() => {
-    // em ambiente fake, mantém lógica básica
     if (!user) {
       setUserRole(null);
       return;
     }
-    // Simulate user role based on some logic or hardcoded for demo
-    // For now, defaulting to 'cliente' but can be toggled via business registration flow
-    if (!userRole) setUserRole('cliente'); 
+
+    const merchantEmails = [
+      'rafael_robertocarvalho@hotmail.com'
+      // você pode adicionar mais e-mails de teste aqui
+    ];
+
+    if (merchantEmails.includes(user.email ?? '')) {
+      setUserRole('lojista');
+    } else {
+      setUserRole('cliente');
+    }
   }, [user]);
 
   // SPLASH
@@ -534,7 +533,7 @@ const App: React.FC = () => {
             {activeTab === 'cashback' && (
               <CashbackView 
                 onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction} // Pass new transaction to view
+                newTransaction={lastTransaction}
               />
             )}
 
@@ -568,17 +567,14 @@ const App: React.FC = () => {
               <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
             )}
 
-            {/* Merchant QR Flow */}
             {activeTab === 'merchant_qr' && (
               <MerchantQrScreen onBack={() => setActiveTab('profile')} user={user} />
             )}
 
-            {/* NEW MERCHANT PANEL (Consolidated) */}
             {activeTab === 'merchant_panel' && (
               <MerchantPanel onBack={() => setActiveTab('store_area')} />
             )}
 
-            {/* QR Code Scanner (Customer) */}
             {activeTab === 'qrcode_scan' && (
               <CashbackScanScreen 
                 onBack={() => setActiveTab('home')} 
@@ -586,23 +582,20 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* NEW USER CASHBACK FLOW */}
             {activeTab === 'user_cashback_flow' && (
               <UserCashbackFlow onBack={() => setActiveTab('profile')} />
             )}
 
-            {/* Payment Flow (Customer - Manual Entry) */}
             {activeTab === 'cashback_payment' && scannedData && (
               <CashbackPaymentScreen
                 user={user}
                 merchantId={scannedData.merchantId}
                 storeId={scannedData.storeId}
                 onBack={() => setActiveTab('home')}
-                onComplete={handlePaymentComplete} // Redirects to wallet with history
+                onComplete={handlePaymentComplete}
               />
             )}
 
-            {/* Merchant Payment Route (Legacy Deep Link) */}
             {activeTab === 'merchant_pay_route' && deepLinkMerchantId && (
               <MerchantPayRoute 
                 merchantId={deepLinkMerchantId}
@@ -613,7 +606,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* NEW QR Route Payment Screen */}
             {activeTab === 'cashback_pay_qr' && qrMerchantId && (
               <CashbackPayFromQrScreen 
                 merchantId={qrMerchantId}
@@ -624,10 +616,9 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Merchant Pending Requests */}
             {activeTab === 'merchant_requests' && (
               <MerchantCashbackRequests 
-                merchantId="merchant_123_uuid" // In real app, derived from user.uid
+                merchantId="merchant_123_uuid"
                 onBack={() => setActiveTab('store_area')}
               />
             )}
@@ -697,7 +688,6 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* Simple Pages Routing */}
             {activeTab === 'support' && <SupportView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'invite_friend' && <InviteFriendView onBack={() => setActiveTab('profile')} />}
             {activeTab === 'about' && <AboutView onBack={() => setActiveTab('profile')} />}
