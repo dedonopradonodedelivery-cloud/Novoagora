@@ -1,161 +1,152 @@
-// src/components/CashbackFlow.tsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { CashbackScanScreen } from './CashbackScanScreen';
+import PayWithCashbackScreen from './PayWithCashbackScreen';
+import PaymentResultScreen from './PaymentResultScreen';
+import { Clock, Store } from 'lucide-react';
 
-type CashbackFlowMode = "pay_with_cashback" | "earn_cashback";
+// Tipos para controle do fluxo
+type FlowStep = "scan" | "pay" | "waiting" | "result";
+type ResultStatus = "approved" | "rejected";
 
-interface CashbackFlowProps {
-  userId: string;
-  mode: CashbackFlowMode;
-  onClose?: () => void;
-}
+type CashbackFlowProps = {
+  initialStoreName?: string;
+  initialCashbackPercent?: number;
+};
 
-/**
- * Fluxo SIMPLIFICADO de cashback:
- * - Passo 1: usuário informa valor
- * - Passo 2: "processando"
- * - Passo 3: resultado de sucesso (mock)
- *
- * IMPORTANTE: neste momento é só UI mockada, não chama Supabase nem services.
- */
-export const CashbackFlow: React.FC<CashbackFlowProps> = ({
-  userId,
-  mode,
-  onClose,
-}) => {
-  const [step, setStep] = useState<"amount" | "processing" | "result">("amount");
-  const [amountInput, setAmountInput] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [resultMessage, setResultMessage] = useState<string | null>(null);
+// Casting do componente PayWithCashbackScreen para aceitar props futuras sem erro de TS agora
+const PayWithCashback = PayWithCashbackScreen as React.ComponentType<any>;
 
-  const isPayMode = mode === "pay_with_cashback";
+export default function CashbackFlow(props: CashbackFlowProps) {
+  // Estados internos
+  const [step, setStep] = useState<FlowStep>("scan");
+  const [storeName, setStoreName] = useState<string>(props.initialStoreName ?? "Loja Parceira");
+  const [cashbackPercent, setCashbackPercent] = useState<number>(props.initialCashbackPercent ?? 5);
+  
+  const [purchaseAmount, setPurchaseAmount] = useState<number>(0);
+  const [cashbackUsed, setCashbackUsed] = useState<number>(0);
+  const [resultStatus, setResultStatus] = useState<ResultStatus>("approved");
 
-  const handleSubmit = () => {
-    setError(null);
+  // --- Handlers ---
 
-    const raw = amountInput.replace(",", ".").trim();
-    const value = Number(raw);
+  // Chamado quando o QR Scanner detecta um código válido
+  const handleScanSuccess = (data: { merchantId: string; storeId: string }) => {
+    console.log("QR Validado:", data);
+    // TODO: Aqui buscaríamos os dados reais da loja (nome, % cashback) no backend usando storeId
+    // Por enquanto, usamos os valores iniciais ou mocks
+    setStep("pay");
+  };
 
-    if (!raw || Number.isNaN(value) || value <= 0) {
-      setError("Informe um valor válido.");
-      return;
-    }
+  // Chamado quando o usuário clica em "Confirmar Pagamento" na tela de formulário
+  const handlePaymentSimulated = (args: { purchaseAmount: number; cashbackUsed: number }) => {
+    setPurchaseAmount(args.purchaseAmount);
+    setCashbackUsed(args.cashbackUsed);
+    setStep("waiting");
 
-    // Aqui, futuramente, vamos chamar o serviço real de cashback.
-    setStep("processing");
-
+    // Simulação de tempo de resposta do lojista/backend
+    // TODO: Substituir por subscrição real ao status da transação no Supabase
     setTimeout(() => {
-      setResultMessage(
-        isPayMode
-          ? `Pagamento de R$ ${value.toFixed(
-              2
-            )} com cashback simulado para o usuário ${userId}.`
-          : `Registro de compra de R$ ${value.toFixed(
-              2
-            )} para gerar cashback (simulado) para o usuário ${userId}.`
-      );
+      setResultStatus("approved"); // ou "rejected" para testar erro
       setStep("result");
-    }, 1200);
+    }, 1500);
   };
 
-  const handleClose = () => {
-    if (onClose) onClose();
+  const handleResetFlow = () => {
+    setPurchaseAmount(0);
+    setCashbackUsed(0);
+    setResultStatus("approved");
+    setStep("scan");
   };
 
-  if (step === "processing") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-4">
-        <div className="w-14 h-14 rounded-full border-4 border-orange-400 border-t-transparent animate-spin mb-4" />
-        <p className="text-lg font-semibold text-gray-900 mb-1">
-          Processando operação...
-        </p>
-        <p className="text-sm text-gray-500">
-          Este fluxo está em modo demonstração. Nenhum débito real será feito.
-        </p>
-      </div>
-    );
-  }
+  // --- Renders ---
 
-  if (step === "result") {
-    return (
-      <div className="flex flex-col min-h-[70vh] p-6">
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-            <span className="text-2xl">✅</span>
-          </div>
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
-            Operação concluída (mock)
-          </h1>
-          <p className="text-sm text-gray-600 mb-4">
-            {resultMessage ??
-              "Fluxo de cashback finalizado em modo de demonstração."}
-          </p>
-          <p className="text-xs text-gray-400">
-            Em breve este fluxo será conectado ao serviço real de cashback.
-          </p>
-        </div>
+  // Wrapper para controlar o background: Dark no Scan, Light nos outros
+  const isScanStep = step === "scan";
 
-        <button
-          type="button"
-          onClick={handleClose}
-          className="w-full mt-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600"
-        >
-          Voltar
-        </button>
-      </div>
-    );
-  }
-
-  // step === "amount"
   return (
-    <div className="flex flex-col min-h-[70vh] p-6">
-      <div className="mb-6">
-        <button
-          type="button"
-          onClick={handleClose}
-          className="text-sm text-gray-600 hover:text-gray-900"
-        >
-          ← Voltar
-        </button>
-      </div>
+    <div className={`min-h-screen flex flex-col ${isScanStep ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <div className="w-full max-w-md mx-auto flex-1 flex flex-col relative">
+        
+        {/* STEP 1: SCANNER */}
+        {step === "scan" && (
+          <div className="flex-1 flex flex-col">
+            <CashbackScanScreen 
+              onBack={() => console.log("Back clicked")} 
+              onScanSuccess={handleScanSuccess} 
+            />
+            
+            {/* Botão de DEV para pular leitura de QR */}
+            <div className="flex justify-center pb-8">
+              <button 
+                onClick={() => handleScanSuccess({ merchantId: 'dev', storeId: 'dev' })}
+                className="text-xs text-gray-500 underline opacity-60 hover:opacity-100 transition-opacity"
+              >
+                (DEV) Continuar para pagamento sem QR
+              </button>
+            </div>
+          </div>
+        )}
 
-      <div className="flex-1">
-        <h1 className="text-xl font-semibold text-gray-900 mb-2">
-          {isPayMode ? "Pagar com Cashback" : "Registrar compra para Cashback"}
-        </h1>
-        <p className="text-sm text-gray-600 mb-6">
-          Este fluxo está em modo demonstração. Use para testar o layout no
-          ambiente publicado.
-        </p>
-
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Valor da operação
-        </label>
-        <div className="flex items-center rounded-2xl border border-gray-200 px-3 py-2 focus-within:ring-2 focus-within:ring-orange-500 focus-within:border-orange-500 mb-2">
-          <span className="text-gray-500 mr-1">R$</span>
-          <input
-            type="text"
-            inputMode="decimal"
-            className="flex-1 bg-transparent outline-none text-lg"
-            placeholder="0,00"
-            value={amountInput}
-            onChange={(e) => setAmountInput(e.target.value)}
+        {/* STEP 2: FORMULÁRIO DE PAGAMENTO */}
+        {step === "pay" && (
+          <PayWithCashback
+            storeName={storeName}
+            cashbackPercent={cashbackPercent}
+            onPaymentSimulated={handlePaymentSimulated}
+            onBack={() => setStep("scan")}
           />
-        </div>
-        {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
+        )}
 
-        <p className="text-xs text-gray-500 mt-2">
-          Nenhum valor será realmente debitado ou creditado enquanto o fluxo
-          estiver em modo mock.
-        </p>
+        {/* STEP 3: AGUARDANDO LOJISTA (INTERMEDIÁRIO GLOBAL) */}
+        {step === "waiting" && (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
+            <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mb-6 relative">
+              <div className="absolute inset-0 rounded-full border-4 border-yellow-200 animate-ping opacity-75"></div>
+              <Clock className="w-10 h-10 text-yellow-600" />
+            </div>
+
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Aguardando Lojista</h2>
+            <p className="text-gray-500 text-sm text-center max-w-xs mb-8">
+              O lojista recebeu uma notificação e precisa autorizar a transação.
+            </p>
+
+            <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-4">
+                <Store className="w-5 h-5 text-gray-400" />
+                <span className="font-bold text-gray-900">{storeName}</span>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Valor da Compra</span>
+                  <span className="font-medium text-gray-900">
+                    {purchaseAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </span>
+                </div>
+                
+                {cashbackUsed > 0 && (
+                  <div className="flex justify-between text-sm text-green-600 font-bold">
+                    <span>Saldo Utilizado</span>
+                    <span>- {cashbackUsed.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: RESULTADO FINAL */}
+        {step === "result" && (
+          <PaymentResultScreen 
+            status={resultStatus}
+            storeName={storeName}
+            purchaseAmount={purchaseAmount}
+            cashbackUsed={cashbackUsed}
+            onBackToHome={handleResetFlow}
+            onViewDetails={() => window.alert("Detalhes da transação (simulação)")}
+          />
+        )}
+
       </div>
-
-      <button
-        type="button"
-        onClick={handleSubmit}
-        className="w-full mt-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600"
-      >
-        {isPayMode ? "Confirmar pagamento" : "Registrar compra"}
-      </button>
     </div>
   );
-};
+}

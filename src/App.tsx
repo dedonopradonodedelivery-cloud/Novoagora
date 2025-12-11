@@ -46,10 +46,7 @@ import { MerchantCashbackRequests } from './components/MerchantCashbackRequests'
 import { MerchantPayRoute } from './components/MerchantPayRoute';
 import { CashbackPayFromQrScreen } from './components/CashbackPayFromQrScreen';
 import { MerchantPanel } from './components/MerchantPanel';
-
-// 🔁 NOVO FLUXO CENTRALIZADO DE CASHBACK
-import { CashbackFlow } from './components/CashbackFlow';
-
+import { UserCashbackFlow } from './components/UserCashbackFlow';
 import { MapPin, Crown } from 'lucide-react';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -74,7 +71,7 @@ const MOCK_STORES: Store[] = [
     address: 'Rua Tirol, 1245 - Freguesia',
     phone: '(21) 99999-1111',
     hours: 'Seg a Dom • 11h às 23h',
-    verified: true,
+    verified: true, // Marked as verified
   },
   {
     id: '2',
@@ -91,7 +88,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada dos Três Rios, 800 - Freguesia',
     phone: '(21) 98888-2222',
     hours: 'Todos os dias • 6h às 21h',
-    verified: true,
+    verified: true, // Marked as verified
   },
   {
     id: '3',
@@ -125,7 +122,7 @@ const MOCK_STORES: Store[] = [
     address: 'Estrada do Gabinal, 1500 - Freguesia',
     phone: '(21) 96666-4444',
     hours: 'Ter a Dom • 9h às 19h',
-    verified: true,
+    verified: true, // Marked as verified
   },
 ];
 
@@ -138,7 +135,7 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<'cliente' | 'lojista' | null>(null);
 
   const [globalSearch, setGlobalSearch] = useState('');
-  const [stores] = useState<Store[]>(MOCK_STORES);
+  const [stores] = useState<Store[]>(MOCK_STORES); // usa apenas os mocks
 
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
 
@@ -204,12 +201,15 @@ const App: React.FC = () => {
 
   // ROLE DO USUÁRIO
   useEffect(() => {
+    // em ambiente fake, mantém lógica básica
     if (!user) {
       setUserRole(null);
       return;
     }
+    // Simulate user role based on some logic or hardcoded for demo
+    // For now, defaulting to 'cliente' but can be toggled via business registration flow
     if (!userRole) setUserRole('cliente'); 
-  }, [user, userRole]);
+  }, [user]);
 
   // SPLASH
   useEffect(() => {
@@ -387,6 +387,7 @@ const App: React.FC = () => {
               onNavigate={setActiveTab}
               activeTab={activeTab}
               userRole={userRole}
+              onOpenMerchantQr={() => setActiveTab('merchant_qr')}
             />
           )}
 
@@ -533,7 +534,7 @@ const App: React.FC = () => {
             {activeTab === 'cashback' && (
               <CashbackView 
                 onBack={() => setActiveTab('home')} 
-                newTransaction={lastTransaction}
+                newTransaction={lastTransaction} // Pass new transaction to view
               />
             )}
 
@@ -567,7 +568,7 @@ const App: React.FC = () => {
               <StoreAreaView onBack={() => setActiveTab('profile')} onNavigate={setActiveTab} />
             )}
 
-            {/* Merchant QR Flow (Legacy) */}
+            {/* Merchant QR Flow */}
             {activeTab === 'merchant_qr' && (
               <MerchantQrScreen onBack={() => setActiveTab('profile')} user={user} />
             )}
@@ -585,13 +586,9 @@ const App: React.FC = () => {
               />
             )}
 
-            {/* 🔁 NOVO FLUXO DE CASHBACK CENTRALIZADO PARA O USUÁRIO */}
-            {activeTab === 'user_cashback_flow' && user && (
-              <CashbackFlow
-                userId={user.uid}
-                mode="pay_with_cashback"
-                onClose={() => setActiveTab('profile')}
-              />
+            {/* NEW USER CASHBACK FLOW */}
+            {activeTab === 'user_cashback_flow' && (
+              <UserCashbackFlow onBack={() => setActiveTab('profile')} />
             )}
 
             {/* Payment Flow (Customer - Manual Entry) */}
@@ -601,7 +598,7 @@ const App: React.FC = () => {
                 merchantId={scannedData.merchantId}
                 storeId={scannedData.storeId}
                 onBack={() => setActiveTab('home')}
-                onComplete={handlePaymentComplete}
+                onComplete={handlePaymentComplete} // Redirects to wallet with history
               />
             )}
 
@@ -630,7 +627,7 @@ const App: React.FC = () => {
             {/* Merchant Pending Requests */}
             {activeTab === 'merchant_requests' && (
               <MerchantCashbackRequests 
-                merchantId="merchant_123_uuid"
+                merchantId="merchant_123_uuid" // In real app, derived from user.uid
                 onBack={() => setActiveTab('store_area')}
               />
             )}

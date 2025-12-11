@@ -1,113 +1,144 @@
-
-import React from 'react';
-import { X, Share2, Copy, MapPin, Store as StoreIcon } from 'lucide-react';
-import { User } from 'firebase/auth';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
+import { ChevronLeft, Download, Copy, CheckCircle2, HelpCircle, Share2 } from 'lucide-react';
 
 interface MerchantQrScreenProps {
   onBack: () => void;
-  user: User | null;
+  user: any;
 }
 
-// Mock Store Data (In a real app, this would come from a Store Context or Database)
-const STORE_DATA = {
-  id: 'store_123_freguesia',
-  name: 'Hamburgueria Brasa',
-  neighborhood: 'Freguesia',
-  shortId: '#LOJA-1234'
-};
-
 export const MerchantQrScreen: React.FC<MerchantQrScreenProps> = ({ onBack, user }) => {
-  
-  // Construct Payload
-  const qrPayload = JSON.stringify({
-    type: "localizei_cashback_qr",
-    merchantId: user?.uid || 'unknown_merchant',
-    storeId: STORE_DATA.id,
-    env: "prod"
-  });
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [copied, setCopied] = useState(false);
 
-  // Generate QR URL using reliable public API
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrPayload)}&color=1B54D9&bgcolor=ffffff`;
+  // Derivar dados do usuário
+  const merchantId = user?.uid || 'id_indisponivel';
+  const pin = merchantId.slice(0, 6).toUpperCase();
+  const deepLink = `${window.location.origin}/cashback/loja/${merchantId}`;
+  const displayUrl = `localizei.app/loja/${pin}`;
+
+  useEffect(() => {
+    const generateQr = async () => {
+      try {
+        const url = await QRCode.toDataURL(deepLink, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#ffffff',
+          },
+        });
+        setQrCodeUrl(url);
+      } catch (err) {
+        console.error('Erro ao gerar QR Code', err);
+      }
+    };
+
+    generateQr();
+  }, [deepLink]);
+
+  const downloadQr = () => {
+    if (!qrCodeUrl) return;
+    const link = document.createElement('a');
+    link.href = qrCodeUrl;
+    link.download = `qrcode-localizei-${pin}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const copyPin = () => {
+    navigator.clipboard.writeText(pin).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleHelp = () => {
+    alert('O cliente deve escanear este QR Code para iniciar o pagamento com cashback. Se a câmera não funcionar, forneça o PIN abaixo.');
+  };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gray-900/95 backdrop-blur-md flex items-center justify-center p-5 animate-in fade-in duration-300">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center animate-in fade-in duration-300 font-sans">
       
-      {/* Main Card */}
-      <div className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-[32px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-200 dark:border-gray-700">
-        
-        {/* Background Decor */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-[#1E5BFF] to-[#1749CC]"></div>
-        
-        {/* Close Button */}
+      {/* Header */}
+      <header className="w-full bg-white px-5 h-16 flex items-center gap-4 border-b border-gray-100 sticky top-0 z-10">
         <button 
           onClick={onBack}
-          className="absolute top-4 right-4 z-20 bg-black/20 hover:bg-black/30 text-white p-2 rounded-full backdrop-blur-md transition-all"
+          className="w-10 h-10 -ml-2 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors"
         >
-          <X className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
+        <h1 className="font-bold text-lg text-gray-900">Meu QR Code</h1>
+      </header>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center pt-8 pb-8 px-6 text-center">
-          
-          {/* Header Icon */}
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-4 text-[#1E5BFF]">
-            <StoreIcon className="w-8 h-8" />
+      <div className="w-full max-w-md p-6 flex flex-col items-center gap-6 pb-20">
+        
+        {/* QR Code Card */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg shadow-gray-200/50 border border-gray-100 w-full flex flex-col items-center text-center">
+          <div className="bg-white p-2 rounded-2xl border border-gray-100 mb-4 shadow-sm">
+            {qrCodeUrl ? (
+              <img 
+                src={qrCodeUrl} 
+                alt="QR Code do Lojista" 
+                className="w-64 h-64 object-contain rounded-xl"
+              />
+            ) : (
+              <div className="w-64 h-64 bg-gray-100 animate-pulse rounded-xl flex items-center justify-center text-gray-400 text-sm">
+                Gerando QR...
+              </div>
+            )}
           </div>
-
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white font-display mb-1">
-            Receber com Cashback
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-[220px] leading-snug">
-            Peça ao cliente para escanear este QR no app Localizei.
-          </p>
-
-          {/* QR Code Container */}
-          <div className="p-4 bg-white rounded-3xl shadow-inner border border-gray-100 dark:border-gray-700 mb-6">
-            <div className="w-56 h-56 relative">
-                <img 
-                    src={qrUrl} 
-                    alt="QR Code da Loja" 
-                    className="w-full h-full object-contain rounded-xl"
-                />
-                {/* Center Logo Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 bg-white rounded-full p-1 shadow-md flex items-center justify-center">
-                        <div className="w-full h-full bg-[#1E5BFF] rounded-full flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-white" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </div>
-
-          {/* Store Details */}
-          <div className="w-full bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-600">
-            <h3 className="font-bold text-gray-900 dark:text-white text-lg">
-                {STORE_DATA.name}
-            </h3>
-            <div className="flex items-center justify-center gap-2 mt-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {STORE_DATA.neighborhood}
-                </span>
-                <span className="text-xs text-gray-300 dark:text-gray-600">•</span>
-                <span className="text-xs font-mono font-bold text-[#1E5BFF] bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md">
-                    {STORE_DATA.shortId}
-                </span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 w-full mt-6">
-            <button className="flex-1 bg-[#1E5BFF] hover:bg-[#1749CC] text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
-                <Share2 className="w-4 h-4" />
-                Compartilhar
-            </button>
-            <button className="w-14 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <Copy className="w-5 h-5" />
-            </button>
-          </div>
-
+          <p className="text-sm font-medium text-gray-400">{displayUrl}</p>
         </div>
+
+        {/* PIN Card */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 w-full flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              PIN de Pagamento
+            </p>
+            <p className="text-3xl font-mono font-black text-gray-800 tracking-wider">
+              {pin}
+            </p>
+          </div>
+          <button 
+            onClick={copyPin}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors text-xs font-bold text-gray-600"
+          >
+            {copied ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                Copiado
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                Copiar
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Actions */}
+        <div className="w-full space-y-4 mt-2">
+          <button
+            onClick={downloadQr}
+            className="w-full bg-[#FF6500] hover:bg-[#E65B00] text-white rounded-2xl py-4 px-6 font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all"
+          >
+            <Download className="w-5 h-5" />
+            Baixar QR Code
+          </button>
+
+          <button
+            onClick={handleHelp}
+            className="w-full flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-700 py-2 transition-colors"
+          >
+            <HelpCircle className="w-4 h-4" />
+            Como funciona?
+          </button>
+        </div>
+
       </div>
     </div>
   );
