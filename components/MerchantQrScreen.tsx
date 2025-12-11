@@ -1,114 +1,142 @@
-
-import React from 'react';
-import { X, Share2, Copy, MapPin, Store as StoreIcon } from 'lucide-react';
-import { User } from 'firebase/auth';
+import React, { useMemo } from 'react';
+import QRCode from 'qrcode';
+import { X, Copy, Download, QrCode, Store } from 'lucide-react';
 
 interface MerchantQrScreenProps {
   onBack: () => void;
-  user: User | null;
+  user: any; // Firebase User
 }
 
-// Mock Store Data (In a real app, this would come from a Store Context or Database)
-const STORE_DATA = {
-  id: 'store_123_freguesia',
-  name: 'Hamburgueria Brasa',
-  neighborhood: 'Freguesia',
-  shortId: '#LOJA-1234'
-};
-
 export const MerchantQrScreen: React.FC<MerchantQrScreenProps> = ({ onBack, user }) => {
-  
-  // Construct Payload
-  const qrPayload = JSON.stringify({
-    type: "localizei_cashback_qr",
-    merchantId: user?.uid || 'unknown_merchant',
-    storeId: STORE_DATA.id,
-    env: "prod"
-  });
+  // UID do lojista (por enquanto usamos o uid do Firebase)
+  const merchantId = user?.uid ?? 'merchant_demo';
 
-  // Generate QR URL using reliable public API
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrPayload)}&color=1B54D9&bgcolor=ffffff`;
+  // PIN fixo por enquanto (depois podemos salvar/buscar no Supabase)
+  const pinCode = '123456';
+
+  // Payload JSON que vai dentro do QR
+  const qrPayload = useMemo(
+    () =>
+      JSON.stringify({
+        type: 'LOCALIZEI_MERCHANT_QR',
+        merchantId,
+        storeId: 'default_store',
+      }),
+    [merchantId]
+  );
+
+  const [qrDataUrl, setQrDataUrl] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    QRCode.toDataURL(qrPayload, { width: 320, margin: 1 })
+      .then(setQrDataUrl)
+      .catch((err) => {
+        console.error('Erro ao gerar QR:', err);
+      });
+  }, [qrPayload]);
+
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(qrPayload)
+      .catch((err) => console.error('Erro ao copiar QR payload:', err));
+  };
+
+  const handleDownload = () => {
+    if (!qrDataUrl) return;
+    const link = document.createElement('a');
+    link.href = qrDataUrl;
+    link.download = `localizei-qr-${merchantId}.png`;
+    link.click();
+  };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gray-900/95 backdrop-blur-md flex items-center justify-center p-5 animate-in fade-in duration-300">
-      
-      {/* Main Card */}
-      <div className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-[32px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-200 dark:border-gray-700">
-        
-        {/* Background Decor */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-[#1E5BFF] to-[#1749CC]"></div>
-        
-        {/* Close Button */}
-        <button 
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      <header className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        <button
           onClick={onBack}
-          className="absolute top-4 right-4 z-20 bg-black/20 hover:bg-black/30 text-white p-2 rounded-full backdrop-blur-md transition-all"
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Voltar"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
+        <h1 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <Store className="w-4 h-4 text-orange-500" />
+          Meu QR de Pagamento
+        </h1>
+        <div className="w-8" />
+      </header>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center pt-8 pb-8 px-6 text-center">
-          
-          {/* Header Icon */}
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-4 text-[#1E5BFF]">
-            <StoreIcon className="w-8 h-8" />
+      <main className="flex-1 px-4 py-6 flex flex-col items-center">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-5 w-full max-w-xs flex flex-col items-center">
+          <div className="mb-3 text-center">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              QR Code do Lojista
+            </p>
+            <p className="text-sm text-gray-400 mt-1">
+              Cliente escaneia para pagar e acumular cashback
+            </p>
           </div>
 
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white font-display mb-1">
-            Receber com Cashback
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-[220px] leading-snug">
-            Peça ao cliente para escanear este QR no app Localizei.
-          </p>
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-3 mb-4 flex items-center justify-center">
+            {qrDataUrl ? (
+              <img
+                src={qrDataUrl}
+                alt="QR Code do lojista"
+                className="w-56 h-56 rounded-xl border border-gray-200 dark:border-gray-700"
+              />
+            ) : (
+              <div className="w-56 h-56 flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
 
-          {/* QR Code Container */}
-          <div className="p-4 bg-white rounded-3xl shadow-inner border border-gray-100 dark:border-gray-700 mb-6">
-            <div className="w-56 h-56 relative">
-                <img 
-                    src={qrUrl} 
-                    alt="QR Code da Loja" 
-                    className="w-full h-full object-contain rounded-xl"
-                />
-                {/* Center Logo Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 bg-white rounded-full p-1 shadow-md flex items-center justify-center">
-                        <div className="w-full h-full bg-[#1E5BFF] rounded-full flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-white" />
-                        </div>
-                    </div>
-                </div>
+          <div className="w-full space-y-2 mb-4">
+            <div className="flex flex-col bg-gray-50 dark:bg-gray-900 rounded-xl px-3 py-2">
+              <span className="text-[11px] text-gray-500 uppercase tracking-wide">
+                ID do Lojista
+              </span>
+              <span className="text-xs font-mono text-gray-800 dark:text-gray-100 break-all">
+                {merchantId}
+              </span>
+            </div>
+
+            <div className="flex flex-col bg-orange-50 dark:bg-orange-900/20 rounded-xl px-3 py-2">
+              <span className="text-[11px] text-orange-600 dark:text-orange-300 uppercase tracking-wide">
+                PIN de Conferência
+              </span>
+              <span className="text-base font-bold text-orange-700 dark:text-orange-300 tracking-[0.2em]">
+                {pinCode}
+              </span>
+              <span className="text-[11px] text-orange-600/70 dark:text-orange-300/70 mt-1">
+                Mostre esse PIN para o cliente conferir na hora do pagamento.
+              </span>
             </div>
           </div>
 
-          {/* Store Details */}
-          <div className="w-full bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-600">
-            <h3 className="font-bold text-gray-900 dark:text-white text-lg">
-                {STORE_DATA.name}
-            </h3>
-            <div className="flex items-center justify-center gap-2 mt-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {STORE_DATA.neighborhood}
-                </span>
-                <span className="text-xs text-gray-300 dark:text-gray-600">•</span>
-                <span className="text-xs font-mono font-bold text-[#1E5BFF] bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md">
-                    {STORE_DATA.shortId}
-                </span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 w-full mt-6">
-            <button className="flex-1 bg-[#1E5BFF] hover:bg-[#1749CC] text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
-                <Share2 className="w-4 h-4" />
-                Compartilhar
+          <div className="w-full flex gap-2">
+            <button
+              onClick={handleCopy}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Copy className="w-4 h-4" />
+              Copiar dados
             </button>
-            <button className="w-14 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <Copy className="w-5 h-5" />
+            <button
+              onClick={handleDownload}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Baixar QR
             </button>
           </div>
-
         </div>
-      </div>
+
+        <div className="mt-6 text-[11px] text-gray-500 dark:text-gray-400 text-center max-w-xs">
+          O cliente pode escanear o QR pela área de Cashback do app Localizei
+          ou pela câmera do celular (caso deep link esteja habilitado).
+        </div>
+      </main>
     </div>
   );
 };
