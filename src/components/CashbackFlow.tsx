@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { CashbackScanScreen } from './CashbackScanScreen';
-import PayWithCashbackScreen from './PayWithCashbackScreen';
-import PaymentResultScreen from './PaymentResultScreen';
-import { Clock, Store } from 'lucide-react';
+// src/components/CashbackFlow.tsx
+import React, { useState } from "react";
+import CashbackScanScreen from "./CashbackScanScreen";
+import PayWithCashbackScreen from "./PayWithCashbackScreen";
+import PaymentResultScreen from "./PaymentResultScreen";
+import { Clock, Store } from "lucide-react";
 
 // Tipos para controle do fluxo
 type FlowStep = "scan" | "pay" | "waiting" | "result";
@@ -19,9 +20,13 @@ const PayWithCashback = PayWithCashbackScreen as React.ComponentType<any>;
 export default function CashbackFlow(props: CashbackFlowProps) {
   // Estados internos
   const [step, setStep] = useState<FlowStep>("scan");
-  const [storeName, setStoreName] = useState<string>(props.initialStoreName ?? "Loja Parceira");
-  const [cashbackPercent, setCashbackPercent] = useState<number>(props.initialCashbackPercent ?? 5);
-  
+  const [storeName, setStoreName] = useState<string>(
+    props.initialStoreName ?? "Loja Parceira"
+  );
+  const [cashbackPercent, setCashbackPercent] = useState<number>(
+    props.initialCashbackPercent ?? 5
+  );
+
   const [purchaseAmount, setPurchaseAmount] = useState<number>(0);
   const [cashbackUsed, setCashbackUsed] = useState<number>(0);
   const [resultStatus, setResultStatus] = useState<ResultStatus>("approved");
@@ -37,7 +42,10 @@ export default function CashbackFlow(props: CashbackFlowProps) {
   };
 
   // Chamado quando o usuário clica em "Confirmar Pagamento" na tela de formulário
-  const handlePaymentSimulated = (args: { purchaseAmount: number; cashbackUsed: number }) => {
+  const handlePaymentSimulated = (args: {
+    purchaseAmount: number;
+    cashbackUsed: number;
+  }) => {
     setPurchaseAmount(args.purchaseAmount);
     setCashbackUsed(args.cashbackUsed);
     setStep("waiting");
@@ -63,21 +71,26 @@ export default function CashbackFlow(props: CashbackFlowProps) {
   const isScanStep = step === "scan";
 
   return (
-    <div className={`min-h-screen flex flex-col ${isScanStep ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div
+      className={`min-h-screen flex flex-col ${
+        isScanStep ? "bg-black text-white" : "bg-gray-50 text-gray-900"
+      }`}
+    >
       <div className="w-full max-w-md mx-auto flex-1 flex flex-col relative">
-        
         {/* STEP 1: SCANNER */}
         {step === "scan" && (
           <div className="flex-1 flex flex-col">
-            <CashbackScanScreen 
-              onBack={() => console.log("Back clicked")} 
-              onScanSuccess={handleScanSuccess} 
+            <CashbackScanScreen
+              onBack={() => console.log("Back clicked")}
+              onScanSuccess={handleScanSuccess}
             />
-            
+
             {/* Botão de DEV para pular leitura de QR */}
             <div className="flex justify-center pb-8">
-              <button 
-                onClick={() => handleScanSuccess({ merchantId: 'dev', storeId: 'dev' })}
+              <button
+                onClick={() =>
+                  handleScanSuccess({ merchantId: "dev", storeId: "dev" })
+                }
                 className="text-xs text-gray-500 underline opacity-60 hover:opacity-100 transition-opacity"
               >
                 (DEV) Continuar para pagamento sem QR
@@ -100,11 +113,13 @@ export default function CashbackFlow(props: CashbackFlowProps) {
         {step === "waiting" && (
           <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
             <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mb-6 relative">
-              <div className="absolute inset-0 rounded-full border-4 border-yellow-200 animate-ping opacity-75"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-yellow-200 animate-ping opacity-75" />
               <Clock className="w-10 h-10 text-yellow-600" />
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Aguardando Lojista</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">
+              Aguardando Lojista
+            </h2>
             <p className="text-gray-500 text-sm text-center max-w-xs mb-8">
               O lojista recebeu uma notificação e precisa autorizar a transação.
             </p>
@@ -114,39 +129,6 @@ export default function CashbackFlow(props: CashbackFlowProps) {
                 <Store className="w-5 h-5 text-gray-400" />
                 <span className="font-bold text-gray-900">{storeName}</span>
               </div>
-              
+
               <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Valor da Compra</span>
-                  <span className="font-medium text-gray-900">
-                    {purchaseAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </span>
-                </div>
-                
-                {cashbackUsed > 0 && (
-                  <div className="flex justify-between text-sm text-green-600 font-bold">
-                    <span>Saldo Utilizado</span>
-                    <span>- {cashbackUsed.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: RESULTADO FINAL */}
-        {step === "result" && (
-          <PaymentResultScreen 
-            status={resultStatus}
-            storeName={storeName}
-            purchaseAmount={purchaseAmount}
-            cashbackUsed={cashbackUsed}
-            onBackToHome={handleResetFlow}
-            onViewDetails={() => window.alert("Detalhes da transação (simulação)")}
-          />
-        )}
-
-      </div>
-    </div>
-  );
-}
+                <div className="flex justify-between text
