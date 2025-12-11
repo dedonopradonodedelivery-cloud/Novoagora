@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, Search, Star, Clock, MapPin, BadgeHelp, CheckCircle, XCircle, SlidersHorizontal, Award, Sparkles, TrendingUp, ImageIcon, Heart } from 'lucide-react';
 import { Store, AdType } from '../types';
+import { getStoreLogo } from '../utils/mockLogos';
 
-// --- Type Definition for Banner Ads ---
 interface BannerAd {
   id: string;
   image: string;
@@ -12,17 +12,14 @@ interface BannerAd {
   merchantName?: string;
 }
 
-// --- Mock Data for Development ---
 const mockStores: Store[] = [
-    { id: 'ms1', name: 'Pizza Place Freguesia', rating: 4.8, reviewsCount: 231, subcategory: 'Restaurantes', distanceKm: 1.2, isOpenNow: true, closingTime: '23:00', isSponsored: true, image: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?q=80&w=600&auto=format&fit=crop', adType: AdType.PREMIUM, category: 'Alimentação', distance: '1.2km', description: 'Pizzas artesanais' },
-    { id: 'ms2', name: 'Sabor & Cia', rating: 4.6, reviewsCount: 153, subcategory: 'Restaurantes', distanceKm: 0.8, isOpenNow: true, closingTime: '22:00', isSponsored: false, image: 'https://images.unsplash.com/photo-1559329007-4477ca94264a?q=80&w=600&auto=format&fit=crop', adType: AdType.ORGANIC, category: 'Alimentação', distance: '0.8km', description: 'Comida caseira' },
-    { id: 'ms3', name: 'Cantinho da Massa - O melhor da Itália no seu bairro', rating: 4.9, reviewsCount: 302, subcategory: 'Restaurantes', distanceKm: 2.1, isOpenNow: false, closingTime: '22:00', isSponsored: true, image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=600&auto=format&fit=crop', adType: AdType.PREMIUM, category: 'Alimentação', distance: '2.1km', description: 'Massas frescas' },
-    { id: 'ms4', name: 'Bistrô da Freguesia', rating: 4.7, reviewsCount: 87, subcategory: 'Restaurantes', distanceKm: 0.4, isOpenNow: true, closingTime: '22:30', isSponsored: false, image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=600&auto=format&fit=crop', adType: AdType.LOCAL, category: 'Alimentação', distance: '0.4km', description: 'Culinária francesa' },
-    { id: 'ms5', name: 'Hamburgueria do Parque', rating: 4.5, reviewsCount: 241, subcategory: 'Restaurantes', distanceKm: 3.5, isOpenNow: false, closingTime: '00:00', isSponsored: false, image: 'https://broken.url/image.jpg', adType: AdType.ORGANIC, category: 'Alimentação', distance: '3.5km', description: 'Burgers artesanais' },
+    { id: 'ms1', name: 'Pizza Place Freguesia', rating: 4.8, reviewsCount: 231, subcategory: 'Restaurantes', distanceKm: 1.2, isOpenNow: true, closingTime: '23:00', isSponsored: true, logoUrl: getStoreLogo(9), adType: AdType.PREMIUM, category: 'Alimentação', distance: '1.2km', description: 'Pizzas artesanais' },
+    { id: 'ms2', name: 'Sabor & Cia', rating: 4.6, reviewsCount: 153, subcategory: 'Restaurantes', distanceKm: 0.8, isOpenNow: true, closingTime: '22:00', isSponsored: false, logoUrl: getStoreLogo(1), adType: AdType.ORGANIC, category: 'Alimentação', distance: '0.8km', description: 'Comida caseira' },
+    { id: 'ms3', name: 'Cantinho da Massa - O melhor da Itália no seu bairro', rating: 4.9, reviewsCount: 302, subcategory: 'Restaurantes', distanceKm: 2.1, isOpenNow: false, closingTime: '22:00', isSponsored: true, logoUrl: getStoreLogo(2), adType: AdType.PREMIUM, category: 'Alimentação', distance: '2.1km', description: 'Massas frescas' },
+    { id: 'ms4', name: 'Bistrô da Freguesia', rating: 4.7, reviewsCount: 87, subcategory: 'Restaurantes', distanceKm: 0.4, isOpenNow: true, closingTime: '22:30', isSponsored: false, logoUrl: getStoreLogo(3), adType: AdType.LOCAL, category: 'Alimentação', distance: '0.4km', description: 'Culinária francesa' },
+    { id: 'ms5', name: 'Hamburgueria do Parque', rating: 4.5, reviewsCount: 241, subcategory: 'Restaurantes', distanceKm: 3.5, isOpenNow: false, closingTime: '00:00', isSponsored: false, logoUrl: getStoreLogo(4), adType: AdType.ORGANIC, category: 'Alimentação', distance: '3.5km', description: 'Burgers artesanais' },
 ];
 
-
-// --- Reusable Components ---
 const HighlightBanner: React.FC<{ banner: BannerAd; onClick: (id: string) => void; }> = ({ banner, onClick }) => (
   <div onClick={() => onClick(banner.id)} className="snap-center flex-shrink-0 w-full h-[160px] rounded-[20px] shadow-lg shadow-black/5 overflow-hidden relative group cursor-pointer">
     <img src={banner.image} alt={banner.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out" />
@@ -91,23 +88,15 @@ const StoreCard: React.FC<{ store: Store; onClick: (store: Store) => void; }> = 
             onClick={() => onClick(store)} 
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 flex gap-4 p-4 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden active:scale-[0.98]"
         >
-            {/* Image Container */}
-            <div className="w-24 h-24 flex-shrink-0 relative">
-                {imageError ? (
-                    <div className="w-full h-full bg-[#F2F2F2] dark:bg-gray-700 rounded-xl flex items-center justify-center">
-                        <ImageIcon className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                    </div>
-                ) : (
-                    <img 
-                        src={store.image} 
-                        alt={store.name} 
-                        className="w-full h-full object-cover rounded-xl"
-                        onError={handleImageError}
-                    />
-                )}
+            <div className="w-24 h-24 flex-shrink-0 relative bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-600">
+                <img 
+                    src={store.logoUrl || getStoreLogo(store.name.length)} 
+                    alt={store.name} 
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
+                />
             </div>
 
-            {/* Info Container */}
             <div className="flex-1 flex flex-col justify-center min-w-0">
                 <div className="flex justify-between items-start gap-1 mb-1">
                     <h3 className="font-semibold text-gray-800 dark:text-white text-base line-clamp-2 flex-1">{store.name}</h3>
@@ -149,8 +138,6 @@ const StoreCard: React.FC<{ store: Store; onClick: (store: Store) => void; }> = 
     );
 };
 
-
-// --- Main Component ---
 interface SubcategoryStoreListProps {
   subcategoryName: string;
   stores: Store[];
@@ -162,7 +149,6 @@ interface SubcategoryStoreListProps {
 export const SubcategoryStoreList: React.FC<SubcategoryStoreListProps> = ({ subcategoryName, stores, sponsoredBanners, onBack, onStoreClick }) => {
   const [activeFilter, setActiveFilter] = useState('relevance');
 
-  // Use passed stores if available, otherwise use mock stores for development
   const displayStores = stores.length > 0 ? stores : mockStores;
 
   const filters = [
@@ -174,7 +160,6 @@ export const SubcategoryStoreList: React.FC<SubcategoryStoreListProps> = ({ subc
 
   return (
     <div className="min-h-screen bg-[#F7F7F7] dark:bg-gray-950 font-sans">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 w-full max-w-md mx-auto h-16 bg-white dark:bg-gray-900 shadow-sm z-20 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800">
         <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
           <ChevronLeft className="w-6 h-6 text-gray-800 dark:text-gray-200" />
@@ -185,18 +170,15 @@ export const SubcategoryStoreList: React.FC<SubcategoryStoreListProps> = ({ subc
         </button>
       </header>
 
-      {/* Scrollable Content */}
       <main className="pt-16 overflow-y-auto">
         <div className="p-4 space-y-6 pb-12">
           
-          {/* Sponsored Carousel */}
           {sponsoredBanners.length > 0 && (
             <section>
               <SponsoredCarousel banners={sponsoredBanners} />
             </section>
           )}
 
-          {/* Filters Section */}
           <section className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2">
             {filters.map(filter => {
               const isActive = activeFilter === filter.id;
@@ -218,7 +200,6 @@ export const SubcategoryStoreList: React.FC<SubcategoryStoreListProps> = ({ subc
             })}
           </section>
 
-          {/* Store List / Empty State */}
           <section>
             {displayStores.length > 0 ? (
               <div className="grid grid-cols-1 gap-7">

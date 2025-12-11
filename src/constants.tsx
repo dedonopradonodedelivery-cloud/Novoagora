@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Utensils, Briefcase, PartyPopper, Shirt, Coffee, Home, Dog, Armchair, Scissors, Heart, GraduationCap, Settings, Dumbbell, CarFront, Wrench, Sun, ShoppingCart, Croissant, Leaf, Beef, Fish, Bike, Beer, Sandwich, ShoppingBag, Sparkles, MapPin, Hand, Feather, Eye, Stethoscope, Smile, Brain, Activity, Apple, FlaskConical, HelpingHand, School, Languages, BookOpen, Baby, Target, Zap, Droplet, BrickWall, PaintRoller, Hammer, Wind, Key, Plug, Scale, Calculator, Ruler, Megaphone, Camera, Printer, Bone, Footprints, Flame, Swords, Trophy, Waves, Music, UserCheck, Tv, Smartphone, Laptop, Cpu, Snowflake, FileText, CircleDashed, Lock, Wallet, Gem, Watch, Moon, ShieldCheck, Package, Building2, Pill, Lightbulb, Palette } from 'lucide-react';
 import { AdType, Category, Store, Story, ServiceLead, Channel, Transaction } from './types';
+import { getStoreLogo } from './utils/mockLogos';
 
 export const CATEGORIES: Category[] = [
   // Top 8 Categories ordered as requested
@@ -209,7 +211,7 @@ export const STORES: Store[] = [
     name: 'Casas Pedro',
     category: 'Alimentação',
     subcategory: 'Mercado',
-    image: 'https://picsum.photos/400/250?random=10',
+    logoUrl: getStoreLogo(0),
     rating: 4.9,
     distance: '0.5km',
     adType: AdType.PREMIUM,
@@ -237,7 +239,7 @@ export const STORES: Store[] = [
     name: 'Hamburgueria Brasa',
     category: 'Alimentação',
     subcategory: 'Lanchonetes',
-    image: 'https://picsum.photos/400/250?random=11',
+    logoUrl: getStoreLogo(1),
     rating: 4.8,
     distance: '1.2km',
     adType: AdType.PREMIUM,
@@ -256,7 +258,7 @@ export const STORES: Store[] = [
     name: 'Ótica Visão',
     category: 'Moda',
     subcategory: 'Acessórios & Bijuterias',
-    image: 'https://picsum.photos/400/250?random=12',
+    logoUrl: getStoreLogo(2),
     rating: 4.5,
     distance: '0.3km',
     adType: AdType.LOCAL,
@@ -272,7 +274,7 @@ export const STORES: Store[] = [
     name: 'PetShop Amigo Fiel',
     category: 'Pets',
     subcategory: 'Banho & Tosa',
-    image: 'https://picsum.photos/400/250?random=13',
+    logoUrl: getStoreLogo(3),
     rating: 4.2,
     distance: '2.0km',
     adType: AdType.ORGANIC,
@@ -284,7 +286,7 @@ export const STORES: Store[] = [
     name: 'Padaria Estrela',
     category: 'Alimentação',
     subcategory: 'Padaria',
-    image: 'https://picsum.photos/400/250?random=14',
+    logoUrl: getStoreLogo(4),
     rating: 4.6,
     distance: '0.8km',
     adType: AdType.ORGANIC,

@@ -1,6 +1,5 @@
-
 import React, { useMemo } from 'react';
-import { ChevronLeft, Star, MapPin, BadgeCheck, Clock, Heart, TrendingUp } from 'lucide-react';
+import { ChevronLeft, Star, MapPin, BadgeCheck } from 'lucide-react';
 import { Store, AdType } from '../types';
 
 export interface EditorialCollection {
@@ -8,7 +7,7 @@ export interface EditorialCollection {
   title: string;
   subtitle: string;
   image: string;
-  keywords: string[]; // Palavras-chave para filtrar as lojas
+  keywords: string[]; 
 }
 
 interface EditorialListViewProps {
@@ -25,13 +24,10 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
   onStoreClick 
 }) => {
 
-  // Lógica de Filtragem e Ordenação
   const displayedStores = useMemo(() => {
-    // 1. Filtrar lojas que correspondem ao tema (keywords)
     const filtered = stores.filter(store => {
       const searchStr = `${store.name} ${store.category} ${store.subcategory} ${store.description}`.toLowerCase();
       
-      // Se a coleção for "Bem avaliados", ignora keywords e pega rating > 4.7
       if (collection.id === 'top-rated') {
         return (store.rating || 0) >= 4.7;
       }
@@ -39,23 +35,17 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
       return collection.keywords.some(keyword => searchStr.includes(keyword.toLowerCase()));
     });
 
-    // 2. Separar em Patrocinados (Premium/Local/Sponsored) e Orgânicos
-    // Para simular "5 lojas patrocinadas", vamos forçar algumas flags se não houver suficientes
     let sponsored = filtered.filter(s => s.adType === AdType.PREMIUM || s.isSponsored || s.adType === AdType.LOCAL);
     let organic = filtered.filter(s => s.adType === AdType.ORGANIC && !s.isSponsored);
 
-    // Ordenar patrocinados por relevância (aqui simulado por ID ou ordem original)
-    // Ordenar orgânicos por Rating
     organic.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-    // Combinar (Patrocinados primeiro)
     return [...sponsored, ...organic];
   }, [stores, collection]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 font-sans animate-in slide-in-from-right duration-300">
       
-      {/* Hero Header */}
       <div className="relative h-[280px] w-full">
         <img 
           src={collection.image} 
@@ -64,7 +54,6 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10"></div>
         
-        {/* Navbar absoluta sobre o banner */}
         <div className="absolute top-0 left-0 right-0 p-4 flex items-center pt-8">
           <button 
             onClick={onBack}
@@ -74,7 +63,6 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
           </button>
         </div>
 
-        {/* Título do Editorial */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <span className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-2 block">
             Achadinhos da Freguesia
@@ -88,7 +76,6 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
         </div>
       </div>
 
-      {/* Lista de Lojas */}
       <div className="p-5 pb-24 -mt-4 relative z-10 rounded-t-[32px] bg-gray-50 dark:bg-gray-950 min-h-[500px]">
         <div className="flex items-center justify-between mb-6 px-1">
           <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -106,9 +93,8 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
                 onClick={() => onStoreClick(store)}
                 className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex gap-4 hover:shadow-lg transition-all cursor-pointer relative overflow-hidden active:scale-[0.99]"
               >
-                {/* Imagem */}
-                <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 relative">
-                  <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
+                <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50 dark:bg-gray-700 relative border border-gray-100 dark:border-gray-600">
+                  <img src={store.logoUrl || "/assets/default-logo.png"} alt={store.name} className="w-full h-full object-contain" />
                   {store.cashback && (
                      <div className="absolute bottom-0 left-0 right-0 bg-green-600/90 text-white text-[9px] font-bold text-center py-0.5 backdrop-blur-sm">
                         {store.cashback}% VOLTA
@@ -116,7 +102,6 @@ export const EditorialListView: React.FC<EditorialListViewProps> = ({
                   )}
                 </div>
 
-                {/* Conteúdo */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
                   <div className="flex justify-between items-start gap-1">
                      <h3 className="font-bold text-gray-900 dark:text-white text-base line-clamp-1">

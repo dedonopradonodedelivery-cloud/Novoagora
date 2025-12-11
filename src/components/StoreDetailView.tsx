@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   ChevronLeft,
@@ -13,7 +12,6 @@ import {
 } from 'lucide-react';
 import { Store } from '../types';
 
-// --- MOCK ORIGINAL (SÓ COMO FALLBACK EXTREMO) ---
 const storeMock = {
   business: {
     id: 1,
@@ -22,7 +20,7 @@ const storeMock = {
     rating: 0,
     ratingCount: 0,
     description: 'Descrição indisponível.',
-    logo: 'https://placehold.co/200x200?text=Logo',
+    logo: '/assets/default-logo.png',
     banners: [
       'https://placehold.co/800x600?text=Banner',
     ],
@@ -42,11 +40,9 @@ const storeMock = {
   },
 };
 
-// --- MAPEIA Store (Supabase/Hook) -> shape interno da view ---
 function mapStoreToBusiness(store?: Store | null) {
   if (!store) return storeMock.business;
 
-  // Cast flexível para acessar propriedades que podem vir do banco
   const s: any = store;
 
   return {
@@ -56,12 +52,10 @@ function mapStoreToBusiness(store?: Store | null) {
     name: s.nome ?? s.name ?? storeMock.business.name,
     category: s.categoria ?? s.category ?? storeMock.business.category,
     rating: s.rating ?? storeMock.business.rating,
-    // Mapeia reviewsCount (useStores) ou total_reviews (DB raw)
     ratingCount: s.reviewsCount ?? s.total_reviews ?? s.ratingCount ?? storeMock.business.ratingCount,
     description: s.descricao ?? s.description ?? storeMock.business.description,
 
-    logo: s.image_url ?? s.image ?? s.logo ?? storeMock.business.logo,
-    // Se não tiver banners específicos, usa a imagem principal como banner
+    logo: s.logoUrl ?? s.image ?? s.image_url ?? storeMock.business.logo,
     banners:
       s.banners && Array.isArray(s.banners) && s.banners.length > 0
         ? s.banners
@@ -86,8 +80,6 @@ function mapStoreToBusiness(store?: Store | null) {
     },
   };
 }
-
-// --- Sub-components ---
 
 const HeaderButton: React.FC<{
   children: React.ReactNode;
@@ -154,8 +146,6 @@ const Tabs: React.FC<{
   );
 };
 
-// --- Main Component ---
-
 interface StoreDetailViewProps {
   store?: Store | null;
   onBack: () => void;
@@ -172,19 +162,14 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
   );
   const [currentSlide, setCurrentSlide] = React.useState(0);
 
-  // Review Logic State
   const [reviewText, setReviewText] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  // Mapeia a store passada via props para o formato interno
   const business = mapStoreToBusiness(store);
   const photoGallery = business.banners || [];
 
   const hasSocials = business.social.instagram || business.social.whatsapp;
-  const hasAddress = business.contact.address && business.location.lat;
-  const hasHours = business.contact.hours;
-  const hasPhone = business.contact.phone;
 
   React.useEffect(() => {
     if (photoGallery.length > 1) {
@@ -200,7 +185,6 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
 
     setIsSubmittingReview(true);
 
-    // TODO: aqui entraria a chamada ao Supabase para salvar
     setTimeout(() => {
       setIsSubmittingReview(false);
       setReviewText('');
@@ -215,7 +199,6 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
   return (
     <div className="min-h-screen bg-[#F5F5F5] dark:bg-gray-950 font-sans relative">
       <main className="overflow-y-auto pb-8">
-        {/* Hero Section */}
         <section className="relative w-full h-[260px] bg-gray-200 dark:bg-gray-800">
           {photoGallery.length > 0 && (
             <div className="absolute inset-0 w-full h-full overflow-hidden rounded-b-[24px] shadow-lg shadow-black/10">
@@ -274,22 +257,20 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
         <div className="relative px-5">
           <div className="relative pt-7">
             {business.logo && (
-              <div className="absolute right-0 -top-12 w-20 h-20 rounded-full bg-white dark:bg-gray-800 border-4 border-white dark:border-[#F5F5F5] shadow-xl flex-shrink-0 z-20">
+              <div className="absolute right-0 -top-12 w-20 h-20 rounded-xl bg-gray-50 dark:bg-gray-800 border-4 border-white dark:border-[#F5F5F5] shadow-xl flex-shrink-0 z-20 overflow-hidden">
                 <img
-                  src={business.logo}
+                  src={business.logo || "/assets/default-logo.png"}
                   alt={`${business.name} logo`}
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-full h-full object-contain"
                 />
               </div>
             )}
 
             <div className="space-y-8">
-              {/* Identity Block */}
               <section className="flex justify-between items-start gap-4">
                 <div className="flex-1 pt-2">
                   <div className="flex items-center gap-2 text-sm font-medium text-[#6C6C6C] dark:text-gray-400 mb-2">
                     {business.category && <span>{business.category}</span>}
-                    {/* Exibe rating se existir */}
                     {business.rating !== undefined && (
                       <>
                         <span className="text-gray-300">•</span>
@@ -306,7 +287,6 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                 </div>
               </section>
 
-              {/* Tabs */}
               <section className="pt-2">
                 <Tabs
                   activeTab={activeTab}
@@ -317,7 +297,6 @@ export const StoreDetailView: React.FC<StoreDetailViewProps> = ({
                 />
               </section>
 
-              {/* Tab Content */}
               {activeTab === 'Sobre' ? (
                 <section className="animate-in fade-in duration-500 space-y-8">
                   {business.description && (
